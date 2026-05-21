@@ -1,58 +1,127 @@
 <script>
+    // --- Lógica de Navegación entre Pantallas ---
+    function cambiarPantalla(idDestino) {
+        document.querySelectorAll('.game-screen').forEach(pantalla => {
+            pantalla.classList.remove('active-screen');
+        });
+        document.getElementById(idDestino).classList.add('active-screen');
+    }
+
     // 1. Efecto Visual: Escanear Enemigo en Tiempo Real
     const inputsAmenaza = document.querySelectorAll('.game-input');
     const bossBar = document.getElementById('boss-atk-bar');
     const bossText = document.getElementById('boss-atk-text');
 
     function actualizarPoderEnemigo() {
-        let s = parseInt(document.getElementById('sel-severidad').value);
-        let e = parseInt(document.getElementById('sel-exposicion').value);
-        let poder = s * e; // Máximo 9
+        let a = parseInt(document.getElementById('sel-personas').value) || 0;
+        let b = parseInt(document.getElementById('sel-frecuencia').value) || 0;
+        let c = parseInt(document.getElementById('sel-preparacion').value) || 0;
+        let d = parseInt(document.getElementById('sel-accidentes').value) || 0;
+        let s = parseInt(document.getElementById('sel-severidad').value) || 0;
 
-        // Animamos la barra del jefe (escala visual de 10 a 100%)
-        let porcentaje = (poder / 9) * 100;
+        let poder = (a + b + c + d) * s;
+        let porcentaje = Math.min((poder / 104) * 100, 100);
+
         bossBar.style.width = porcentaje + '%';
-        bossText.innerText = (poder * 10) + ' ATK';
+        bossText.innerText = poder + ' ATK';
     }
 
-    // Escuchar cambios en los selects de Amenaza
     inputsAmenaza.forEach(input => input.addEventListener('change', actualizarPoderEnemigo));
+    actualizarPoderEnemigo();
 
-    // 2. El Golpe Final (Botón de Impacto)
+    // 2. El Golpe Final (Cálculo Instantáneo en Frontend)
     const btnImpacto = document.getElementById('btn-impact');
 
     btnImpacto.addEventListener('click', () => {
-        // Bloquear botón mientras procesa
+        // Bloquear botón brevemente para dar efecto de procesamiento de juego
         btnImpacto.disabled = true;
         btnImpacto.innerText = '⚔️ CALCULANDO DAÑO...';
 
-        // Recopilar datos
-        const datos = {
-            severidad: document.getElementById('sel-severidad').value,
-            exposicion: document.getElementById('sel-exposicion').value,
-            ingenieria: document.getElementById('sel-ingenieria').value,
-            epp: document.getElementById('sel-epp').value
+        // Recopilar todos los datos numéricos desde los selects
+        let a = parseInt(document.getElementById('sel-personas').value) || 0;
+        let b = parseInt(document.getElementById('sel-frecuencia').value) || 0;
+        let c = parseInt(document.getElementById('sel-preparacion').value) || 0;
+        let d = parseInt(document.getElementById('sel-accidentes').value) || 0;
+        let s = parseInt(document.getElementById('sel-severidad').value) || 0;
+
+        let ing = parseFloat(document.getElementById('sel-ingenieria').value) || 0;
+        let proc = parseFloat(document.getElementById('sel-procedimientos').value) || 0;
+        let sen = parseFloat(document.getElementById('sel-senaletica').value) || 0;
+        let ent = parseFloat(document.getElementById('sel-entrenamiento').value) || 0;
+        let epp = parseFloat(document.getElementById('sel-epp').value) || 0;
+
+        // --- CÁLCULO MATEMÁTICO INMEDIATO ---
+        let poderInicial = (a + b + c + d) * s;
+        let reduccionTotal = ing + proc + sen + ent + epp;
+
+        // Daño residual después de aplicar las defensas
+        let danioResidual = Math.round(poderInicial * (1 - reduccionTotal));
+        if (danioResidual < 0) danioResidual = 0;
+
+        // Determinar Rangos de Riesgo e IPERC (Matriz Básica)
+        let claseCSS = 'ACEPTABLE';
+        let estadoFinal = 'ACEPTABLE';
+
+        if (danioResidual >= 25) {
+            claseCSS = 'INTOLERABLE';
+            estadoFinal = 'INTOLERABLE';
+        } else if (danioResidual >= 17) {
+            claseCSS = 'IMPORTANTE';
+            estadoFinal = 'IMPORTANTE';
+        } else if (danioResidual >= 9) {
+            claseCSS = 'MODERADO';
+            estadoFinal = 'MODERADO';
+        }
+
+        // Sistema de Vida (A mayor riesgo residual, menos vida le queda al jugador)
+        let hpRestante = Math.max(0, 100 - danioResidual);
+
+        // Crear la respuesta estructurada tal como la esperaba tu backend
+        const resultado = {
+            hp: hpRestante,
+            claseCSS: claseCSS,
+            estadoFinal: estadoFinal,
+            danioRecibido: danioResidual
         };
 
-        // Enviar al servidor
-        google.script.run
-            .withSuccessHandler(recibirImpacto)
-            .procesarMisionIPERC(datos);
+        // Un pequeño delay artificial de 250ms para que la animación se note fluida y profesional
+        setTimeout(() => {
+            // Actualizar la interfaz de inmediato
+            recibirImpacto(resultado);
+
+            // RESPALDO EN SERVIDOR (Asíncrono - No bloquea la pantalla del usuario)
+            const datosParaServidor = {
+                personas: a, frecuencia: b, preparacion: c, accidentes: d, severidad: s,
+                ing: ing, proc: proc, sen: sen, ent: ent, epp: epp,
+                danioResidual: danioResidual, hpRestante: hpRestante, estadoFinal: estadoFinal
+            };
+
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withFailureHandler(err => console.log("Error guardando datos: ", err.message))
+                    .procesarMisionIPERC(datosParaServidor); // Envía los datos para registro interno en Sheets si se requiere
+            }
+        }, 250);
     });
 
     // 3. Procesar el Daño en Pantalla
     function recibirImpacto(resultado) {
-        // Actualizar barra de vida del jugador
         const playerBar = document.getElementById('player-hp-bar');
         const playerText = document.getElementById('player-hp-text');
 
         playerBar.style.width = resultado.hp + '%';
         playerText.innerText = resultado.hp + '% HP';
 
-        // Cambiar color de vida si baja mucho
-        if (resultado.hp <= 30) {
+        // Cambiar color de vida según el estado devuelto
+        if (resultado.claseCSS === 'INTOLERABLE') {
             playerBar.style.background = 'var(--riesgo-intolerable)';
             playerBar.style.boxShadow = '0 0 10px var(--riesgo-intolerable)';
+        } else if (resultado.claseCSS === 'IMPORTANTE') {
+            playerBar.style.background = 'var(--riesgo-importante)';
+            playerBar.style.boxShadow = '0 0 10px var(--riesgo-importante)';
+        } else if (resultado.claseCSS === 'MODERADO') {
+            playerBar.style.background = 'var(--riesgo-moderado)';
+            playerBar.style.boxShadow = '0 0 10px var(--riesgo-moderado)';
         } else {
             playerBar.style.background = 'var(--riesgo-aceptable)';
             playerBar.style.boxShadow = '0 0 10px var(--riesgo-aceptable)';
@@ -69,7 +138,7 @@
         statusEl.innerText = resultado.estadoFinal;
         statusEl.className = `hud-status status-${resultado.claseCSS}`;
 
-        scoreEl.innerText = `Daño Residual: ${resultado.danioRecibido}`;
+        scoreEl.innerText = `Riesgo Residual: ${resultado.danioRecibido}`;
 
         // Restaurar botón
         btnImpacto.disabled = false;
