@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <base target="_top">
+    <?!= include('css'); ?>
+</head>
+
+<body>
+
+    <div class="game-container">
+        <header class="game-header">
+            <div class="game-title">Misión IPERC</div>
+            <div class="game-sub">Sobrevive al Riesgo</div>
+        </header>
+
+        <div class="battle-arena">
+            <div class="hp-box player-hp">
+                <div class="hp-info">
+                    <span class="hp-name">LA EMPRESA (Tú)</span>
+                    <span class="hp-value" id="player-hp-text">100% HP</span>
+                </div>
+                <div class="hp-bar-bg">
+                    <div class="hp-bar-fill fill-player" id="player-hp-bar" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <div class="vs-badge">VS</div>
+
+            <div class="hp-box boss-hp">
+                <div class="hp-info">
+                    <span class="hp-name">LA AMENAZA</span>
+                    <span class="hp-value" id="boss-atk-text">10 ATK</span>
+                </div>
+                <div class="hp-bar-bg">
+                    <div class="hp-bar-fill fill-boss" id="boss-atk-bar" style="width: 10%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-2 strategy-panel">
+            <div class="level-card boss-card">
+                <div class="level-header">
+                    <div class="level-badge" style="background: var(--riesgo-intolerable);">☠️</div>
+                    <div class="level-title">Fase 1: La Amenaza</div>
+                </div>
+                <div class="field" style="margin-top: 15px;">
+                    <label>Índice de Severidad</label>
+                    <select id="sel-severidad" class="game-input">
+                        <option value="1">1 - Lesión Leve</option>
+                        <option value="2">2 - Lesión Reversible</option>
+                        <option value="3">3 - Muerte / Irreversible</option>
+                    </select>
+                </div>
+                <div class="field" style="margin-top: 10px;">
+                    <label>Frecuencia de Exposición</label>
+                    <select id="sel-exposicion" class="game-input">
+                        <option value="1">1 - Esporádico</option>
+                        <option value="2">2 - Eventual</option>
+                        <option value="3">3 - Permanente</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="level-card player-card">
+                <div class="level-header">
+                    <div class="level-badge" style="background: var(--accent-blue);">🛡️</div>
+                    <div class="level-title">Fase 2: Escudos</div>
+                </div>
+                <div class="field" style="margin-top: 15px;">
+                    <label>Control de Ingeniería</label>
+                    <select id="sel-ingenieria">
+                        <option value="0">Ninguno (+0 DEF)</option>
+                        <option value="1">Básico (+1 DEF)</option>
+                        <option value="2">Avanzado (+2 DEF)</option>
+                    </select>
+                </div>
+                <div class="field" style="margin-top: 10px;">
+                    <label>Equipo de Protección (EPP)</label>
+                    <select id="sel-epp">
+                        <option value="0">Ropa de calle (+0 DEF)</option>
+                        <option value="1">EPP Básico (+1 DEF)</option>
+                        <option value="2">EPP Especial (+2 DEF)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-impact" id="btn-impact">💥 RECIBIR IMPACTO 💥</button>
+
+        <div id="battle-result" class="hud-result">
+            <div class="hud-header">
+                <div class="hud-title">Reporte de Combate</div>
+                <div class="hud-status" id="result-status">ESTADO</div>
+            </div>
+            <div class="hud-score" id="result-score">Daño Recibido: 0</div>
+        </div>
+    </div>
+
+    <?!= include('js'); ?>
+</body>
+
+</html>

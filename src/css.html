@@ -1,0 +1,311 @@
+<style>
+    :root {
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent-blue: #3b82f6;
+        --riesgo-aceptable: #10b981;
+        --riesgo-importante: #f97316;
+        --riesgo-intolerable: #ef4444;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        background: var(--bg-color);
+        color: var(--text-main);
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .game-container {
+        width: 100%;
+        max-width: 700px;
+    }
+
+    .game-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .game-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--accent-blue);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .game-sub {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    /* LA ARENA */
+    .battle-arena {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .hp-box {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .boss-hp {
+        align-items: flex-end;
+    }
+
+    .hp-info {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-weight: bold;
+        font-size: 13px;
+    }
+
+    .boss-hp .hp-info {
+        flex-direction: row-reverse;
+    }
+
+    .hp-name {
+        color: var(--text-muted);
+    }
+
+    .player-hp .hp-value {
+        color: var(--riesgo-aceptable);
+    }
+
+    .boss-hp .hp-value {
+        color: var(--riesgo-intolerable);
+    }
+
+    .hp-bar-bg {
+        width: 100%;
+        height: 18px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .hp-bar-fill {
+        height: 100%;
+        border-radius: 8px;
+        transition: width 0.5s ease-out;
+    }
+
+    .fill-player {
+        background: var(--riesgo-aceptable);
+        box-shadow: 0 0 10px var(--riesgo-aceptable);
+    }
+
+    .fill-boss {
+        background: var(--riesgo-intolerable);
+        box-shadow: 0 0 10px var(--riesgo-intolerable);
+        float: right;
+    }
+
+    .vs-badge {
+        background: #0f172a;
+        color: white;
+        font-weight: 900;
+        font-style: italic;
+        padding: 15px;
+        border-radius: 50%;
+        margin: 0 15px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    /* TARJETAS Y FORMULARIO */
+    .grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .grid-2 {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .level-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .level-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 1rem;
+    }
+
+    .level-badge {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+    }
+
+    .level-title {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 16px;
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .field label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    select {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--text-main);
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        outline: none;
+    }
+
+    select:focus {
+        border-color: var(--accent-blue);
+    }
+
+    select option {
+        background: var(--card-bg);
+    }
+
+    /* BOTON E IMPACTO */
+    .btn-impact {
+        width: 100%;
+        background: linear-gradient(45deg, var(--riesgo-intolerable), #b91c1c);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 20px;
+        border-radius: 8px;
+        border: 2px solid #fca5a5;
+        cursor: pointer;
+        animation: pulse 2s infinite;
+        margin-top: 1rem;
+        text-transform: uppercase;
+    }
+
+    .btn-impact:hover {
+        filter: brightness(1.2);
+        box-shadow: 0 0 30px rgba(239, 68, 68, 0.7);
+    }
+
+    .btn-impact:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        animation: none;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.02);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* RESULTADO */
+    .hud-result {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        border-left: 4px solid transparent;
+        display: none;
+    }
+
+    .hud-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 12px;
+    }
+
+    .hud-title {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    .hud-score {
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .hud-status {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .status-ACEPTABLE {
+        color: var(--riesgo-aceptable);
+        border-color: var(--riesgo-aceptable);
+    }
+
+    .status-IMPORTANTE {
+        color: var(--riesgo-importante);
+        border-color: var(--riesgo-importante);
+    }
+
+    .status-INTOLERABLE {
+        color: var(--riesgo-intolerable);
+        border-color: var(--riesgo-intolerable);
+    }
+
+    .border-ACEPTABLE {
+        border-left-color: var(--riesgo-aceptable);
+    }
+
+    .border-IMPORTANTE {
+        border-left-color: var(--riesgo-importante);
+    }
+
+    .border-INTOLERABLE {
+        border-left-color: var(--riesgo-intolerable);
+    }
+</style>
