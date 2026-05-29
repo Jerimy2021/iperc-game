@@ -2,188 +2,190 @@
 <html lang="es">
 
 <head>
-    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IPERC ZONE — Educación en Seguridad Industrial</title>
     <?!= include('css'); ?>
 </head>
 
 <body>
 
-    <div class="game-container">
-        <header class="game-header">
-            <div class="game-title">Misión IPERC</div>
-            <div class="game-sub">Sobrevive al Riesgo</div>
-        </header>
+    <!-- NOTIFICATION HOST -->
+    <div id="notifs"></div>
 
-        <div class="battle-arena">
-            <div class="hp-box player-hp">
-                <div class="hp-info">
-                    <span class="hp-name">LA EMPRESA (Tú)</span>
-                    <span class="hp-value" id="player-hp-text">100% HP</span>
-                </div>
-                <div class="hp-bar-bg">
-                    <div class="hp-bar-fill fill-player" id="player-hp-bar" style="width: 100%;"></div>
-                </div>
+    <!-- ═══ SCREEN: TITLE ═══ -->
+    <div id="s-title" class="scr on">
+        <div class="title-wrap">
+            <div class="title-zone">IPERC</div>
+            <div class="title-iperc">ZONE</div>
+            <div class="title-tag">EDUCACIÓN EN SEGURIDAD INDUSTRIAL · SST · SSOMA</div>
+            <p class="title-desc">Aprende Identificación de Peligros, Evaluación y Control de Riesgos a través de una
+                experiencia interactiva dinámica. ¡La seguridad es un juego serio!</p>
+            <div class="title-phases">
+                <span class="ph-chip ph-red">🔴 RIESGO INICIAL</span>
+                <span class="ph-chip"
+                    style="color:var(--or2);border-color:rgba(200,80,0,.4);background:rgba(50,20,0,.5)">🔐 LOTO &
+                    CELULAR</span>
+                <span class="ph-chip ph-yel">🪖 EPP & CONTROLES</span>
+                <span class="ph-chip ph-grn">🚦 CRUCE SEGURO</span>
+                <span class="ph-chip"
+                    style="color:#ff55ff;border-color:rgba(180,0,200,.4);background:rgba(40,0,50,.5)">🧯 BOSS
+                    EXTINTOR</span>
             </div>
-
-            <div class="vs-badge">VS</div>
-
-            <div class="hp-box boss-hp">
-                <div class="hp-info">
-                    <span class="hp-name">LA AMENAZA</span>
-                    <span class="hp-value" id="boss-atk-text">0 ATK</span>
-                </div>
-                <div class="hp-bar-bg">
-                    <div class="hp-bar-fill fill-boss" id="boss-atk-bar" style="width: 0%;"></div>
-                </div>
+            <div class="deco-line">
+                <div class="dl"></div>
+                <div class="dd"></div>
+                <div class="dr"></div>
             </div>
-        </div>
-
-        <div id="fase-1" class="game-screen active-screen">
-            <div class="level-card boss-card">
-                <div class="level-header">
-                    <div class="level-badge" style="background: var(--riesgo-intolerable);">☠️</div>
-                    <div class="level-title">Nivel 1: Analiza la Amenaza</div>
-                </div>
-                <div class="grid-2" style="margin-top: 15px;">
-                    <div class="field">
-                        <label>Personas expuestas (A)</label>
-                        <select id="sel-personas" class="game-input">
-                            <option value="0">Cero</option>
-                            <option value="1">De 1 a 3</option>
-                            <option value="2">De 4 a 10</option>
-                            <option value="3">Mayor a 10</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Frecuencia de exposición (B)</label>
-                        <select id="sel-frecuencia" class="game-input">
-                            <optgroup label="Seguridad">
-                                <option value="0">Muy esporádico</option>
-                                <option value="1">Al menos 1 vez / año</option>
-                                <option value="2">Al menos 1 vez / mes</option>
-                                <option value="3">Al menos 1 vez / día</option>
-                                <option value="4">Varias veces al día</option>
-                            </optgroup>
-                            <optgroup label="Salud Ocupacional">
-                                <option value="0">Remotamente</option>
-                                <option value="1">Esporádicamente</option>
-                                <option value="2">Eventualmente</option>
-                                <option value="3">Permanentemente</option>
-                            </optgroup>
-                            <optgroup label="Daños Materiales">
-                                <option value="1">Potencial pérdida material</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Preparación del personal (C)</label>
-                        <select id="sel-preparacion" class="game-input">
-                            <option value="0">Todos preparados</option>
-                            <option value="1">La mayoría preparados</option>
-                            <option value="2">Algunos preparados</option>
-                            <option value="3">Ninguno preparado</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Registro de accidentes (D)</label>
-                        <select id="sel-accidentes" class="game-input">
-                            <option value="0">Cero</option>
-                            <option value="1">Uno</option>
-                            <option value="2">Dos a tres</option>
-                            <option value="3">Mayor a tres</option>
-                        </select>
-                    </div>
-                    <div class="field" style="grid-column: 1 / -1;">
-                        <label>Severidad (S)</label>
-                        <select id="sel-severidad" class="game-input">
-                            <optgroup label="Seguridad">
-                                <option value="0">Sin lesión</option>
-                                <option value="2">Lesión no incapacitante</option>
-                                <option value="4">Lesión incapacitante temporal</option>
-                                <option value="6">Lesión incapacitante permanente</option>
-                                <option value="8">Fatalidad</option>
-                            </optgroup>
-                            <optgroup label="Salud Ocupacional">
-                                <option value="0">No afecta</option>
-                                <option value="2">Disconfort / incomodidad</option>
-                                <option value="4">Daño reversible</option>
-                                <option value="6">Daño irreversible</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn btn-nav" onclick="cambiarPantalla('fase-2')">Continuar a la Armería ➔</button>
-        </div>
-
-        <div id="fase-2" class="game-screen">
-            <div class="level-card player-card">
-                <div class="level-header">
-                    <div class="level-badge" style="background: var(--accent-blue);">🛡️</div>
-                    <div class="level-title">Nivel 2: Equipa tus Defensas</div>
-                </div>
-                <div class="grid-2" style="margin-top: 15px;">
-                    <div class="field">
-                        <label>Ingeniería</label>
-                        <select id="sel-ingenieria">
-                            <option value="0">Ninguno</option>
-                            <option value="0.20">En curso</option>
-                            <option value="0.40">Definitivo</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Procedimientos</label>
-                        <select id="sel-procedimientos">
-                            <option value="0">Ninguno</option>
-                            <option value="0.10">En curso</option>
-                            <option value="0.20">Definitivo</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Señalética</label>
-                        <select id="sel-senaletica">
-                            <option value="0">Ninguno</option>
-                            <option value="0.10">En curso</option>
-                            <option value="0.20">Definitivo</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Entrenamiento</label>
-                        <select id="sel-entrenamiento">
-                            <option value="0">Ninguno</option>
-                            <option value="0.08">En curso</option>
-                            <option value="0.15">Definitivo</option>
-                        </select>
-                    </div>
-                    <div class="field" style="grid-column: 1 / -1;">
-                        <label>EPP</label>
-                        <select id="sel-epp">
-                            <option value="0">Ninguno</option>
-                            <option value="0">En curso</option>
-                            <option value="0.05">Definitivo</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
-                <button class="btn btn-nav btn-back" onclick="cambiarPantalla('fase-1')"
-                    style="margin-top: 0; flex: 1;">⬅ Volver</button>
-                <button class="btn btn-impact" id="btn-impact" style="margin-top: 0; flex: 2;">💥 RECIBIR IMPACTO
-                    💥</button>
-            </div>
-        </div>
-
-        <div id="battle-result" class="hud-result">
-            <div class="hud-header">
-                <div class="hud-title">Reporte de Combate</div>
-                <div class="hud-status" id="result-status">ESTADO</div>
-            </div>
-            <div class="hud-score" id="result-score">Daño Residual: 0</div>
+            <button class="btn-main" onclick="show('s-char')">INICIAR MISIÓN</button>
+            <div class="hof-score" id="hof-score" style="margin-top:14px"></div>
         </div>
     </div>
 
+    <!-- ═══ SCREEN: CHARACTER SELECT ═══ -->
+    <div id="s-char" class="scr">
+        <div style="text-align:center;padding-top:28px;">
+            <div
+                style="font-family:var(--jb);font-size:8px;color:rgba(255,100,50,.6);letter-spacing:6px;margin-bottom:6px;">
+                ◈ ALICORP SSOMA ◈</div>
+            <div class="cs-title">SELECCIONA TU AGENTE</div>
+            <div class="cs-sub">CADA ESPECIALISTA TIENE HABILIDADES ÚNICAS DE SEGURIDAD</div>
+            <div
+                style="width:200px;height:2px;background:linear-gradient(90deg,transparent,#ff4400,transparent);margin:0 auto 28px;">
+            </div>
+        </div>
+        <div class="chars-row" id="chars-row"></div>
+        <button id="btn-confirm" onclick="confirmChar()">▶ CONFIRMAR AGENTE</button>
+    </div>
+
+    <!-- ═══ SCREEN: MAP / LEVEL SELECT ═══ -->
+    <div id="s-map" class="scr">
+        <div class="map-header">
+            <div class="map-title">MAPA DE MISIONES · RUTA IPERC</div>
+        </div>
+        <div class="map-hero-card" id="map-hero-card"></div>
+        <div class="levels-track" id="levels-track"></div>
+        <div class="risk-preview" id="risk-preview">
+            <div style="font-family:var(--jb);font-size:7px;color:var(--mut);letter-spacing:3px;margin-bottom:8px">▸
+                ESTADO IPERC ACTUAL ◂</div>
+            <div class="rp-row">
+                <div class="rp-item">
+                    <div class="rp-label">RIESGO INICIAL</div>
+                    <div class="rp-val" id="rp-initial" style="color:var(--r2)">—</div>
+                </div>
+                <div class="rp-item">
+                    <div class="rp-label">CONTROLES</div>
+                    <div class="rp-val" id="rp-controls" style="color:var(--c2)">0/5</div>
+                </div>
+                <div class="rp-item">
+                    <div class="rp-label">RIESGO RESIDUAL</div>
+                    <div class="rp-val" id="rp-residual" style="color:var(--gr2)">—</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ SCREEN: GAME (CANVAS) ═══ -->
+    <div id="s-game" class="scr">
+        <!-- HUD BAR -->
+        <div id="ghud">
+            <div class="hitem">
+                <div class="hlbl">VIDA</div>
+                <div class="hbar">
+                    <div class="hfill" id="hf-hp" style="width:100%"></div>
+                </div>
+                <div class="hval" id="hv-hp" style="color:var(--gr2)">100%</div>
+            </div>
+            <div class="hsep"></div>
+            <div class="hitem">
+                <div class="hlbl">XP</div>
+                <div class="hval" id="hv-xp" style="color:var(--g2)">0</div>
+            </div>
+            <div class="hsep"></div>
+            <div class="hitem" id="hud-extra"></div>
+            <div class="hsep"></div>
+            <div class="hstage-name" id="hstage-name"></div>
+            <div class="hsep" style="margin-left:auto"></div>
+            <div class="hkeys">
+                <span class="kb">←→</span> Mover &nbsp; <span class="kb">↑</span> Saltar &nbsp; <span
+                    class="kb">SPC</span> Atacar &nbsp; <span class="kb">E</span> Interactuar &nbsp; <span
+                    class="kb">F</span> Portal Rápido
+            </div>
+            <button onclick="toggleBGM()" id="btn-mute"
+                style="margin-left:6px;font-size:9px;font-family:var(--jb);background:rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.2);padding:2px 7px;border-radius:3px;cursor:pointer;color:#333;flex-shrink:0;">🎵
+                BGM</button>
+        </div>
+
+        <!-- CANVAS -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- RISK METER (sidebar) -->
+        <div id="risk-meter">
+            <div class="rm-title">▸ CÁLCULO IPERC ◂</div>
+            <div class="rm-row"><span class="rm-label">Severidad</span><span class="rm-val" id="rm-sev"
+                    style="color:#aa0022">—</span></div>
+            <div class="rm-row"><span class="rm-label">Prob/Exp</span><span class="rm-val" id="rm-prob"
+                    style="color:#cc4400">—</span></div>
+            <div class="rm-bar">
+                <div class="rm-fill" id="rm-initial-fill" style="width:0%"></div>
+            </div>
+            <div class="rm-row"><span class="rm-label">Riesgo Inicial</span><span class="rm-val" id="rm-initial"
+                    style="color:#aa0022">—</span></div>
+            <div style="height:8px"></div>
+            <div class="rm-row"><span class="rm-label">Controles</span><span class="rm-val" id="rm-ctrl"
+                    style="color:#005580">0</span></div>
+            <div class="rm-bar">
+                <div class="rm-fill" id="rm-residual-fill" style="width:0%"></div>
+            </div>
+            <div class="rm-row"><span class="rm-label">Riesgo Residual</span><span class="rm-val" id="rm-residual"
+                    style="color:#005520">—</span></div>
+            <div class="rm-badge rmb-AC" id="rm-badge">ACEPTABLE</div>
+        </div>
+    </div>
+
+    <!-- VICTORY OVERLAY — fixed at root so buttons always work -->
+    <div id="vic-ov">
+        <div class="vic-box" id="vic-box"></div>
+    </div>
+
+    <!-- ═══ SCREEN: FINAL RESULT ═══ -->
+    <div id="s-final" class="scr">
+        <div class="final-box" id="final-box"></div>
+    </div>
+
+    <!-- ═══ SECRET DOOR QUIZ MODAL ═══ -->
+    <div id="quiz-modal">
+        <div class="qz-header">
+            <div class="qz-door-icon">⚡</div>
+            <div class="qz-title">PORTAL RÁPIDO</div>
+            <div class="qz-subtitle">PUERTA SECRETA · ACCESO RESTRINGIDO · RESPONDE 2 DE 3</div>
+            <div class="qz-timer-bar-wrap">
+                <div class="qz-timer-fill" id="qz-timer-fill"></div>
+            </div>
+            <div class="qz-timer-label" id="qz-timer-label">⏱ 2:00</div>
+        </div>
+        <div class="qz-box" id="qz-box">
+            <div class="qz-progress" id="qz-progress"></div>
+            <div id="qz-main">
+                <div class="qz-q-num" id="qz-q-num">PREGUNTA 1 DE 3</div>
+                <div class="qz-question" id="qz-question"></div>
+                <div class="qz-options" id="qz-options"></div>
+                <div class="qz-feedback" id="qz-feedback"></div>
+                <button class="qz-btn-next" id="qz-btn-next" onclick="quizNext()">SIGUIENTE →</button>
+            </div>
+            <div class="qz-result" id="qz-result">
+                <div class="qz-result-icon" id="qz-result-icon"></div>
+                <div class="qz-result-title" id="qz-result-title"></div>
+                <div class="qz-result-msg" id="qz-result-msg"></div>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+                    <button class="qz-result-btn qz-result-btn-tp" id="qz-tp-btn" onclick="quizTeleport()"
+                        style="display:none">⚡ TELETRANSPORTAR AL FINAL</button>
+                    <button class="qz-result-btn qz-result-btn-close" onclick="closeQuiz()">↩ VOLVER</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sdoor-hint">⚡ PORTAL RÁPIDO ACTIVO → [F] ACTIVAR</div>
     <?!= include('js'); ?>
 </body>
 
