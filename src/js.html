@@ -2,7 +2,6 @@
     /* ═══════════════════════════════════════════
        SECRET DOOR + QUIZ SYSTEM
     ═══════════════════════════════════════════ */
-
     /* ── QUIZ QUESTION BANK — basado en Procedimiento ALI-P-SI-PF-002 v5 ── */
     const QUIZ_BANK = {
         1: [ // NVL 1 · DEFINICIONES BÁSICAS IPERC
@@ -143,11 +142,16 @@
 
     /* ── SECRET DOOR POSITION — next to the normal door on left platform ── */
     function secretDoorPos() {
-        if (!PLATS || !PLATS[0]) return null;
-        const p = PLATS[0]; // same left ground platform as normal door
-        const normal = doorPos();
-        // Place the portal to the left of the normal door, with a small gap
-        return {x: normal.x - 70, y: normal.y, w: 54, h: 90};
+        if (!PLATS || PLATS.length < 4) return null;
+
+        const topPlat = PLATS[3];
+
+        return {
+            x: topPlat.x + (topPlat.w * 0.5) - 22,
+            y: topPlat.y - 75,
+            w: 44,
+            h: 75
+        };
     }
 
     /* ── Draw Secret Door (Teleport Portal) ── */
@@ -155,110 +159,54 @@
         if (!PLATS || LEVEL_DONE) return;
         const d = secretDoorPos();
         if (!d) return;
+
         const {x, y, w, h} = d;
         const cx = x + w / 2;
         const cy = y + h / 2;
-        const r = Math.min(w, h) / 2 - 4;
-        const t = Date.now();
-        const pulse = 0.6 + Math.sin(t * .006) * 0.4;
         const locked = QZ.doorLocked;
 
-        // Outer glow aura
-        const ag = CX.createRadialGradient(cx, cy, 0, cx, cy, r + 40);
-        ag.addColorStop(0, locked ? `rgba(200,20,20,${pulse * .18})` : `rgba(120,60,255,${pulse * .3})`);
-        ag.addColorStop(1, 'rgba(0,0,0,0)');
-        CX.fillStyle = ag; CX.beginPath(); CX.arc(cx, cy, r + 40, 0, Math.PI * 2); CX.fill();
+        // Movimiento suave de flotación
+        const t = Date.now();
+        const hoverY = cy + Math.sin(t * 0.003) * 6;
 
-        // Spinning outer ring
-        if (!locked) {
-            for (let i = 0; i < 8; i++) {
-                const ang = (t * 0.002) + (i / 8) * Math.PI * 2;
-                const rx = cx + Math.cos(ang) * (r + 8);
-                const ry = cy + Math.sin(ang) * (r + 8);
-                CX.fillStyle = `rgba(180,100,255,${0.3 + pulse * 0.4})`;
-                CX.beginPath(); CX.arc(rx, ry, 3, 0, Math.PI * 2); CX.fill();
-            }
-            // Counter-spin inner dots
-            for (let i = 0; i < 6; i++) {
-                const ang = -(t * 0.003) + (i / 6) * Math.PI * 2;
-                const rx = cx + Math.cos(ang) * (r - 8);
-                const ry = cy + Math.sin(ang) * (r - 8);
-                CX.fillStyle = `rgba(220,160,255,${0.25 + pulse * 0.3})`;
-                CX.beginPath(); CX.arc(rx, ry, 2, 0, Math.PI * 2); CX.fill();
-            }
-        }
-
-        // Portal ring
         CX.save();
-        CX.lineWidth = locked ? 3 : 4;
-        CX.strokeStyle = locked ? `rgba(180,30,30,${pulse})` : `rgba(180,100,255,${pulse})`;
-        CX.shadowColor = locked ? '#ff2020' : '#aa55ff';
-        CX.shadowBlur = 20;
-        CX.beginPath(); CX.arc(cx, cy, r, 0, Math.PI * 2); CX.stroke();
-        CX.restore();
 
-        // Portal interior gradient
-        const ig = CX.createRadialGradient(cx, cy, 0, cx, cy, r);
-        if (locked) {
-            ig.addColorStop(0, 'rgba(60,0,0,.9)');
-            ig.addColorStop(1, 'rgba(20,0,0,.85)');
-        } else {
-            ig.addColorStop(0, `rgba(80,20,180,${0.7 + pulse * .2})`);
-            ig.addColorStop(0.5, `rgba(60,10,140,${0.6 + pulse * .1})`);
-            ig.addColorStop(1, `rgba(20,0,60,0.9)`);
-        }
-        CX.fillStyle = ig; CX.beginPath(); CX.arc(cx, cy, r, 0, Math.PI * 2); CX.fill();
+        // 1. Brillo exterior (Glow)
+        CX.shadowColor = locked ? '#ff3355' : '#00eeff';
+        CX.shadowBlur = 15;
 
-        // Inner shimmer swirl
-        if (!locked) {
-            CX.save(); CX.beginPath(); CX.arc(cx, cy, r, 0, Math.PI * 2); CX.clip();
-            for (let i = 0; i < 4; i++) {
-                const ang = (t * 0.004 + i * Math.PI / 2);
-                const lx = cx + Math.cos(ang) * r * 0.7;
-                const ly = cy + Math.sin(ang) * r * 0.7;
-                const slg = CX.createRadialGradient(lx, ly, 0, lx, ly, r * 0.5);
-                slg.addColorStop(0, `rgba(200,150,255,${0.15 + pulse * .1})`);
-                slg.addColorStop(1, 'rgba(0,0,0,0)');
-                CX.fillStyle = slg; CX.fillRect(cx - r, cy - r, r * 2, r * 2);
-            }
-            CX.restore();
-        }
+        // 2. Fondo del portal (Óvalo semi-transparente)
+        CX.beginPath();
+        CX.ellipse(cx, hoverY, w / 2, h / 2, 0, 0, Math.PI * 2);
+        CX.fillStyle = locked ? 'rgba(255, 51, 85, 0.15)' : 'rgba(0, 238, 255, 0.15)';
+        CX.fill();
 
-        // Center icon
-        CX.save();
-        CX.font = '22px serif'; CX.textAlign = 'center'; CX.textBaseline = 'middle';
-        if (!locked) {CX.shadowColor = '#cc88ff'; CX.shadowBlur = 18;}
-        CX.fillText(locked ? '🔒' : '⚡', cx, cy);
-        CX.restore(); CX.textBaseline = 'alphabetic';
+        // 3. Borde sólido del portal
+        CX.lineWidth = 3;
+        CX.strokeStyle = locked ? '#ff3355' : '#00eeff';
+        CX.stroke();
 
-        // Label above
-        CX.font = 'bold 7px "JetBrains Mono",monospace';
-        CX.fillStyle = locked ? `rgba(255,60,60,${pulse})` : `rgba(200,130,255,${pulse})`;
+        // 4. Icono central
+        CX.font = '24px Arial';
         CX.textAlign = 'center';
-        CX.fillText(locked ? '🔒 BLOQUEADO' : '⚡ PORTAL RÁPIDO', cx, y - 14);
-        if (!locked) {
-            CX.fillStyle = `rgba(180,100,255,${0.5 + pulse * 0.3})`;
-            CX.fillText('[F] ACTIVAR', cx, y - 4);
-        }
-        CX.textAlign = 'left';
+        CX.textBaseline = 'middle';
+        CX.shadowBlur = 0; // Apagamos la sombra para que el emoji sea nítido
+        CX.fillText(locked ? '🔒' : '⚡', cx, hoverY);
 
-        // Lock countdown
+        // 5. Texto superior limpio
+        CX.font = 'bold 11px "JetBrains Mono", monospace';
+        CX.fillStyle = '#ffffff';
+
+        // Si está bloqueado y hay temporizador
         if (locked && QZ.doorLockTimer > 0) {
-            CX.font = '8px "JetBrains Mono",monospace';
-            CX.fillStyle = '#ff5555'; CX.textAlign = 'center';
-            CX.fillText(`Espera ${Math.ceil(QZ.doorLockTimer / 60)}s`, cx, y + h + 18);
+            const segs = Math.ceil(QZ.doorLockTimer / 60);
+            CX.fillStyle = '#ff3355';
+            CX.fillText(`ESPERA: ${segs}s`, cx, y - 10);
+        } else {
+            CX.fillText(locked ? 'BLOQUEADO' : 'EVALUACIÓN [F]', cx, y - 10);
         }
 
-        // Proximity hint popup
-        if (!locked && PL) {
-            const dist = Math.abs(PL.x - cx);
-            if (dist < 140) {
-                $('sdoor-hint').style.display = 'block';
-            } else {
-                $('sdoor-hint').style.display = 'none';
-            }
-        }
-        CX.textAlign = 'left';
+        CX.restore();
     }
 
     /* ── Check F key for secret door ── */
@@ -267,8 +215,13 @@
         if (QZ.doorLocked) return;
         const d = secretDoorPos();
         if (!d) return;
-        const dist = Math.abs((PL.x + PL.w / 2) - (d.x + d.w / 2));
-        if (dist < 100) {
+
+        // Calculamos distancias de centros exactos
+        const plCx = PL.x + PL.w / 2;
+        const dCx = d.x + d.w / 2;
+
+        // Un rango de 50px requiere estar de pie justo en el portal
+        if (Math.abs(plCx - dCx) < 50 && PL.y + PL.h <= d.y + d.h + 10 && PL.y >= d.y - 20) {
             openQuiz();
         }
     }
@@ -406,31 +359,56 @@
     }
 
     /* ── Evaluate quiz result ── */
+    /* ── Evaluate quiz result ── */
     function quizEvaluate() {
         clearInterval(QZ.timerInterval);
         QZ.timerInterval = null;
+
         const correct = QZ.answers.filter(Boolean).length;
         const total = QZ.questions.length;
-        const MIN_CORRECT = 2; // at least 2 out of 3
+        const MIN_CORRECT = 2; // Al menos 2 de 3
+        const passed = (correct >= MIN_CORRECT);
+
+        // 🌟 NUEVO: Enviar datos a Google Sheets de forma silenciosa
+        if (typeof google !== 'undefined' && google.script) {
+            const quizData = {
+                fecha: new Date().toLocaleString(),
+                nivel: (typeof ZONE !== 'undefined' && ZONE) ? ZONE.name : 'Nivel Desconocido',
+                personaje: (typeof CHARS !== 'undefined' && typeof G !== 'undefined' && CHARS[G.charIdx]) ? CHARS[G.charIdx].name : 'Anónimo',
+                puntaje: correct,
+                totalPreguntas: total,
+                resultado: passed ? 'APROBADO' : 'REPROBADO'
+            };
+            // Llama a la función del backend en Apps Script
+            google.script.run.guardarResultadosQuiz(quizData);
+        }
+
         updateQuizProgress();
-        if (correct >= MIN_CORRECT) {
-            // 2 or 3 correct — teleport!
+
+        if (passed) {
+            // 2 o 3 correctas — ¡teletransporte!
             $('qz-main').style.display = 'none';
             $('qz-result').style.display = 'block';
             $('qz-result-icon').textContent = '⚡';
             $('qz-result-title').textContent = '¡ACCESO CONCEDIDO!';
+
             const perfectMsg = correct === total
                 ? '¡Perfecto! Respondiste todas las preguntas correctamente.'
                 : `Respondiste ${correct}/${total} — cumples el mínimo requerido (2 de 3).`;
+
             $('qz-result-msg').innerHTML = `
-      <strong style="color:var(--p2)">${correct}/${total} respuestas correctas</strong><br><br>
-      ${perfectMsg}<br><br>
-      <span style="color:var(--gr2)">⚡ Serás transportado al tramo final, cerca del último ícono.</span>
-    `;
+                    <strong style="color:var(--cyan)">${correct}/${total} respuestas correctas</strong><br><br>
+                    ${perfectMsg}<br><br>
+                    <span style="color:var(--gr2)">⚡ Serás transportado al tramo final, cerca del último ícono.</span>
+                `;
             $('qz-tp-btn').style.display = 'inline-block';
-            snd('lvlup');
+
+            if (typeof snd === 'function') snd('lvlup');
         } else {
-            quizFail(`${correct}/${total} respuestas correctas. Se necesitan al menos 2 de 3 para el acceso.`);
+            // Reprobado
+            if (typeof quizFail === 'function') {
+                quizFail(`${correct}/${total} respuestas correctas. Se necesitan al menos 2 de 3 para el acceso.`);
+            }
         }
     }
 
@@ -500,34 +478,10 @@
 
     /* ── CHARACTERS ── */
     const CHARS = [
-        {
-            emoji: '🪖', name: 'INSPECTOR', role: 'SUPERVISOR DE SEGURIDAD', color: '#f5b200', hp: 100,
-            bonus: {epp: 1.5, ing: 1.2, sig: 1.0, proc: 1.3, train: 1.2},
-            bars: {exp: 90, cap: 85, lead: 80},
-            special: 'Detecta peligros 40% más rápido',
-            desc: 'Experimentado en campo. Identifica riesgos con precisión excepcional.'
-        },
-        {
-            emoji: '🏹', name: 'ANALISTA', role: 'TÉCNICO EN HIGIENE INDUSTRIAL', color: '#00eeff', hp: 85,
-            bonus: {epp: 1.1, ing: 1.5, sig: 1.2, proc: 1.4, train: 1.1},
-            bars: {exp: 75, cap: 95, lead: 65},
-            special: 'Cálculo de riesgo +30% preciso',
-            desc: 'Especialista en evaluación cuantitativa. Domina la matriz IPERC.'
-        },
-        {
-            emoji: '🧙', name: 'BRIGADISTA', role: 'RESPUESTA A EMERGENCIAS', color: '#ff6680', hp: 120,
-            bonus: {epp: 1.8, ing: 1.0, sig: 1.1, proc: 1.0, train: 1.3},
-            bars: {exp: 80, cap: 70, lead: 90},
-            special: 'HP máximo +20, EPP súper efectivo',
-            desc: 'Primera línea de defensa. Resiste daño y protege al equipo.'
-        },
-        {
-            emoji: '🗿', name: 'GERENTE SST', role: 'COORDINADORA DE SEGURIDAD', color: '#aa55ff', hp: 90,
-            bonus: {epp: 1.2, ing: 1.3, sig: 1.5, proc: 1.6, train: 1.5},
-            bars: {exp: 85, cap: 90, lead: 95},
-            special: 'Controles administrativos x1.6',
-            desc: 'Implementa sistemas completos. Su gestión reduce riesgo residual al mínimo.'
-        },
+        {name: 'INSPECTOR', role: 'Especialista de Campo', color: '#c89000', hp: 100, spd: 3.0, special: 'Visualiza peligros ocultos y tiene mayor rango.', desc: 'Especialista en reconocimiento y detección de condiciones subestándar.', bars: {exp: 60, cap: 70, lead: 80}},
+        {name: 'ANALISTA', role: 'Especialista IPERC', color: '#00c8d4', hp: 80, spd: 3.2, special: 'Otorga un 20% más de XP por control.', desc: 'Especialista en evaluación cuantitativa y desarrollo de la matriz IPERC.', bars: {exp: 80, cap: 90, lead: 60}},
+        {name: 'BRIGADISTA', role: 'Primera Línea', color: '#ff3355', hp: 120, spd: 2.8, special: 'Inicia con 25% más de vida y resiste un impacto.', desc: 'Primera línea de respuesta. Mitigación de impactos severos.', bars: {exp: 70, cap: 80, lead: 90}},
+        {name: 'GERENTE SST', role: 'Líder del Sistema', color: '#aa55ff', hp: 90, spd: 3.0, special: 'Reduce automáticamente un 15% del riesgo residual.', desc: 'Planificación del sistema de gestión para reducir el riesgo residual.', bars: {exp: 100, cap: 100, lead: 100}}
     ];
 
     /* ── LEVEL DEFINITIONS ── */
@@ -689,9 +643,9 @@
     };
 
     // LEVEL 4: EPP — now level 4 (unchanged, but re-id'd)
-    const LVL4_EPP = {...LVL3_DATA, id: 4, phase: '🟡 FASE 2 · CONTROLES', name: 'NVL 4 · EQUIPOS EPP'};
+    const LVL4_EPP = {...LVL3_LOTO, id: 4, phase: '🟡 FASE 2 · CONTROLES', name: 'NVL 4 · EQUIPOS EPP'};
     // LEVEL 6: CONTROLES — now level 6
-    const LVL6_CTRL = {...LVL4_DATA, id: 6, phase: '🟡 FASE 3 · CONTROLES', name: 'NVL 6 · CONTROLES'};
+    const LVL6_CTRL = {...LVL4_EPP, id: 6, phase: '🟡 FASE 3 · CONTROLES', name: 'NVL 6 · CONTROLES'};
 
     // LEVEL 7: BOSS FINAL — Extintor + Jefe
     const LVL7_BOSS = {
@@ -932,11 +886,21 @@
 
         BGM_TIMEOUT = setTimeout(() => {if (BGM_RUNNING) playBGMLoop();}, totalDur * 1000 - 100);
     }
-
     function toggleBGM() {
         const btn = $('btn-mute');
-        if (BGM_RUNNING) {stopBGM(); if (btn) {btn.textContent = '🔇 BGM'; btn.style.opacity = '.5';} }
-        else {startBGM(); if (btn) {btn.textContent = '🎵 BGM'; btn.style.opacity = '1';} }
+        if (BGM_RUNNING) {
+            stopBGM();
+            if (btn) {
+                btn.textContent = '🔇';
+                btn.style.opacity = '.5';
+            }
+        } else {
+            startBGM();
+            if (btn) {
+                btn.textContent = '🎵';
+                btn.style.opacity = '1';
+            }
+        }
     }
 
     /* ── NOTIFICATIONS ── */
@@ -950,135 +914,187 @@
         $('notifs').appendChild(d);
         NT = setTimeout(() => {d.style.transition = 'opacity .3s'; d.style.opacity = '0'; setTimeout(() => {d.remove(); pN();}, 300);}, 2400);
     }
-
-    /* ─────────────────────────────
-       CHARACTER SELECT
-    ───────────────────────────── */
     function buildChars() {
-        const row = $('chars-row'); row.innerHTML = '';
-        // Map char color → aura CSS vars
-        const auraMap = {
-            '#00eeff': 'rgba(0,238,255,.2)',
-            '#ff5555': 'rgba(255,60,60,.2)',
-            '#ffcc00': 'rgba(255,200,0,.2)',
-            '#44ff88': 'rgba(40,255,120,.2)',
-            '#ff88ff': 'rgba(240,80,255,.2)',
-        };
-        CHARS.forEach((c, i) => {
-            const aura = auraMap[c.color] || 'rgba(255,80,0,.15)';
-            const auraS = c.color;
-            const d = document.createElement('div');
-            d.className = 'cc';
-            d.dataset.i = i;
-            d.style.setProperty('--char-aura', aura);
-            d.style.setProperty('--char-aura-solid', auraS);
-            d.innerHTML = `
-      <div class="cc-chk">✓</div>
-      <div class="cc-portrait">
-        <div class="cc-portrait-bg"></div>
-        <div class="cc-portrait-lines"></div>
-        <canvas class="cc-av-canvas" width="120" height="150" data-charidx="${i}" style="display:block;margin:auto;"></canvas>
-      </div>
-      <div class="cc-info">
-        <div class="cc-name" style="color:${c.color}">${c.name}</div>
-        <div class="cc-role">${c.role}</div>
-        <div class="cc-stat-bars">
-          <div class="csb-row"><span class="csb-lbl">Experiencia</span><div class="csb-bg"><div class="csb-fill" style="width:${c.bars.exp}%;background:linear-gradient(90deg,#003020,#00ee66)"></div></div></div>
-          <div class="csb-row"><span class="csb-lbl">Capacitación</span><div class="csb-bg"><div class="csb-fill" style="width:${c.bars.cap}%;background:linear-gradient(90deg,#442200,#f5b200)"></div></div></div>
-          <div class="csb-row"><span class="csb-lbl">Liderazgo</span><div class="csb-bg"><div class="csb-fill" style="width:${c.bars.lead}%;background:linear-gradient(90deg,#002040,#00eeff)"></div></div></div>
-          <div class="csb-row"><span class="csb-lbl">Resistencia</span><div class="csb-bg"><div class="csb-fill" style="width:${c.hp}%;background:linear-gradient(90deg,#440000,#ff3355)"></div></div></div>
-        </div>
-        <div class="cc-bonus">⭐ ${c.special}</div>
-        <div class="cc-desc">${c.desc}</div>
-      </div>`;
-            d.addEventListener('click', () => selectChar(i));
+        var row = document.getElementById('chars-row');
+        if (!row) return;
+        row.innerHTML = '';
+
+        for (var i = 0; i < CHARS.length; i++) {
+            var c = CHARS[i];
+            if (!c) continue;
+
+            var d = document.createElement('div');
+            d.className = 'char-card cc';
+            d.setAttribute('data-i', i);
+            d.style.setProperty('--char-color', c.color || '#00eeff');
+
+            (function (index) {
+                d.onclick = function () {selectChar(index);};
+            })(i);
+
+            var charName = c.name ? c.name : 'EMP';
+            var code = charName.substring(0, 3).toUpperCase() + '-0' + (i + 1);
+
+            var html = '<div class="c-avatar-frame">';
+            html += '<div class="c-avatar-glow"></div>';
+            html += '<canvas class="cc-av-canvas" width="90" height="90" style="position: relative; z-index: 4; display:block; margin:auto;"></canvas>';
+            html += '<div class="c-avatar-code" style="position: absolute; bottom: -10px; background: rgba(0,0,0,0.9); padding: 2px 8px; border-radius: 4px; font-size: 11px; z-index: 5; border: 1px solid var(--char-color);">' + code + '</div>';
+            html += '<div class="c-avatar-scanner"></div></div>';
+            html += '<div class="c-name" style="color: var(--char-color);">' + charName + '</div>';
+            html += '<div class="c-desc">' + (c.role || '') + '<br><br>' + (c.desc || '') + '</div>';
+            html += '<div class="char-tooltip"><div class="ct-title">⚡ HABILIDAD ÚNICA</div><div class="ct-text">' + (c.special || '') + '</div></div>';
+
+            d.innerHTML = html;
             row.appendChild(d);
-            // Draw sprite on portrait canvas
-            const cv = d.querySelector('.cc-av-canvas');
+
+            var cv = d.querySelector('.cc-av-canvas');
             if (cv) {
-                const ctx2 = cv.getContext('2d');
-                ctx2.save(); ctx2.translate(60, 75);
-                drawCharSprite(ctx2, i, 0, 0, 56, 72);
+                var ctx2 = cv.getContext('2d');
+                ctx2.save();
+                ctx2.translate(45, 55);
+                if (typeof drawCharSprite === 'function') {
+                    drawCharSprite(ctx2, i, 0, 0, 56, 72);
+                }
                 ctx2.restore();
             }
-        });
+        }
     }
     function selectChar(i) {
-        G.charIdx = i;
-        document.querySelectorAll('.cc').forEach((c, j) => c.classList.toggle('sel', j === i));
-        $('btn-confirm').classList.add('on');
+        if (typeof G !== 'undefined') G.charIdx = i;
+        var cards = document.querySelectorAll('.cc');
+        for (var j = 0; j < cards.length; j++) {
+            if (j === i) {
+                cards[j].classList.add('sel');
+            } else {
+                cards[j].classList.remove('sel');
+            }
+        }
+        var btn = document.getElementById('btn-confirm');
+        if (btn) btn.classList.add('on');
     }
     function confirmChar() {
         if (G.charIdx === null) return;
-        const ch = CHARS[G.charIdx];
-        G.hp = ch.hp; G.xp = 0; G.level = 1;
-        G.currentLevel = 0; G.doneLevels = [];
-        G.severityScore = 0; G.probabilityScore = 0; G.initialRisk = 0;
-        G.eppReduction = 0; G.controlReduction = 0; G.residualRisk = 0;
-        G.collectedEPP = []; G.collectedControls = []; G.workersRescued = 0;
-        G.lotoApplied = 0; G.lotoReduction = 0; G.phoneUses = 0; G.phonePenalty = 0;
-        G.safeRouteChosen = null; G.cruceBonus = 0; G.extinguisherHeld = false; G.extinguisherUses = 0;
-        buildMap(); show('s-map');
+
+        // 1. Apagamos la pantalla de selección
+        var charScreen = document.getElementById('s-char');
+        if (charScreen) charScreen.classList.remove('on');
+
+        // 2. Encendemos el mapa
+        var mapScreen = document.getElementById('s-map');
+        if (mapScreen) mapScreen.classList.add('on');
+
+        // 3. Ejecutamos tu lógica original del mapa
+        if (typeof buildMap === 'function') buildMap();
+        if (typeof snd === 'function') snd('btn');
     }
 
     /* ─────────────────────────────
        MAP
     ───────────────────────────── */
     function buildMap() {
-        const ch = CHARS[G.charIdx];
-        // Hero card
-        $('map-hero-card').innerHTML = `
-    <canvas id="map-hero-av" width="52" height="56" style="display:block;flex-shrink:0;"></canvas>
-    <div>
-      <div class="mhc-name" style="color:${ch.color}">${ch.name} — ${ch.role}</div>
-      <div class="mhc-stats">
-        <span class="mhcs">HP: <span>${Math.max(0, G.hp)}%</span></span>
-        <span class="mhcs">XP: <span>${G.xp}</span></span>
-        <span class="mhcs">Nivel IPERC: <span>${G.level}</span></span>
-        <span class="mhcs">Misiones: <span>${G.doneLevels.length}/7</span></span>
-      </div>
-    </div>`;
-        // Draw sprite on map hero canvas
-        setTimeout(() => {
-            const mvc = $('map-hero-av');
-            if (mvc) {const mc = mvc.getContext('2d'); mc.save(); mc.translate(26, 28); drawCharSprite(mc, G.charIdx, 0, 0, 40, 48); mc.restore();}
-        }, 0);
+        const zone = document.getElementById('map-zone');
+        if (!zone) return;
+        const pChar = CHARS[G.charIdx];
+        if (!pChar) return;
 
-        // Levels track
-        const track = $('levels-track'); track.innerHTML = '';
-        ALL_LEVELS.forEach((lv, i) => {
-            if (i > 0) {
-                const conn = document.createElement('div');
-                conn.className = 'lconn ' + (G.doneLevels.includes(i - 1) ? 'done' : 'locked');
-                track.appendChild(conn);
+        const charName = pChar.name || 'EMP';
+        const charColor = pChar.color || 'var(--cyan)';
+        const charRole = pChar.role || 'ESPECIALISTA';
+        const charCode = charName.substring(0, 3).toUpperCase() + '-0' + (G.charIdx + 1);
+
+        // 1.5 DIBUJAR EL AVATAR EN EL SIDEBAR
+        const avatarCanvas = document.getElementById('sidebar-char-canvas');
+        if (avatarCanvas && typeof drawCharSprite === 'function') {
+            const ctx = avatarCanvas.getContext('2d');
+            ctx.clearRect(0, 0, avatarCanvas.width, avatarCanvas.height);
+            ctx.save();
+            // Centramos el dibujo en el canvas de 90x90
+            ctx.translate(45, 55);
+            drawCharSprite(ctx, G.charIdx, 0, 0, 56, 72);
+            ctx.restore();
+
+            // Colorear el borde con el color del personaje
+            const container = document.getElementById('sidebar-avatar-container');
+            if (container) container.style.borderColor = charColor;
+        }
+
+        const nameEl = document.getElementById('map-char-name');
+        if (nameEl) nameEl.innerHTML = `<span style="color:${charColor}">${charName}</span> <span style="font-size:0.6em;color:var(--mut)">— ${charRole}</span>`;
+
+        const hpEl = document.getElementById('map-char-hp');
+        if (hpEl) hpEl.textContent = G.hp + '%';
+
+        const xpEl = document.getElementById('map-char-xp');
+        if (xpEl) xpEl.textContent = G.xp + ' XP';
+
+        const lvlEl = document.getElementById('map-char-lvl');
+        if (lvlEl) lvlEl.textContent = 'NVL ' + G.level;
+
+        const iniEl = document.getElementById('map-iperc-initial');
+        if (iniEl) iniEl.textContent = G.initialRisk > 0 ? G.initialRisk : '—';
+
+        const ctrlEl = document.getElementById('map-iperc-controls');
+        if (ctrlEl) ctrlEl.textContent = (G.collectedControls ? G.collectedControls.length : 0) + '/5';
+
+        const resEl = document.getElementById('map-iperc-residual');
+        if (resEl) resEl.textContent = G.residualRisk > 0 ? G.residualRisk : '—';
+
+        zone.innerHTML = `
+                <div class="title-wrap" style="padding-top: 30px; padding-bottom: 10px;">
+                    <div class="title-zone" style="font-size: 2.5rem; line-height: 1;">HOJA DE RUTA</div>
+                </div>
+                <p style="text-align:center; font-family:'Exo 2'; color:var(--mut); font-size:0.9rem; letter-spacing:1px; margin: 0 0 20px 0;">
+                    COMPLETE LAS OPERACIONES CRÍTICAS PARA REDUCIR EL RIESGO RESIDUAL
+                </p>
+                <div id="serpentine-matrix" class="map-container"></div>
+            `;
+
+        const matrix = document.getElementById('serpentine-matrix');
+        const nodesPerRow = 3;
+        let currentRowHTML = [];
+        let isReverseRow = false;
+
+        ALL_LEVELS.forEach((lvl, idx) => {
+            let state = 'locked';
+            let isCurrent = (idx === G.currentLevel);
+            let isCompleted = G.doneLevels.includes(idx) || (idx < G.currentLevel);
+
+            if (isCurrent) state = 'current';
+            else if (isCompleted) state = 'completed';
+
+            const cleanName = lvl.name ? lvl.name.replace(/^NVL\s\d+\s·\s/, '') : '';
+            const phaseCode = lvl.phase ? lvl.phase.split('·')[0].replace(/[^\w\s]/gi, '').trim() : '';
+
+            let nodeHTML = `
+                    <div class="map-node-wrapper ${state}" ${state !== 'locked' ? `onclick="startLevel(${idx})"` : ''}>
+                        ${isCurrent ? `
+                            <div class="map-player-badge" style="--char-color: ${charColor}">
+                                <div class="radar-dot"></div>
+                                <span>${charName} [${charCode}]</span>
+                            </div>
+                        ` : ''}
+                        <div class="map-node ${state}">
+                            ${String(idx + 1).padStart(2, '0')}
+                        </div>
+                        <div class="node-info">
+                            <div class="node-code" style="color: ${lvl.color || 'var(--cyan)'}">${phaseCode}</div>
+                            <div class="map-node-name node-name" title="${cleanName}">${cleanName}</div>
+                        </div>
+                    </div>
+                `;
+
+            currentRowHTML.push(nodeHTML);
+
+            if (currentRowHTML.length === nodesPerRow || idx === ALL_LEVELS.length - 1) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = `map-row ${isReverseRow ? 'reverse' : ''}`;
+                rowDiv.innerHTML = currentRowHTML.join('');
+                matrix.appendChild(rowDiv);
+
+                currentRowHTML = [];
+                isReverseRow = !isReverseRow;
             }
-            const done = G.doneLevels.includes(i);
-            const current = i === G.currentLevel;
-            const locked = !done && i > G.currentLevel;
-            const sc = done ? 'done' : current ? 'current' : 'locked';
-            const phaseTag = i < 2 ? 'pt-red' : i < 4 ? 'pt-ora' : i < 6 ? 'pt-yel' : 'pt-boss';
-            const nd = document.createElement('div'); nd.className = 'lnode';
-            nd.innerHTML = `
-      <div class="lnc ${sc}">
-        <span class="lnc-phase-tag ${phaseTag}">${i < 2 ? 'RIESGO' : i === 2 ? 'CONDUCTA' : i === 3 ? 'EPP' : i === 4 ? 'VIAL' : i === 5 ? 'CONTROL' : 'BOSS'}</span>
-        ${done ? '✓' : lv.emoji}
-      </div>
-      <div class="lnn ${sc}" style="color:${done ? 'var(--gr2)' : current ? lv.color : 'var(--mut)'}">${lv.name}</div>
-      <div style="font-family:var(--jb);font-size:6px;color:var(--mut)">${done ? '✓ COMPLETADO' : current ? '▶ ACTIVO' : locked ? '🔒 BLOQUEADO' : '—'}</div>`;
-            if (!locked) {
-                nd.style.cursor = 'pointer';
-                nd.addEventListener('click', () => startLevel(i));
-            }
-            track.appendChild(nd);
         });
-
-        // IPERC status preview
-        const initRisk = G.initialRisk > 0 ? G.initialRisk.toFixed(0) : '—';
-        const controls = G.collectedEPP.length + G.collectedControls.length;
-        const residual = G.residualRisk > 0 ? G.residualRisk.toFixed(0) + '%' : '—';
-        $('rp-initial').textContent = initRisk;
-        $('rp-controls').textContent = controls + '/5';
-        $('rp-residual').textContent = residual;
     }
 
     function startLevel(i) {
@@ -1120,7 +1136,6 @@
             }
         }
     }
-
     function startPlatformer(zone) {
         ZONE = zone; LEVEL_DONE = false;
         show('s-game');
@@ -1133,7 +1148,6 @@
             startBGM();
         }));
     }
-
     function sizeCanvas() {
         const sc = $('s-game');
         CV.width = sc.clientWidth || window.innerWidth;
@@ -1155,6 +1169,9 @@
         const HUD = 52;
         const PH = H - HUD;
         const ch = CHARS[G.charIdx];
+        //BRIGADISTA (Vida inicial y Escudo)
+        G.hp = ch.name === 'BRIGADISTA' ? 125 : 100;
+        G.brigadistaShield = ch.name === 'BRIGADISTA';
 
         PL = {
             x: W * .05, y: HUD + PH * .55, w: 30, h: 38, vx: 0, vy: 0, onGround: false,
@@ -1216,37 +1233,40 @@
         // LOTO level: phone distractors spawn
         if (z.isLotoLevel) {
             initPhoneDistractors();
-            const extraHTMLLoto = `<div class="hlbl">LOTO</div><div class="hval" id="hv-loto" style="color:#ff5500">0/${C_TOT}</div><div class="hlbl" style="margin-left:6px">📱</div><div class="hval" id="hv-phone" style="color:#ffcc00">-0xp</div>`;
+            const extraHTMLLoto = `
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem;"><span style="color:var(--mut);">OBJETIVO</span><span id="hv-loto" style="color:#ff5500; font-weight:bold;">0/${C_TOT}</span></div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem;"><span style="color:var(--mut);">DISTRACCIÓN</span><span id="hv-phone" style="color:#ffcc00; font-weight:bold;">-0xp</span></div>`;
             $('hud-extra').innerHTML = extraHTMLLoto;
-            $('hstage-name').textContent = z.emoji + ' ' + z.name;
+            $('hstage-name').textContent = z.name;
             updateHUD(); updateRiskMeter(); return;
         }
 
         // Cruce level
         if (z.isCruceLevel) {
             initCruceLevel();
-            const extraHTMLCruce = `<div class="hlbl">RUTA</div><div class="hval" id="hv-ruta" style="color:#00ee66">—</div><div class="hlbl" style="margin-left:6px">🚦</div><div class="hval" id="hv-sem" style="color:#ff3355">ROJO</div>`;
+            const extraHTMLCruce = `
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem;"><span style="color:var(--mut);">RUTA</span><span id="hv-ruta" style="color:#00ee66; font-weight:bold;">—</span></div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem;"><span style="color:var(--mut);">SEMÁFORO</span><span id="hv-sem" style="color:#ff3355; font-weight:bold;">ROJO</span></div>`;
             $('hud-extra').innerHTML = extraHTMLCruce;
-            $('hstage-name').textContent = z.emoji + ' ' + z.name;
+            $('hstage-name').textContent = z.name;
             updateHUD(); updateRiskMeter(); return;
         }
 
         // Boss level init
         if (z.isBossLevel) {
             initBoss();
-            // Place extintor más centrado — visible y alcanzable antes de llegar al boss
             EXTINGUISHER.x = PLATS[0].x + PLATS[0].w * .55;
             EXTINGUISHER.y = PLATS[0].y - EXTINGUISHER.h - 4;
+
             const extraHTML2 = `
-      <div class="hitem"><div class="hlbl">JEFE HP</div><div class="hbar"><div class="hfill" id="hf-boss-hp" style="width:100%;background:linear-gradient(90deg,#880088,#ff55ff)"></div></div><div class="hval" id="hv-boss-hp" style="color:#ff55ff">100%</div></div>
-      <div class="hsep"></div>
-      <div class="hitem"><div class="hlbl">🧯 EXTINTOR</div><div class="hval" id="hv-extinguisher" style="color:#ff8800;font-size:13px">NO EQUIPADO</div></div>
-      <div class="hsep"></div>
-      <div class="hitem"><div class="hlbl">USOS</div><div class="hval" id="hv-ext-uses" style="color:#00eeff">0</div></div>
-      <div class="hsep"></div>
-      <div class="hitem"><div class="hlbl">⭐ YO REPORTO</div><div class="hval" id="hv-star" style="color:#ffd600">DISPONIBLE</div></div>`;
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:4px;"><span style="color:var(--mut);">JEFE HP</span><span id="hv-boss-hp" style="color:#ff55ff; font-weight:bold;">100%</span></div>
+                        <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; margin-bottom:10px; overflow:hidden;"><div id="hf-boss-hp" style="width:100%; height:100%; background:linear-gradient(90deg,#880088,#ff55ff); transition: width 0.2s;"></div></div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem;"><span style="color:var(--mut);">EXTINTOR</span><span id="hv-extinguisher" style="color:#ff8800; font-weight:bold;">NO EQUIPADO</span></div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem;"><span style="color:var(--mut);">USOS</span><span id="hv-ext-uses" style="color:#00eeff; font-weight:bold;">0</span></div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.85rem;"><span style="color:var(--mut);">REPORTE</span><span id="hv-star" style="color:#ffd600; font-weight:bold;">DISPONIBLE</span></div>`;
+
             $('hud-extra').innerHTML = extraHTML2;
-            $('hstage-name').textContent = z.emoji + ' ' + z.name;
+            $('hstage-name').textContent = z.name;
             updateHUD(); updateRiskMeter();
             setTimeout(() => notify('📋 ¡LEE EL PET primero! Es el pergamino dorado — recógelo para aprender a usar el extintor', 'p'), 400);
             setTimeout(() => notify('🧯 ¡RECOGE EL EXTINTOR! Está en tu plataforma — camina hacia él', 'w'), 2200);
@@ -1259,17 +1279,20 @@
 
         // HUD extras based on level type
         let extraHTML = '';
+        const fontStyle = "font-family: 'JetBrains Mono', monospace; font-weight:bold;";
+
         if (z.isProbabilityLevel) {
-            extraHTML = `<div class="hlbl">RESCATADOS</div><div class="hval" id="hv-rescued" style="color:var(--gr2)">0/${z.collectibles.length}</div>`;
+            extraHTML = `<div style="display:flex; justify-content:space-between; font-size:0.8rem;"><span style="color:#aaa; letter-spacing:1px;">RESCATADOS</span><span id="hv-rescued" style="color:var(--gr2); ${fontStyle}">0/${z.collectibles.length}</span></div>`;
         } else if (z.isEPPLevel) {
-            extraHTML = `<div class="hlbl">TIEMPO</div><div class="hval" id="hv-timer" style="color:var(--g2)">60s</div>`;
+            extraHTML = `<div style="display:flex; justify-content:space-between; font-size:0.8rem;"><span style="color:#aaa; letter-spacing:1px;">TIEMPO</span><span id="hv-timer" style="color:var(--g2); ${fontStyle}">60s</span></div>`;
         } else if (z.isControlLevel) {
-            extraHTML = `<div class="hlbl">CONTROLES</div><div class="hval" id="hv-ctrl-count" style="color:var(--c2)">0/${z.collectibles.length}</div>`;
+            extraHTML = `<div style="display:flex; justify-content:space-between; font-size:0.8rem;"><span style="color:#aaa; letter-spacing:1px;">CONTROLES</span><span id="hv-ctrl-count" style="color:var(--c2); ${fontStyle}">0/${z.collectibles.length}</span></div>`;
         } else {
-            extraHTML = `<div class="hlbl">PELIGROS</div><div class="hval" id="hv-neut" style="color:var(--r2)">0/${z.hazards.length}</div>`;
+            extraHTML = `<div style="display:flex; justify-content:space-between; font-size:0.8rem;"><span style="color:#aaa; letter-spacing:1px;">PELIGROS</span><span id="hv-neut" style="color:var(--r2); ${fontStyle}">0/${z.hazards.length}</span></div>`;
         }
         $('hud-extra').innerHTML = extraHTML;
-        $('hstage-name').textContent = z.emoji + ' ' + z.name;
+
+        $('hstage-name').textContent = z.name;
 
         updateHUD(); updateRiskMeter();
     }
@@ -1282,7 +1305,6 @@
 
         const left = KEYS['a'] || KEYS['arrowleft'];
         const right = KEYS['d'] || KEYS['arrowright'];
-        const jump = KEYS['w'] || KEYS['arrowup'] || KEYS[' '] && PL.onGround;
 
         if (left) {PL.vx = -SP; PL.facing = -1;}
         else if (right) {PL.vx = SP; PL.facing = 1;}
@@ -1302,13 +1324,34 @@
                 PL.y = p.y - PL.h; PL.vy = 0; PL.onGround = true;
             }
         }
-        if (PL.y + PL.h >= H) {PL.y = H - PL.h; PL.vy = 0; PL.onGround = true;}
+
+        // 🚨 CONTROL CRÍTICO: DETECCIÓN DE CAÍDA AL VACÍO (RE-SPAWN EN INICIO)
+        if (PL.y + PL.h >= H - 5) {
+            // Si el jugador toca el fondo del canvas (caída libre)
+            PL.vx = 0;
+            PL.vy = 0;
+
+            // Posicionamos al jugador de vuelta en la plataforma inicial [0]
+            if (PLATS && PLATS[0]) {
+                PL.x = PLATS[0].x + 20;
+                PL.y = PLATS[0].y - PL.h - 10;
+            } else {
+                PL.x = 40;
+                PL.y = 100;
+            }
+
+            // Feedback de impacto al usuario
+            snd('hit');
+            spawnP(PL.x + PL.w / 2, PL.y + PL.h / 2, 'rgba(255, 51, 85, 0.9)', 25);
+            ft(PL.x + 10, PL.y - 25, '⚠️ CAÍDA AL VACÍO', '#ff3355');
+            notify('🚨 ¡CAÍDA AL VACÍO! El no usar plataformas estables reinicia tu posición al punto de partida.', 'r');
+        }
+
         if (PL.y < 52) {PL.y = 52; PL.vy = 0;}
 
         if (PL.atkCd > 0) PL.atkCd--;
         if (PL.atkTimer > 0) PL.atkTimer--; else PL.attacking = false;
         if (PL.invincible > 0) PL.invincible--;
-        // Mushroom scale tween: lerp back to 1 over time
         if (PL.scaleTimer > 0) {PL.scaleTimer--; if (PL.scaleTimer === 0) {PL.scale = 1;} }
         PL.ft++;
 
@@ -1320,7 +1363,6 @@
             if (el) el.textContent = remaining + 's';
             if (el) el.style.color = remaining <= 15 ? '#ff3355' : remaining <= 30 ? '#f5b200' : '#00ee66';
             if (LEVEL_TIMER >= LEVEL_MAX_TIME && !LEVEL_DONE) {
-                // Time up — finish with whatever was collected
                 finishLevel(); return;
             }
         }
@@ -1348,7 +1390,7 @@
             if (ov(PL, {x: m.x, y: m.y + Math.sin(m.bt) * 4, w: m.w, h: m.h})) collectMushroom(m);
         }
 
-        // PET scrolls & icons (tick bobble + pickup)
+        // PET scrolls & icons
         for (const pet of PETS) {
             pet.bt += .03;
             if (!pet.collected && pet.type === 'pet') {
@@ -1387,7 +1429,6 @@
                 const elEq = $('hv-extinguisher');
                 if (elEq) {elEq.textContent = '✅ EQUIPADO'; elEq.style.color = '#00ee66'; elEq.style.fontSize = '12px';}
                 snd('collect');
-                // Extra reminder after 2s
                 setTimeout(() => {
                     if (RUNNING && BOSS && BOSS.alive && G.extinguisherHeld)
                         notify('💡 TIP: Acércate al 🐲 y pulsa [SPC] — cuanto más cerca, más daño', 'i');
@@ -1398,14 +1439,14 @@
         // Boss logic
         if (BOSS && BOSS.alive) updateBoss();
 
-        // Boss drops (arsenal pickups)
+        // Boss drops
         for (const bd of BOSS_DROPS) {
             if (bd.collected) continue;
             bd.bt += .05;
             if (ov(PL, {x: bd.x, y: bd.y + Math.sin(bd.bt) * 4, w: bd.w, h: bd.h})) collectBossDrop(bd);
         }
 
-        // Door collision — player enters when door is unlocked
+        // Door collision
         if (isPortalOpen()) {
             const d = doorPos();
             if (ov(PL, {x: d.x + 8, y: d.y, w: d.w - 16, h: d.h})) finishLevel();
@@ -1427,6 +1468,16 @@
 
     function hurtPl(h) {
         const ch = CHARS[G.charIdx];
+
+        //BRIGADISTA (Vida inicial y Escudo)
+        if (G.brigadistaShield && ch.name === 'BRIGADISTA') {
+            G.brigadistaShield = false;
+            PL.invincible = 60;
+            ft(PL.x + PL.w / 2, PL.y, '🛡️ ¡ESCUDO ACTIVO!', '#ff3355');
+            snd('collect');
+            return;
+        }
+
         let d = 12;
         // EPP collected in earlier levels reduces damage
         d -= Math.round(G.eppReduction * 10);
@@ -1443,7 +1494,10 @@
         if (PL.atkCd > 0) return;
         PL.attacking = true; PL.atkTimer = 20; PL.atkCd = 28;
         // Extinguisher has a longer range than fists
-        const extRange = G.extinguisherHeld && ZONE && ZONE.isBossLevel ? 110 : 58;
+        // INSPECTOR (Mayor rango de ataque)
+        let baseRange = 58;
+        if (CHARS[G.charIdx] && CHARS[G.charIdx].name === 'INSPECTOR') baseRange = 85;
+        const extRange = G.extinguisherHeld && ZONE && ZONE.isBossLevel ? 110 : baseRange;
         const ax = PL.facing === 1 ? PL.x + PL.w : PL.x - extRange;
         // Hit regular hazards
         for (const h of HZDS) {
@@ -1504,7 +1558,9 @@
 
     function neutralize(h) {
         h.alive = false; P_NEUT++;
-        const xg = 55 + h.sev * 10; G.xp += xg; chkLvl();
+        let xg = 55 + h.sev * 10;
+        if (CHARS[G.charIdx].name === 'ANALISTA') xg = Math.round(xg * 1.2);
+        G.xp += xg; chkLvl();
         spawnP(h.px + h.w / 2, h.py + h.h / 2, 'rgba(0,238,255,0.7)', 16);
         ft(h.px, h.py - 12, 'NEUTRALIZADO +' + xg + 'XP', '#00ffee');
         notify('⚔ ' + h.type + ' NEUTRALIZADO — SEV: ' + h.sevLbl, 'g');
@@ -1516,7 +1572,9 @@
 
     function pickUp(c) {
         c.collected = true; C_COLL++;
-        const xg = 40; G.xp += xg; chkLvl();
+        let xg = 40;
+        if (CHARS[G.charIdx].name === 'ANALISTA') xg = Math.round(xg * 1.2);
+        G.xp += xg; chkLvl();
         spawnP(c.px + c.w / 2, c.py, 'rgba(245,178,0,0.7)', 14);
         snd(c.isWorker ? 'rescue' : 'collect');
 
@@ -1568,7 +1626,7 @@
 
     /* ─── DOOR (on left ground platform near player spawn) ─── */
     function doorPos() {
-        const p = PLATS[0]; // left ground platform — where player starts
+        const p = PLATS[PLATS.length - 1];
         return {x: p.x + p.w - 80, y: p.y - 90, w: 64, h: 90};
     }
 
@@ -1889,47 +1947,26 @@
             s.style.transform = 'scale(1)';
         });
     }
-
     function enviarRating() {
         const rating = window._gameRating;
         if (!rating) return;
         const labels = ['', 'Para nada', 'Poco entretenido', 'Más o menos', 'Bastante entretenido', '¡Muy entretenido!'];
         const ch = CHARS[G.charIdx] || {name: '—'};
-        const payload = {
-            fecha: new Date().toLocaleString('es-PE'),
-            personaje: ch.name,
-            xp_total: G.xp,
-            riesgo_residual: G.residualRisk.toFixed(1),
-            estrellas: rating,
-            opinion: labels[rating]
-        };
 
-        // ═══ INTEGRACIÓN GOOGLE SHEETS VÍA APPS SCRIPT ═══
-        // Cuando despliegues en AppScript, descomenta esto y pon tu URL:
-        //
-        // const WEB_APP_URL = 'https://script.google.com/macros/s/TU_DEPLOYMENT_ID/exec';
-        // fetch(WEB_APP_URL, {
-        //   method: 'POST',
-        //   headers: {'Content-Type':'application/json'},
-        //   body: JSON.stringify(payload)
-        // }).then(()=>mostrarEnviado()).catch(()=>mostrarEnviado());
-        // return;
-        //
-        // En AppScript (Code.gs) necesitas:
-        // function doPost(e){
-        //   const data = JSON.parse(e.postData.contents);
-        //   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Ratings');
-        //   sheet.appendRow([data.fecha, data.personaje, data.xp_total,
-        //                    data.riesgo_residual, data.estrellas, data.opinion]);
-        //   return ContentService.createTextOutput('OK');
-        // }
+        // 🌟 NUEVO: Enviar datos de la encuesta a Google Sheets de forma silenciosa
+        if (typeof google !== 'undefined' && google.script) {
+            const ratingData = {
+                fecha: new Date().toLocaleString('es-PE'),
+                personaje: ch.name,
+                // Juntamos el número de estrellas con el texto para que lo leas más fácil en Excel
+                estrellas: rating + " Estrellas - " + labels[rating],
+                // Añadimos la XP y el riesgo residual al estado final
+                estado: "Completado (XP: " + G.xp + " / Riesgo: " + G.residualRisk.toFixed(1) + ")"
+            };
+            google.script.run.guardarEncuestaFinal(ratingData);
+        }
 
-        // Modo standalone: guarda en localStorage hasta conectar con AppScript
-        try {
-            const prev = JSON.parse(localStorage.getItem('iperc_ratings') || '[]');
-            prev.push(payload);
-            localStorage.setItem('iperc_ratings', JSON.stringify(prev));
-        } catch (e) { }
+        // Llamamos a la función que muestra el "Gracias por tu opinión" en el juego
         mostrarEnviado();
     }
 
@@ -1992,7 +2029,6 @@
             invTimer: 0
         };
     }
-
     function drawPETs() {
         const t = Date.now();
         for (const pet of PETS) {
@@ -2041,7 +2077,6 @@
             }
         }
     }
-
     function drawStar() {
         if (!STAR || STAR.collected) return;
         const t = Date.now();
@@ -2080,7 +2115,6 @@
         CX.fillText('5 SEG INMUNIDAD', sx + 18, sy + 42);
         CX.textAlign = 'left';
     }
-
     function updateStar() {
         if (!STAR || STAR.collected) return;
         // Collect check
@@ -2102,21 +2136,22 @@
             }, 1000 / 60);
         }
     }
-
-
     function spawnMushrooms() {
-        // Place mushrooms centered on the 3 middle staircase platforms
         const positions = [
             {x: PLATS[1].x + PLATS[1].w * .5 - 14, y: PLATS[1].y - 34},
             {x: PLATS[2].x + PLATS[2].w * .5 - 14, y: PLATS[2].y - 34},
             {x: PLATS[4].x + PLATS[4].w * .5 - 14, y: PLATS[4].y - 34},
         ];
         const rand3 = Math.random() > .45;
+
         const types = [
-            {good: true, emoji: '🍄', label: '+20 HP', heal: 20, color: '#00ee66'},
-            {good: false, emoji: '🍄', label: '-15 HP', heal: -15, color: '#ff3355'},
-            {good: rand3, emoji: '🍄', label: '???', heal: rand3 ? 25 : -20, color: '#f5b200'},
+            {good: true, emoji: '🧰', label: '+20 VIDA', heal: 20, color: '#00ee66'},
+
+            {good: false, emoji: '💀', label: 'TÓXICO -15', heal: -15, color: '#ff3355'},
+
+            {good: rand3, emoji: '⚠️', label: 'EVALUAR', heal: rand3 ? 25 : -20, color: '#f5b200'},
         ];
+
         types.forEach((t, i) => {
             MUSHROOMS.push({...t, x: positions[i].x, y: positions[i].y, w: 28, h: 28, bt: Math.random() * Math.PI * 2, collected: false});
         });
@@ -2186,7 +2221,6 @@
         BOSS_DROPS = [];
         const el = $('hv-boss-hp'); if (el) el.textContent = '100%';
     }
-
     function updateBoss() {
         if (!BOSS || !BOSS.alive) return;
         const W = CV.width, H = CV.height;
@@ -2349,7 +2383,6 @@
             emoji: '👾',
         });
     }
-
     function updateMiniMonsters() {
         if (!BOSS || !BOSS.minis) return;
         const H = CV.height, W = CV.width;
@@ -2397,7 +2430,6 @@
             }
         }
     }
-
     function drawMiniMonsters() {
         if (!BOSS || !BOSS.minis) return;
         const t = Date.now();
@@ -2420,7 +2452,6 @@
             CX.textAlign = 'left';
         }
     }
-
     function spawnArsenalDrop() {
         const W = CV.width;
         const allTools = [...G.collectedEPP, ...G.collectedControls];
@@ -2456,20 +2487,21 @@
             {x: PLATS[3].x + PLATS[3].w * .5 - 14, y: PLATS[3].y - 34},
             {x: PLATS[4].x + PLATS[4].w * .5 - 14, y: PLATS[4].y - 34},
         ];
-        // Boss level: ROJO=crece (+HP), VERDE=encoge (-HP)
+
+        // 🔴 MALO = ROJO (Daño)  |  🟢 BUENO = VERDE (Salud)
         const types = [
-            {good: true, boss: true, emoji: '🍄', tint: 'red', label: '🔴 ROJO = CRECE', heal: 20, color: '#ff2222'},
-            {good: false, boss: true, emoji: '🍄', tint: 'green', label: '🟢 VERDE = ENCOGE', heal: -15, color: '#00cc44'},
-            {good: true, boss: true, emoji: '🍄', tint: 'red', label: '🔴 ROJO = CRECE', heal: 25, color: '#ff2222'},
-            {good: false, boss: true, emoji: '🍄', tint: 'green', label: '🟢 VERDE = ENCOGE', heal: -15, color: '#00cc44'},
+            {good: true, boss: true, emoji: '🍄', tint: 'green', label: '+20 HP', heal: 20, color: '#00ee66'},
+            {good: false, boss: true, emoji: '🍄', tint: 'red', label: '-15 HP', heal: -15, color: '#ff3355'},
+            {good: true, boss: true, emoji: '🍄', tint: 'green', label: '+25 HP', heal: 25, color: '#00ee66'},
+            {good: false, boss: true, emoji: '🍄', tint: 'red', label: '-15 HP', heal: -15, color: '#ff3355'},
         ];
+
+        MUSHROOMS = [];
         types.forEach((t, i) => {
             MUSHROOMS.push({...t, x: positions[i].x, y: positions[i].y, w: 28, h: 28, bt: Math.random() * Math.PI * 2, collected: false});
         });
-        notify('🍄 ¡HONGOS DE BATALLA! 🔴Rojo=CRECE  🟢Verde=ENCOGE', 'w');
+        notify('🍄 ¡HONGOS DE BATALLA! 🟢Verde=SALUD  🔴Rojo=PELIGRO', 'w');
     }
-
-
     function collectBossDrop(bd) {
         bd.collected = true;
         BOSS.arsenalUsed++;
@@ -2478,12 +2510,10 @@
         notify('⚔ ' + bd.label + ' EQUIPADO — ¡DAÑO +35%!', 'g');
         snd('collect');
     }
-
     function bossDamageMult() {
         // Base damage multiplied by arsenal used
         return 1 + (BOSS && BOSS.arsenalUsed ? BOSS.arsenalUsed * 0.35 : 0);
     }
-
     function drawBoss() {
         if (!BOSS || !BOSS.alive) return;
         const B = BOSS;
@@ -2635,7 +2665,6 @@
         // Draw mini-monsters
         drawMiniMonsters();
     }
-
     function drawMarioMushroom(cx, x, y, size, capColor, pulse) {
         const cx2 = x, cy2 = y;
         const r = size;
@@ -2674,7 +2703,6 @@
         CX.fillStyle = 'rgba(255,255,255,0.25)';
         CX.beginPath(); CX.arc(cx2 - r * .18, cy2 - r * .38, r * .22, 0, Math.PI * 2); CX.fill();
     }
-
     function drawMushrooms() {
         const t = Date.now();
         for (const m of MUSHROOMS) {
@@ -2685,28 +2713,52 @@
             const pulse = Math.sin(t * .006) * .5 + .5;
 
             const isBoss = !!m.boss;
-            const isGrow = m.good;
-            const capColor = isGrow ? '#dd2222' : '#22aa44'; // rojo=crece, verde=encoge
-            const labelCol = m.color || (isGrow ? '#cc1100' : '#006622');
-            const size = isBoss ? 18 : 15;
+            const isGrow = m.good; // true = cura/crece, false = daño/encoge
 
-            // Draw custom Mario mushroom
-            drawMarioMushroom(CX, mx + 14, my + 10, size, capColor, pulse);
+            if (isBoss) {
+                // 🟢 BUENO (isGrow = true) -> Sombrero Verde | 🔴 MALO (isGrow = false) -> Sombrero Rojo
+                const capColor = isGrow ? '#22aa44' : '#dd2222';
+                const labelCol = m.color || (isGrow ? '#00ee66' : '#ff3355');
+                const size = 18;
 
-            // Label arriba
-            CX.font = 'bold 7px "JetBrains Mono",monospace';
-            CX.fillStyle = labelCol; CX.textAlign = 'center';
-            CX.fillText(m.label, mx + 14, my - 8);
+                drawMarioMushroom(CX, mx + 14, my + 10, size, capColor, pulse);
 
-            // Hint abajo
-            CX.font = 'bold 7px "JetBrains Mono",monospace';
-            CX.fillStyle = isGrow ? '#aa1100' : '#005518';
-            CX.fillText(isGrow ? '🔴 CRECE' : '🟢 ENCOGE', mx + 14, my + 36);
+                // Texto Arriba (Súper nítido con sombra)
+                CX.font = 'bold 11px "JetBrains Mono",monospace';
+                CX.textAlign = 'center';
+                CX.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                CX.fillText(m.label, mx + 14, my - 8 + 1);
+                CX.fillStyle = labelCol;
+                CX.fillText(m.label, mx + 14, my - 8);
+
+                // Hint Abajo ajustado coherentemente
+                CX.font = 'bold 11px "JetBrains Mono",monospace';
+                CX.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                CX.fillText(isGrow ? '🟢 CRECE' : '🔴 ENCOGE', mx + 14, my + 38 + 1);
+                CX.fillStyle = isGrow ? '#00ee66' : '#ff3355';
+                CX.fillText(isGrow ? '🟢 CRECE' : '🔴 ENCOGE', mx + 14, my + 38);
+
+            } else {
+                // MODO NIVELES NORMALES: Dibuja los Emojis Industriales
+                CX.font = '26px serif';
+                CX.textAlign = 'center';
+                CX.textBaseline = 'alphabetic';
+                CX.fillText(m.emoji || '🍄', mx + 14, my + 22);
+
+                const labelText = (m.label || '').toUpperCase();
+                CX.font = 'bold 11px "JetBrains Mono",monospace';
+                CX.textAlign = 'center';
+
+                CX.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                CX.fillText(labelText, mx + 14, my - 4 + 1);
+                CX.fillStyle = m.color || '#f5b200';
+                CX.fillText(labelText, mx + 14, my - 4);
+            }
 
             CX.textAlign = 'left';
+            CX.textBaseline = 'alphabetic';
         }
     }
-
     function hurtBoss(dmg) {
         if (!BOSS || !BOSS.alive) return;
         const mult = bossDamageMult();
@@ -2761,7 +2813,6 @@
        NO penaliza al pasar caminando cerca.
     ═══════════════════════════════════════════ */
     let PHONE_EMOJIS = [];
-
     function initPhoneDistractors() {
         PHONE_EMOJIS = [];
         // Place phones in CORNERS / edges of platforms — far from collectibles
@@ -2786,7 +2837,6 @@
             });
         }
     }
-
     function updatePhone() {
         for (const ph of PHONE_EMOJIS) {
             if (!ph.active) {
@@ -2812,7 +2862,6 @@
             // Penalty ONLY when player presses E while inside zone (handled in keydown)
         }
     }
-
     function triggerPhoneUse() {
         // Called when player presses E near a phone
         if (!ZONE || !ZONE.isLotoLevel) return false;
@@ -2839,7 +2888,6 @@
         }
         return false;
     }
-
     function drawPhone() {
         if (!ZONE || !ZONE.isLotoLevel) return;
         const t = Date.now();
@@ -2918,7 +2966,6 @@
         setTimeout(() => notify('🟢 VERDE → Los carros frenan. ¡Cruza la franja ahora!', 'g'), 2400);
         setTimeout(() => notify('🔴 ROJO → Los carros circulan a toda velocidad. ¡No entres a la calzada!', 'b'), 4200);
     }
-
     /* Spawn a new car from one side */
     function spawnCar() {
         const W = CV.width;
@@ -2943,7 +2990,6 @@
             flashTimer: 0,
         });
     }
-
     /* Update all cars each frame */
     function updateCars() {
         const W = CV.width;
@@ -3008,7 +3054,6 @@
 
         CRUCE.cars = CRUCE.cars.filter(c => c.alive);
     }
-
     function updateCruce() {
         // Semaphore cycles: red 260 ticks (~4.3s), green 220 ticks (~3.7s)
         CRUCE.semTimer++;
@@ -3061,7 +3106,6 @@
             }
         }
     }
-
     function drawCruce() {
         if (!ZONE || !ZONE.isCruceLevel) return;
         const t = Date.now();
@@ -3217,7 +3261,6 @@
         CX.restore();
         CX.textAlign = 'left';
     }
-
     function drawExtinguisher() {
         if (!ZONE || !ZONE.isBossLevel || EXTINGUISHER.collected) return;
         const ex = EXTINGUISHER.x;
@@ -3266,7 +3309,6 @@
 
     /* ═══════════ RENDER ═══════════ */
     function loop() {update(); draw(); RAF = requestAnimationFrame(loop);}
-
     function draw() {
         const W = CV.width, H = CV.height;
         CX.clearRect(0, 0, W, H);
@@ -3366,19 +3408,54 @@
                 da.addColorStop(0, `rgba(220,20,60,${pulse * .18})`); da.addColorStop(1, 'rgba(0,0,0,0)');
                 CX.fillStyle = da; CX.fillRect(hx - 46, hy - 46, h.w + 92, h.h + 92);
             }
-            // Shadow
+
+            // Shadow -- Peligros
             CX.fillStyle = 'rgba(0,0,0,.3)'; CX.beginPath();
             CX.ellipse(hx + h.w / 2, hy + h.h + 3, h.w / 2, 6, 0, 0, Math.PI * 2); CX.fill();
             // Emoji
-            CX.font = '30px serif'; CX.textAlign = 'center'; CX.fillText(h.emoji, hx + h.w / 2, hy + h.h - 2);
-            // Severity badge
-            CX.fillStyle = 'rgba(0,0,0,.75)'; roundRect(hx, hy - 18, 36, 14, 3); CX.fill();
-            CX.font = 'bold 8px "JetBrains Mono",monospace';
-            CX.fillStyle = h.sevColor || '#ff8800'; CX.textAlign = 'center';
-            CX.fillText('SEV-' + h.sevLbl, hx + 18, hy - 7);
+            const flash = (Math.sin(h.at * 0.14) + 1) / 2;
+            const auraColor = flash > 0.5 ? 'rgba(255, 204, 0, 0.25)' : 'rgba(255, 17, 51, 0.3)';
+            const borderColor = flash > 0.5 ? '#ffcc00' : '#ff1133';
+            CX.beginPath();
+            CX.arc(hx + h.w / 2, hy + h.h / 2, 20 + Math.sin(h.at * 0.1) * 2, 0, Math.PI * 2);
+            CX.fillStyle = auraColor;
+            CX.fill();
+            CX.strokeStyle = borderColor;
+            CX.lineWidth = 2.5;
+            CX.stroke();
+            CX.font = '32px serif'; CX.textAlign = 'center'; CX.textBaseline = 'middle'; CX.fillText(h.emoji, hx + h.w / 2, hy + h.h / 2);
+            // Severity badge (Prioridad 1)
+            //CX.fillStyle = 'rgba(0,0,0,.75)'; roundRect(hx, hy - 18, 36, 14, 3); CX.fill();
+            //CX.font = 'bold 8px "JetBrains Mono",monospace';
+            //CX.fillStyle = h.sevColor || '#ff8800'; CX.textAlign = 'center';
+            //CX.fillText('SEV-' + h.sevLbl, hx + 18, hy - 7);
             // Label
-            CX.font = '7px "JetBrains Mono",monospace';
-            CX.fillStyle = 'rgba(200,200,200,.7)'; CX.fillText(h.type.substring(0, 12), hx + h.w / 2, hy - 20);
+            //CX.font = '7px "JetBrains Mono",monospace';
+            //CX.fillStyle = 'rgba(200,200,200,.7)'; CX.fillText(h.type.substring(0, 12), hx + h.w / 2, hy - 20);
+            //
+
+            /* ─── DESTELLO INDUSTRIAL INTERMITENTE ───
+            const flash = (Math.sin(h.at * 0.14) + 1) / 2;
+            const colorDestello = flash > 0.5 ? '#ffcc00' : '#ff1133';
+            const radioGlow = 15 + flash * 20;
+            const glow = CX.createRadialGradient(hx + h.w / 2, hy + h.h / 2, 2, hx + h.w / 2, hy + h.h / 2, radioGlow);
+            glow.addColorStop(0, colorDestello);
+            glow.addColorStop(0.4, flash > 0.5 ? 'rgba(255,204,0,0.4)' : 'rgba(255,17,51,0.4)');
+            glow.addColorStop(1, 'rgba(0,0,0,0)');
+            CX.fillStyle = glow;
+            CX.beginPath();
+            CX.arc(hx + h.w / 2, hy + h.h / 2, radioGlow, 0, Math.PI * 2);
+            CX.fill();
+            CX.fillStyle = '#232731';
+            CX.fillRect(hx + h.w / 2 - 7, hy + h.h - 8, 14, 8);
+            CX.fillStyle = colorDestello;
+            CX.strokeStyle = '#ffffff';
+            CX.lineWidth = 1.5;
+            CX.beginPath();
+            CX.arc(hx + h.w / 2, hy + h.h / 2 + 1, 7, 0, Math.PI * 2);
+            CX.fill();
+            CX.stroke();
+            */
             // Proximity popup
             if (Math.abs(h.px - PL.x) < 150) {
                 const bx = Math.min(hx + 2, W - 168), by = Math.max(hy - 78, 56);
@@ -3395,7 +3472,6 @@
                 CX.textAlign = 'left';
             }
         }
-
         // Collectibles (EPP / workers / controls)
         for (const c of COLS) {
             if (c.collected) continue;
@@ -3406,14 +3482,31 @@
             const gc = isWorker ? 'rgba(0,238,102,.2)' : 'rgba(245,178,0,.2)';
             cg.addColorStop(0, gc); cg.addColorStop(1, 'rgba(0,0,0,0)');
             CX.fillStyle = cg; CX.fillRect(c.px - 16, cy - 16, 60, 60);
-            CX.font = '24px serif'; CX.textAlign = 'center'; CX.fillText(c.emoji, c.px + 14, cy + 22);
-            CX.font = '6px "JetBrains Mono",monospace';
-            CX.fillStyle = c.color || '#f5b200'; CX.textAlign = 'center';
-            CX.fillText(isWorker ? 'RESCATAR' : c.type, c.px + 14, cy - 6);
-            // Bounce arrow if close
+
+            // Prioridad 1: Emoji
+            CX.font = '26px serif';
+            CX.textAlign = 'center';
+            CX.textBaseline = 'alphabetic';
+            CX.fillText(c.emoji, c.px + 14, cy + 22);
+
+            // Texto de identificación nítido con sombra proyecatada
+            const labelText = (isWorker ? 'RESCATAR' : c.type).toUpperCase();
+            CX.font = 'bold 11px "JetBrains Mono", monospace';
+            CX.textAlign = 'center';
+
+            // 1. Capa de Sombra negra (Desplazada +1px abajo)
+            CX.fillStyle = 'rgba(0, 0, 0, 0.85)';
+            CX.fillText(labelText, c.px + 14, cy - 4 + 1);
+
+            // 2. Capa de Texto frontal brillante
+            CX.fillStyle = c.color || '#f5b200';
+            CX.fillText(labelText, c.px + 14, cy - 4);
+
+            // Bounce arrow if close (Ajustada a cy - 18 para evitar colisión de textos)
             if (Math.abs(c.px - PL.x) < 100) {
                 CX.fillStyle = `rgba(0,238,102,${.7 + Math.sin(Date.now() * .007) * .3})`;
-                CX.font = '12px serif'; CX.textAlign = 'center'; CX.fillText('▼', c.px + 14, cy - 12);
+                CX.font = '12px serif'; CX.textAlign = 'center';
+                CX.fillText('▼', c.px + 14, cy - 18); // <-- Subimos la flecha aquí
             }
             CX.textAlign = 'left';
         }
@@ -3565,7 +3658,6 @@
             CX.fillText('TIEMPO RESTANTE', W / 2, H - 26); CX.textAlign = 'left';
         }
     }
-
     function drawDoor() {
         if (!PLATS || !PLATS[0]) return;
         const d = doorPos();
@@ -3573,139 +3665,115 @@
         const t = Date.now();
         const {x, y, w, h} = d;
 
-        // === PROGRESS BAR above door (always visible) ===
+        // === PROGRESS BAR above door (Siempre visible, más delgada y nítida) ===
         const remaining = C_TOT - C_COLL;
         const pct = C_TOT > 0 ? C_COLL / C_TOT : 0;
-        const barW = w + 40, barX = x - 20, barY = y - 32;
-        CX.fillStyle = 'rgba(0,0,0,.7)';
-        CX.fillRect(barX, barY, barW, 12);
-        CX.fillStyle = open ? '#00ee66' : pct > .6 ? '#f5b200' : '#ff8800';
-        CX.fillRect(barX, barY, barW * pct, 12);
-        CX.strokeStyle = 'rgba(255,255,255,.15)'; CX.lineWidth = 1;
-        CX.strokeRect(barX, barY, barW, 12);
-        CX.font = 'bold 8px "JetBrains Mono",monospace';
-        CX.fillStyle = '#fff'; CX.textAlign = 'center';
-        CX.fillText(open ? '¡COMPLETO! → ENTRA A LA PUERTA' : `RECOLECTA: ${C_COLL}/${C_TOT} ítems`, x + w / 2, barY - 4);
+        const barW = w + 40, barX = x - 20, barY = y - 30;
 
-        // === DOOR SHADOW ===
-        CX.fillStyle = 'rgba(0,0,0,.4)';
-        CX.fillRect(x + 8, y + 6, w, h);
+        // Base de la barra
+        CX.fillStyle = 'rgba(0, 0, 0, 0.8)';
+        CX.fillRect(barX, barY, barW, 6);
+        // Relleno de la barra
+        CX.fillStyle = open ? '#00ee66' : pct > .6 ? '#f5b200' : '#ff3355';
+        CX.fillRect(barX, barY, barW * pct, 6);
+        // Borde fino
+        CX.strokeStyle = 'rgba(255, 255, 255, 0.3)'; CX.lineWidth = 1;
+        CX.strokeRect(barX, barY, barW, 6);
 
-        // === DOOR FRAME (stone) ===
-        const frameCol = open ? '#1a4a1a' : '#2a2a2a';
-        const frameHi = open ? '#2a6a2a' : '#3a3a3a';
-        CX.fillStyle = frameCol;
-        CX.fillRect(x - 10, y - 12, w + 20, h + 12);
-        // brick pattern
-        CX.fillStyle = open ? 'rgba(0,0,0,.2)' : 'rgba(0,0,0,.3)';
-        for (let fy = y - 12; fy < y + h; fy += 16) {
-            const off = (Math.floor((fy - (y - 12)) / 16) % 2) * 22;
-            for (let fx = x - 10; fx < x + w + 10; fx += 44) {
-                CX.fillRect(fx + off, fy, 1, 16);
-            }
-            CX.fillRect(x - 10, fy + 15, w + 20, 1);
-        }
-        // Frame sides highlight
-        CX.fillStyle = frameHi;
-        CX.fillRect(x - 10, y - 12, 10, h + 12);
-        CX.fillRect(x + w, y - 12, 10, h + 12);
-        CX.fillRect(x - 10, y - 12, w + 20, 10);
+        // Texto de progreso con sombra hiper-nítida
+        CX.font = 'bold 9px "JetBrains Mono", monospace';
+        CX.textAlign = 'center';
+        const txt = open ? 'ZONA DESPEJADA: SALIDA HABILITADA' : `OBJETIVO: ${C_COLL}/${C_TOT} CONTROLES`;
+        CX.fillStyle = 'rgba(0, 0, 0, 0.9)';
+        CX.fillText(txt, x + w / 2, barY - 6 + 1); // Sombra
+        CX.fillStyle = open ? '#00ee66' : '#ffffff';
+        CX.fillText(txt, x + w / 2, barY - 6);     // Frente
 
-        // === DOOR INTERIOR ===
+        // === ESTRUCTURA DE LA COMPUERTA (Chasis Industrial Metálico) ===
+        const frameColor = open ? '#112211' : '#221111';
+        const glowColor = open ? '#00ee66' : '#ff3355';
+        const pulse = Math.sin(t * 0.005) * 0.5 + 0.5;
+
+        // Sombra de la estructura
+        CX.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        CX.fillRect(x + 5, y + 5, w, h);
+
+        // Base gris oscuro industrial
+        CX.fillStyle = '#1c2024';
+        CX.fillRect(x - 5, y - 5, w + 10, h + 5);
+
+        // Paneles laterales (Columnas de soporte)
+        CX.fillStyle = '#2a3036';
+        CX.fillRect(x - 5, y - 5, 8, h + 5);
+        CX.fillRect(x + w - 3, y - 5, 8, h + 5);
+        CX.fillRect(x - 5, y - 5, w + 10, 8); // Techo
+
+        // === INTERIOR DE LA PUERTA ===
         if (open) {
-            // OPEN — glowing green tunnel
-            const glow = 0.7 + Math.sin(t * .004) * .3;
+            // ABIERTO — Campo de fuerza verde
+            const ig = CX.createLinearGradient(x, y, x, y + h);
+            ig.addColorStop(0, `rgba(0, 238, 102, ${0.4 + pulse * 0.2})`);
+            ig.addColorStop(1, 'rgba(0, 30, 10, 0.9)');
+            CX.fillStyle = ig;
+            CX.fillRect(x, y, w, h);
 
-            // Deep tunnel
-            const tg = CX.createLinearGradient(x, y, x, y + h);
-            tg.addColorStop(0, '#002200');
-            tg.addColorStop(.5, '#004400');
-            tg.addColorStop(1, '#001100');
-            CX.fillStyle = tg; CX.fillRect(x, y, w, h);
-
-            // Inner glow
-            const ig = CX.createRadialGradient(x + w / 2, y + h * .5, 0, x + w / 2, y + h * .5, w);
-            ig.addColorStop(0, `rgba(0,238,102,${glow * .4})`);
-            ig.addColorStop(1, 'rgba(0,0,0,0)');
-            CX.fillStyle = ig; CX.fillRect(x - 10, y - 10, w + 20, h + 20);
-
-            // Animated horizontal lines
+            // Líneas de escaneo horizontal (Grid tecnológico)
             CX.save();
             CX.beginPath(); CX.rect(x, y, w, h); CX.clip();
-            CX.strokeStyle = `rgba(0,238,102,0.15)`; CX.lineWidth = 1;
-            for (let ly = y + ((t / 40) % 12); ly < y + h; ly += 12) {
+            CX.strokeStyle = `rgba(0, 238, 102, 0.2)`; CX.lineWidth = 1;
+            for (let ly = y + ((t / 30) % 15); ly < y + h; ly += 15) {
                 CX.beginPath(); CX.moveTo(x, ly); CX.lineTo(x + w, ly); CX.stroke();
             }
             CX.restore();
 
-            // BIG pulsing arrow pointing RIGHT into door
-            CX.font = `bold ${Math.round(28 + Math.sin(t * .006) * 4)}px serif`;
-            CX.fillStyle = `rgba(0,255,100,${glow})`;
+            // Símbolo de Avance (▶) nítido sin pixelado excesivo
+            CX.font = 'bold 24px Arial';
+            CX.fillStyle = '#ffffff';
+            CX.shadowColor = '#00ee66';
+            CX.shadowBlur = 10;
             CX.textAlign = 'center';
-            CX.fillText('▶', x + w / 2, y + h / 2 + 10);
+            CX.textBaseline = 'middle';
+            CX.fillText('▶', x + w / 2, y + h / 2);
+            CX.shadowBlur = 0; // Reset
 
-            // Glowing border
-            CX.strokeStyle = `rgba(0,238,102,${glow})`;
-            CX.lineWidth = 3; CX.strokeRect(x - 1, y - 1, w + 2, h + 2);
-
-            // Big "ENTRAR" label with bouncing arrow
-            const bounce = Math.sin(t * .005) * 5;
-            CX.font = 'bold 11px "Bebas Neue",cursive';
-            CX.fillStyle = `rgba(0,255,100,${glow})`;
-            CX.textAlign = 'center';
-            CX.fillText('▼ ENTRA AQUÍ ▼', x + w / 2, y - 16 + bounce);
-
-            // Sparkles around the door
-            for (let i = 0; i < 6; i++) {
-                const ang = (t / 800 + i / 6) * Math.PI * 2;
-                const sx = x + w / 2 + Math.cos(ang) * (w / 2 + 18);
-                const sy = y + h / 2 + Math.sin(ang) * (h / 2 + 14);
-                const sp = 0.4 + Math.sin(t * .008 + i) * 0.6;
-                CX.fillStyle = `rgba(0,255,100,${sp})`;
-                CX.font = '10px serif'; CX.textAlign = 'center';
-                CX.fillText('✦', sx, sy + 5);
-            }
-
-            // Arrow from player pointing to door if far
-            const doorCX = x + w / 2, doorCY = y + h / 2;
-            const dist = Math.sqrt((PL.x + PL.w / 2 - doorCX) ** 2 + (PL.y + PL.h / 2 - doorCY) ** 2);
-            if (dist > 80) {
-                const ang2 = Math.atan2(doorCY - (PL.y + PL.h / 2), doorCX - (PL.x + PL.w / 2));
-                const ax = PL.x + PL.w / 2 + Math.cos(ang2) * 52;
-                const ay = PL.y + PL.h / 2 + Math.sin(ang2) * 52;
-                CX.save(); CX.translate(ax, ay); CX.rotate(ang2);
-                CX.fillStyle = `rgba(0,255,100,${0.7 + Math.sin(t * .006) * .3})`;
-                CX.beginPath(); CX.moveTo(16, 0); CX.lineTo(-8, -8); CX.lineTo(-8, 8); CX.closePath(); CX.fill();
-                CX.restore();
-            }
+            // Borde luminoso verde
+            CX.strokeStyle = '#00ee66';
+            CX.lineWidth = 2;
+            CX.strokeRect(x, y, w, h);
 
         } else {
-            // LOCKED — dark metal door
-            CX.fillStyle = '#141414'; CX.fillRect(x, y, w, h);
+            // CERRADO — Campo de fuerza láser rojo
+            const ig = CX.createLinearGradient(x, y, x, y + h);
+            ig.addColorStop(0, `rgba(255, 51, 85, ${0.3 + pulse * 0.1})`);
+            ig.addColorStop(1, 'rgba(40, 5, 10, 0.9)');
+            CX.fillStyle = ig;
+            CX.fillRect(x, y, w, h);
 
-            // Metal panels
-            CX.fillStyle = '#1c1c1c';
-            CX.fillRect(x + 6, y + 8, w / 2 - 10, h / 2 - 12);
-            CX.fillRect(x + w / 2 + 4, y + 8, w / 2 - 10, h / 2 - 12);
-            CX.fillRect(x + 6, y + h / 2 + 6, w / 2 - 10, h / 2 - 12);
-            CX.fillRect(x + w / 2 + 4, y + h / 2 + 6, w / 2 - 10, h / 2 - 12);
+            // Rejas láser rojas
+            CX.strokeStyle = `rgba(255, 51, 85, ${0.6 + pulse * 0.4})`;
+            CX.lineWidth = 2;
+            CX.shadowColor = '#ff3355';
+            CX.shadowBlur = 8;
+            for (let lx = x + 10; lx < x + w; lx += 15) {
+                CX.beginPath(); CX.moveTo(lx, y); CX.lineTo(lx, y + h); CX.stroke();
+            }
+            CX.shadowBlur = 0; // Reset
 
-            // Lock
-            CX.font = '28px serif'; CX.textAlign = 'center';
-            CX.fillText('🔒', x + w / 2, y + h / 2 + 10);
+            // Icono de Candado / Bloqueo
+            CX.font = '22px Arial';
+            CX.fillStyle = '#ffffff';
+            CX.textAlign = 'center';
+            CX.textBaseline = 'middle';
+            CX.fillText('🔒', x + w / 2, y + h / 2);
 
-            // Remaining count
-            CX.font = 'bold 9px "JetBrains Mono",monospace';
-            CX.fillStyle = 'rgba(255,100,0,.9)'; CX.textAlign = 'center';
-            CX.fillText(`Faltan: ${remaining}`, x + w / 2, y + h + 18);
-
-            // Dark border
-            CX.strokeStyle = 'rgba(60,60,60,.8)'; CX.lineWidth = 2;
+            // Borde luminoso rojo
+            CX.strokeStyle = '#ff3355';
+            CX.lineWidth = 2;
             CX.strokeRect(x, y, w, h);
         }
+        CX.textBaseline = 'alphabetic';
         CX.textAlign = 'left';
     }
-
 
     /* ── CHARACTER SPRITES ── */
     function drawCharSprite(cx, idx, cx0, cy0, pw, ph) {
@@ -4210,7 +4278,6 @@
             cx.fillStyle = 'rgba(255,255,200,0.7)'; cx.beginPath(); cx.ellipse(-2.5, -hh * 0.76, 2, 1.5, 0, 0, Math.PI * 2); cx.fill();
         }
     }
-
     function drawPlayer() {
         const p = PL;
         if (!p || !isFinite(p.x) || !isFinite(p.y)) return;
@@ -4243,7 +4310,6 @@
             CX.fillStyle = '#00eeff'; CX.fillRect(p.x - 2, p.y - 10, (p.w + 4) * (1 - p.atkCd / 28), 4);
         }
     }
-
     /* ── RISK METER UPDATE ── */
     function updateRiskMeter() {
         const aliveHzds = HZDS ? HZDS.filter(h => h.alive) : [];
@@ -4252,7 +4318,9 @@
         // Probability approximation
         const expScore = ZONE && ZONE.isProbabilityLevel ? (C_TOT - C_COLL) / Math.max(1, C_TOT) * 4 : 2;
         const initRisk = Math.round(sevScore * expScore);
-        const ctrlRed = Math.min(85, Math.round((G.eppReduction + G.controlReduction) * 100));
+        //GERENTE SST (-15% Riesgo Residual)
+        let bonusGerente = (CHARS[G.charIdx] && CHARS[G.charIdx].name === 'GERENTE SST') ? 15 : 0;
+        const ctrlRed = Math.min(85, Math.round((G.eppReduction + G.controlReduction) * 100) + bonusGerente);
         const residual = Math.round(initRisk * (1 - ctrlRed / 100));
 
         const label = residual > 7 ? 'INTOLERABLE' : residual > 4 ? 'IMPORTANTE' : residual > 2 ? 'MODERADO' : 'ACEPTABLE';
@@ -4329,5 +4397,36 @@
     buildChars();
     loadHiScore();
     if ('ontouchstart' in window) addMobileControls();
-</script>
+
+    /* ── Volver al Mapa de Selección ── */
+    function returnToMap() {
+        RUNNING = false;      // Detiene el ciclo de físicas
+        LEVEL_DONE = true;    // Marca el nivel como finalizado/interrumpido
+
+        if (typeof stopBGM === 'function') stopBGM();
+
+        if (QZ && QZ.active) closeQuiz();
+
+        show('s-map');
+
+        if (typeof buildMap === 'function') buildMap();
+    }
+
+    function iniciarJuego() {
+        var titleScreen = document.getElementById('s-title');
+        if (titleScreen) titleScreen.classList.remove('on');
+        var charScreen = document.getElementById('s-char');
+        if (charScreen) charScreen.classList.add('on');
+    }
+
+    function abrirManual() {
+        var modal = document.getElementById('modal-manual');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function cerrarManual() {
+        var modal = document.getElementById('modal-manual');
+        if (modal) modal.style.display = 'none';
+    }
+
 </script>
