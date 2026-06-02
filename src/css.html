@@ -2900,7 +2900,7 @@
     }
 
     /* ═══════════════════════════════════════════
-            DETECCIÓN DE CELULAR EN HORIZONTAL (LANDSCAPE) - CORREGIDO
+            DETECCIÓN DE CELULAR EN HORIZONTAL (LANDSCAPE)
         ═══════════════════════════════════════════ */
     @media screen and (max-height: 600px) and (orientation: landscape) {
 
@@ -3004,6 +3004,7 @@
             height: 100vh !important;
             width: 100vw !important;
             overflow: hidden !important;
+            position: relative !important;
         }
 
         #s-game .map-sidebar {
@@ -3018,6 +3019,8 @@
             border-right: 2px solid rgba(0, 238, 255, 0.2) !important;
             overflow-y: auto !important;
             box-sizing: border-box !important;
+            z-index: 10 !important;
+            /* Mantener la barra siempre por encima */
         }
 
         #risk-meter,
@@ -3059,14 +3062,23 @@
             margin-top: 5px !important;
         }
 
+        /* --- CORRECCIÓN DEL LIENZO PARA LLENAR EL ESPACIO NEGRO --- */
         #s-game .game-main-area {
-            position: relative !important;
-            flex: 1 !important;
+            position: absolute !important;
+            /* Forzar ubicación fuera del flujo flex */
+            top: 0 !important;
+            left: 200px !important;
+            /* Empezar justo al lado del panel izquierdo */
+            width: calc(100vw - 200px) !important;
+            /* Cubrir todo el ancho restante */
             height: 100vh !important;
+            /* Cubrir toda la altura */
             padding: 0 !important;
-            background: #000 !important;
+            margin: 0 !important;
+            background: transparent !important;
+            /* Dejar transparente por si hay botones atrás */
             overflow: hidden !important;
-            display: block !important;
+            z-index: 1 !important;
         }
 
         #s-game .canvas-container {
@@ -3074,7 +3086,8 @@
             top: 0 !important;
             left: 0 !important;
             width: 100% !important;
-            height: 100% !important;
+            height: 100vh !important;
+            /* FORZAR LA ALTURA VISUAL */
             padding: 0px !important;
             margin: 0px !important;
             z-index: 1 !important;
@@ -3083,7 +3096,8 @@
 
         #s-game .canvas-container div {
             width: 100% !important;
-            height: 100% !important;
+            height: 100vh !important;
+            /* FORZAR LA ALTURA VISUAL */
             max-width: none !important;
             max-height: none !important;
             transform: none !important;
@@ -3091,23 +3105,16 @@
             padding: 0 !important;
         }
 
-        #gameCanvas {
-            width: 100% !important;
-            height: 100% !important;
-            max-width: none !important;
-            max-height: none !important;
-            object-fit: fill !important;
-            border: none !important;
-            border-radius: 0px !important;
-        }
-
         #gameCanvas,
-        #s-game .canvas-container canvas {
+        #s-game .canvas-container canvas,
+        #s-game canvas {
             width: 100% !important;
-            height: 100% !important;
+            height: 100vh !important;
+            /* LA CLAVE: 100vh EN LUGAR DE 100% */
             max-width: none !important;
             max-height: none !important;
             object-fit: fill !important;
+            /* Estirar el gráfico al nuevo tamaño */
             transform: none !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -3124,7 +3131,8 @@
             right: 12px !important;
             padding: 6px 12px !important;
             font-size: 0.85rem !important;
-            z-index: 100 !important;
+            z-index: 1000 !important;
+            /* Elevado para asegurar que no se esconda */
         }
 
         /* ─── 6. CUADRO DE RESUMEN Y ENCUESTA (SOLUCIÓN SCROLL Y TÁCTIL) ─── */

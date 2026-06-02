@@ -642,10 +642,11 @@
         ],
     };
 
-    // LEVEL 4: EPP — now level 4 (unchanged, but re-id'd)
-    const LVL4_EPP = {...LVL3_LOTO, id: 4, phase: '🟡 FASE 2 · CONTROLES', name: 'NVL 4 · EQUIPOS EPP'};
-    // LEVEL 6: CONTROLES — now level 6
-    const LVL6_CTRL = {...LVL4_EPP, id: 6, phase: '🟡 FASE 3 · CONTROLES', name: 'NVL 6 · CONTROLES'};
+    // LEVEL 4: EPP — Ahora usa correctamente los datos de EPP (LVL3_DATA)
+    const LVL4_EPP = {...LVL3_DATA, id: 4, phase: '🟡 FASE 2 · CONTROLES', name: 'NVL 4 · EQUIPOS EPP'};
+
+    // LEVEL 6: CONTROLES — Ahora usa correctamente los datos de CONTROLES (LVL4_DATA)
+    const LVL6_CTRL = {...LVL4_DATA, id: 6, phase: '🟡 FASE 3 · CONTROLES', name: 'NVL 6 · CONTROLES'};
 
     // LEVEL 7: BOSS FINAL — Extintor + Jefe
     const LVL7_BOSS = {
@@ -2957,9 +2958,11 @@
         CRUCE.redLightHitTimer = 0;
         CRUCE.playerCrossed = false; // true once player fully passes through the carZone on green
 
-        // Car zone: full-width horizontal band at the mid-platform level (calzada vehicular)
-        const laneY = PLATS[1].y - 52;
-        const laneH = 64;
+        // 🛠️ ¡CAMBIO AQUÍ PARA CORREGIR EL BUG DEL CELULAR! 🛠️
+        // Reducimos la altura (laneH) de 64 a 40 para hacer la línea más delgada.
+        // Ajustamos laneY (de -52 a -42) para centrarla perfectamente en la pista real sin tocar tus plataformas.
+        const laneH = 40;
+        const laneY = PLATS[1].y - 42;
         CRUCE.carZone = {x: 0, y: laneY, w: W, h: laneH};
 
         setTimeout(() => notify('🚗 ¡CUIDADO! La CALZADA está activa. Respeta el SEMÁFORO 🚦', 'b'), 600);
