@@ -2568,19 +2568,21 @@
         }
 
         #s-game .map-sidebar {
-            flex-direction: row;
-            flex-wrap: wrap;
-            width: 100%;
-            height: auto;
-            max-height: 130px;
-            overflow: hidden;
-            padding: 8px 12px;
-            gap: 8px;
-            border-bottom: 1px solid rgba(0, 238, 255, 0.15);
-            border-right: none;
+            display: flex !important;
+            flex-direction: column !important;
+            width: 200px !important;
+            min-width: 200px !important;
+            height: 100vh !important;
+            padding: 6px !important;
+            gap: 4px !important;
+            background: rgba(0, 15, 25, 0.95) !important;
+            border-right: 2px solid rgba(0, 238, 255, 0.2) !important;
+            overflow-y: auto !important;
+            box-sizing: border-box !important;
         }
 
         #s-game .map-sidebar>div {
+            /* ver esto */
             flex: 1 1 120px;
         }
 
@@ -3058,43 +3060,71 @@
         }
 
         #s-game .game-main-area {
+            position: relative !important;
             flex: 1 !important;
             height: 100vh !important;
             padding: 0 !important;
             background: #000 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
             overflow: hidden !important;
+            display: block !important;
         }
 
         #s-game .canvas-container {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100% !important;
             height: 100% !important;
-            padding: 5px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            box-sizing: border-box !important;
+            padding: 0px !important;
+            margin: 0px !important;
+            z-index: 1 !important;
+            display: block !important;
+        }
+
+        #s-game .canvas-container div {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            max-height: none !important;
+            transform: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         #gameCanvas {
             width: 100% !important;
             height: 100% !important;
-            max-width: 100% !important;
-            max-height: 100% !important;
-            object-fit: contain !important;
-            border: 1px solid rgba(0, 238, 255, 0.25) !important;
-            border-radius: 6px !important;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8) !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: fill !important;
+            border: none !important;
+            border-radius: 0px !important;
+        }
+
+        #gameCanvas,
+        #s-game .canvas-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: fill !important;
+            transform: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            border-radius: 0px !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
         }
 
         button[onclick="returnToMap()"] {
-            top: 8px !important;
+            position: absolute !important;
+            top: 12px !important;
             right: 12px !important;
-            padding: 4px 10px !important;
+            padding: 6px 12px !important;
             font-size: 0.85rem !important;
-            z-index: 9999 !important;
+            z-index: 100 !important;
         }
 
         /* ─── 6. CUADRO DE RESUMEN Y ENCUESTA (SOLUCIÓN SCROLL Y TÁCTIL) ─── */
