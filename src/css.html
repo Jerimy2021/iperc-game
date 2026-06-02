@@ -2823,4 +2823,411 @@
         color: var(--gr2);
         font-size: 18px;
     }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE AVANZADO Y FORZADO A LANDSCAPE
+       ═══════════════════════════════════════════ */
+
+    /* Pantalla de advertencia de rotación */
+    #rotate-device {
+        position: fixed;
+        inset: 0;
+        background: var(--bg2);
+        z-index: 100000;
+        display: none;
+        /* Oculto por defecto en PC y pantallas correctas */
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+        color: var(--c2);
+    }
+
+    #rotate-device .rotate-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+        animation: rotatePhoneAnim 2s infinite ease-in-out;
+    }
+
+    @keyframes rotatePhoneAnim {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        50% {
+            transform: rotate(-90deg);
+        }
+
+        100% {
+            transform: rotate(-90deg);
+        }
+    }
+
+    #rotate-device h2 {
+        font-family: var(--beb);
+        letter-spacing: 3px;
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    #rotate-device p {
+        font-family: var(--exo);
+        font-size: 15px;
+        color: var(--mut);
+        max-width: 300px;
+        line-height: 1.5;
+    }
+
+    /* DETECCIÓN DE CELULAR EN VERTICAL (PORTRAIT) */
+    @media screen and (max-width: 850px) and (orientation: portrait) {
+        #rotate-device {
+            display: flex !important;
+            /* Muestra el mensaje de bloqueo */
+        }
+
+        /* Oculta absolutamente todo lo demás para evitar bugs visuales */
+        .scr,
+        #notifs,
+        #mobile-controls,
+        #modal-manual,
+        #quiz-modal,
+        #vic-ov {
+            display: none !important;
+        }
+    }
+
+    /* ═══════════════════════════════════════════
+            DETECCIÓN DE CELULAR EN HORIZONTAL (LANDSCAPE) - CORREGIDO
+        ═══════════════════════════════════════════ */
+    @media screen and (max-height: 600px) and (orientation: landscape) {
+
+        /* ─── 1. PANTALLA PRINCIPAL ─── */
+        #s-title .title-iperc {
+            font-size: clamp(40px, 15vh, 70px) !important;
+            letter-spacing: 6px;
+        }
+
+        #s-title .title-zone {
+            font-size: clamp(16px, 6vh, 24px) !important;
+            margin-bottom: 0px;
+        }
+
+        #s-title .title-desc {
+            font-size: 12px !important;
+            margin-top: 5px !important;
+            margin-bottom: 10px !important;
+        }
+
+        #s-title .main-menu {
+            flex-direction: row !important;
+            margin-top: 10px !important;
+            gap: 15px !important;
+        }
+
+        .btn-menu {
+            width: auto !important;
+            padding: 10px 24px !important;
+            font-size: 16px !important;
+        }
+
+        /* ─── 2. SELECCIÓN DE PERSONAJE (CORRECCIÓN DE TÍTULO) ─── */
+        #s-char {
+            justify-content: flex-start !important;
+            padding-top: 15px !important;
+            overflow-y: auto !important;
+        }
+
+        .cs-title {
+            font-size: 24px !important;
+            margin-bottom: 2px !important;
+        }
+
+        .cs-sub {
+            margin-bottom: 10px !important;
+        }
+
+        .chars-row {
+            gap: 10px !important;
+        }
+
+        .cc-portrait {
+            height: 80px !important;
+        }
+
+        .cc-av {
+            font-size: 50px !important;
+        }
+
+        .cc-info {
+            padding: 5px 8px !important;
+        }
+
+        #btn-confirm {
+            margin-top: 10px !important;
+            padding: 8px 40px !important;
+            font-size: 16px !important;
+        }
+
+        /* ─── 3. MODAL MANUAL DE INDUCCIÓN ─── */
+        .modal-content {
+            padding: 15px 25px !important;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* ─── 4. MAPA DE NIVELES ─── */
+        #s-map .map-layout-container {
+            flex-direction: row !important;
+        }
+
+        #s-map .map-sidebar {
+            width: 200px !important;
+            padding: 15px !important;
+            gap: 15px !important;
+            height: 100vh !important;
+            border-right: 1px solid rgba(0, 238, 255, 0.15) !important;
+            border-bottom: none !important;
+            overflow-y: auto;
+        }
+
+        #sidebar-avatar-container {
+            width: 60px !important;
+            height: 60px !important;
+        }
+
+        /* ─── 5. PANTALLA DE JUEGO (REPARACIÓN TOTAL) ─── */
+        #s-game .map-layout-container {
+            flex-direction: row !important;
+            height: 100vh !important;
+            width: 100vw !important;
+            overflow: hidden !important;
+        }
+
+        #s-game .map-sidebar {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 200px !important;
+            min-width: 200px !important;
+            height: 100vh !important;
+            padding: 6px !important;
+            gap: 4px !important;
+            background: rgba(0, 15, 25, 0.95) !important;
+            border-right: 2px solid rgba(0, 238, 255, 0.2) !important;
+            overflow-y: auto !important;
+            box-sizing: border-box !important;
+        }
+
+        #risk-meter,
+        #hud-extra,
+        #hstage-name {
+            display: flex !important;
+        }
+
+        #s-game .sidebar-section {
+            padding: 6px 8px !important;
+            margin: 0 !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        #hstage-name {
+            font-size: 1.1rem !important;
+        }
+
+        #risk-meter {
+            flex-direction: column !important;
+            gap: 2px !important;
+        }
+
+        #s-game .hud-title {
+            font-size: 0.9rem !important;
+            padding-bottom: 3px !important;
+            margin-bottom: 5px !important;
+        }
+
+        #s-game span,
+        #s-game div {
+            font-size: 0.75rem !important;
+        }
+
+        #rm-badge {
+            font-size: 1rem !important;
+            padding: 4px !important;
+            margin-top: 5px !important;
+        }
+
+        #s-game .game-main-area {
+            flex: 1 !important;
+            height: 100vh !important;
+            padding: 0 !important;
+            background: #000 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            overflow: hidden !important;
+        }
+
+        #s-game .canvas-container {
+            width: 100% !important;
+            height: 100% !important;
+            padding: 5px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+        }
+
+        #gameCanvas {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
+            object-fit: contain !important;
+            border: 1px solid rgba(0, 238, 255, 0.25) !important;
+            border-radius: 6px !important;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8) !important;
+        }
+
+        button[onclick="returnToMap()"] {
+            top: 8px !important;
+            right: 12px !important;
+            padding: 4px 10px !important;
+            font-size: 0.85rem !important;
+            z-index: 9999 !important;
+        }
+
+        /* ─── 6. CUADRO DE RESUMEN Y ENCUESTA (SOLUCIÓN SCROLL Y TÁCTIL) ─── */
+
+        /* 1. Elevamos estas pantallas para que los controles táctiles no bloqueen el dedo */
+        #vic-ov,
+        #s-final {
+            z-index: 99999 !important;
+            /* Solo subimos el nivel, dejamos que JS controle si se ve o no */
+            padding-top: 15px !important;
+            padding-bottom: 20px !important;
+        }
+
+        #s-final {
+            justify-content: flex-start !important;
+            /* Permite bajar en la encuesta */
+        }
+
+        /* 2. Hacemos que las cajas se puedan scrollear (overflow-y: auto) */
+        .vic-box,
+        .final-box {
+            max-height: 85vh !important;
+            overflow-y: auto !important;
+            /* ACTIVA EL SCROLL */
+            width: 90% !important;
+            max-width: 480px !important;
+            margin: auto !important;
+            /* Lo centra en la pantalla */
+            padding: 15px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 3. Ajustamos tamaños para que sea más fácil tocar los botones */
+        .vic-box h1,
+        .vic-box h2,
+        .final-box h2 {
+            font-size: 1.2rem !important;
+            margin: 2px 0 8px 0 !important;
+        }
+
+        .vic-box p,
+        .vic-box div {
+            font-size: 0.85rem !important;
+        }
+
+        .vic-box button,
+        .final-box button {
+            padding: 10px 16px !important;
+            font-size: 0.95rem !important;
+            margin-top: 8px !important;
+        }
+
+        /* 4. Acomodamos los botones finales de la encuesta uno al lado del otro */
+        .final-btns {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            gap: 10px !important;
+            margin-top: 10px !important;
+        }
+
+        .final-btns button {
+            flex: 1 !important;
+            min-width: 130px !important;
+        }
+
+        /* ─── 7. QUIZ / PORTAL RÁPIDO (SOLUCIÓN SCROLL Y TAMAÑO) ─── */
+        #quiz-modal {
+            justify-content: flex-start !important;
+            padding: 10px !important;
+            z-index: 100000 !important;
+            /* Asegura estar por encima de los controles táctiles */
+        }
+
+        .qz-box {
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+            /* ACTIVA EL SCROLL CON EL DEDO AQUÍ */
+            padding: 12px 15px !important;
+            margin: 0 auto !important;
+            pointer-events: all !important;
+            /* Fuerza a que detecte los toques */
+        }
+
+        /* Achicamos los encabezados y espacios para que quepa mejor en horizontal */
+        .qz-header {
+            padding: 5px 10px !important;
+            margin-bottom: 8px !important;
+        }
+
+        .qz-door-icon {
+            font-size: 20px !important;
+            margin-bottom: 2px !important;
+        }
+
+        .qz-title {
+            font-size: 1.2rem !important;
+            margin-bottom: 2px !important;
+        }
+
+        .qz-subtitle {
+            margin-bottom: 5px !important;
+        }
+
+        .qz-question {
+            font-size: 0.9rem !important;
+            margin-bottom: 8px !important;
+        }
+
+        .qz-options {
+            gap: 6px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .qz-opt {
+            padding: 8px 12px !important;
+            font-size: 0.85rem !important;
+        }
+
+        .qz-btn-next,
+        .qz-result-btn {
+            padding: 8px 16px !important;
+            font-size: 0.9rem !important;
+            width: 100% !important;
+            margin-top: 5px !important;
+        }
+
+        #quiz-modal.on {
+            display: flex !important;
+            pointer-events: all !important;
+        }
+
+    }
 </style>
