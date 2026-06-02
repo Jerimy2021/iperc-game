@@ -4376,27 +4376,78 @@
         if (sc) $('hof-score').textContent = '🏆 MEJOR PUNTAJE: ' + sc + ' XP';
     }
 
-    /* ── MOBILE CONTROLS ── */
+    /* ── MOBILE CONTROLS (D-PAD COMPLETO) ── */
     function addMobileControls() {
+        // Crear el contenedor con la clase CSS del nuevo diseño
         const mc = document.createElement('div');
-        mc.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9000;display:flex;justify-content:space-between;padding:10px 20px;pointer-events:none;';
+        mc.id = 'mobile-controls';
+        mc.className = 'active';
+
         mc.innerHTML = `
-    <div style="display:flex;gap:8px;pointer-events:all">
-      <button ontouchstart="KEYS['a']=true" ontouchend="KEYS['a']=false" style="${mBtn()}">◀</button>
-      <button ontouchstart="KEYS['arrowup']=true" ontouchend="KEYS['arrowup']=false" style="${mBtn()}">▲</button>
-      <button ontouchstart="KEYS['d']=true" ontouchend="KEYS['d']=false" style="${mBtn()}">▶</button>
-    </div>
-    <div style="pointer-events:all">
-      <button ontouchstart="doAtk()" style="${mBtn()}#00eeff;border-color:rgba(0,238,255,.5)">⚔</button>
-    </div>`;
+          <!-- D-PAD IZQUIERDO: Movimiento -->
+          <div class="mc-dpad">
+            <button class="mc-btn mc-btn-jump mc-dpad-top"   id="mc-up">▲</button>
+            <button class="mc-btn mc-dpad-left"              id="mc-left">◀</button>
+            <button class="mc-btn mc-dpad-right"             id="mc-right">▶</button>
+          </div>
+
+          <!-- BOTONES DERECHO: Acción -->
+          <div class="mc-actions">
+            <button class="mc-btn mc-btn-atk"   id="mc-atk"   style="grid-column:2;grid-row:1;">⚔</button>
+            <button class="mc-btn mc-btn-inter" id="mc-inter"  style="grid-column:1;grid-row:1;">[F]</button>
+            <button class="mc-btn mc-btn-ext"   id="mc-ext"    style="grid-column:1;grid-row:2;">🧯</button>
+          </div>`;
+
         document.body.appendChild(mc);
+
+        // ── Asignar eventos táctiles robustos ──
+        function bindKey(btnId, keyName, onlyTap) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+            if (onlyTap) {
+                // Acción puntual (no mantener pulsado)
+                btn.addEventListener('touchstart', e => {
+                    e.preventDefault();
+                    btn.classList.add('pressed');
+                    if (keyName === '__atk__' && typeof doAtk === 'function') doAtk();
+                    else if (keyName === '__inter__') {
+                        // Simula tecla F — interactuar / abrir puerta
+                        const ev = new KeyboardEvent('keydown', {key: 'f', bubbles: true});
+                        document.dispatchEvent(ev);
+                    } else if (keyName === '__ext__') {
+                        const ev = new KeyboardEvent('keydown', {key: ' ', bubbles: true});
+                        document.dispatchEvent(ev);
+                    }
+                    setTimeout(() => btn.classList.remove('pressed'), 180);
+                }, {passive: false});
+            } else {
+                // Tecla mantenida (movimiento)
+                btn.addEventListener('touchstart', e => {
+                    e.preventDefault();
+                    btn.classList.add('pressed');
+                    KEYS[keyName] = true;
+                }, {passive: false});
+                btn.addEventListener('touchend', e => {e.preventDefault(); btn.classList.remove('pressed'); KEYS[keyName] = false;}, {passive: false});
+                btn.addEventListener('touchcancel', e => {e.preventDefault(); btn.classList.remove('pressed'); KEYS[keyName] = false;}, {passive: false});
+            }
+        }
+
+        bindKey('mc-left', 'a', false);
+        bindKey('mc-right', 'd', false);
+        bindKey('mc-up', 'arrowup', false);  // saltar
+        bindKey('mc-atk', '__atk__', true);
+        bindKey('mc-inter', '__inter__', true);
+        bindKey('mc-ext', '__ext__', true);
+
+        // Ocultar el hint de teclado en pantalla de juego cuando hay táctil
+        const hint = document.querySelector('.hkeys');
+        if (hint) hint.style.display = 'none';
     }
-    function mBtn() {return 'background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:18px;width:52px;height:52px;border-radius:4px;cursor:pointer;touch-action:none;color:';}
 
     /* ── INIT ── */
     buildChars();
     loadHiScore();
-    if ('ontouchstart' in window) addMobileControls();
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) addMobileControls();
 
     /* ── Volver al Mapa de Selección ── */
     function returnToMap() {

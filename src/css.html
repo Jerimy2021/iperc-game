@@ -2407,4 +2407,420 @@
         object-fit: contain;
         /* Mantiene la proporción del juego */
     }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE MÓVIL — BREAKPOINT PRINCIPAL
+       ═══════════════════════════════════════════ */
+    @media (max-width: 600px) {
+
+        /* ── PANTALLA TÍTULO ── */
+        .title-zone {
+            font-size: clamp(20px, 8vw, 36px);
+            letter-spacing: 8px;
+        }
+
+        .title-iperc {
+            font-size: clamp(52px, 18vw, 90px);
+            letter-spacing: 6px;
+        }
+
+        .title-tag {
+            font-size: 7px;
+            letter-spacing: 3px;
+        }
+
+        .title-desc {
+            font-size: 13px !important;
+            padding: 0 10px;
+        }
+
+        .btn-menu {
+            width: 90vw;
+            max-width: 320px;
+            font-size: 18px;
+            padding: 14px 20px;
+        }
+
+        /* ── MODAL MANUAL ── */
+        .modal-content {
+            padding: 24px 18px;
+            width: 95%;
+        }
+
+        .modal-content ul li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        /* ── SELECCIÓN DE PERSONAJE ── */
+        .cs-title {
+            font-size: clamp(22px, 7vw, 36px);
+            letter-spacing: 4px;
+        }
+
+        .cs-sub {
+            font-size: 7px;
+            letter-spacing: 2px;
+            padding: 0 10px;
+        }
+
+        .chars-row {
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 8px;
+            justify-content: center;
+        }
+
+        .cc {
+            width: calc(50% - 8px);
+            min-width: 130px;
+            flex: 0 0 calc(50% - 8px);
+            clip-path: none;
+            border-radius: 6px;
+        }
+
+        .cc-portrait {
+            height: clamp(90px, 22vw, 140px);
+        }
+
+        .cc-av {
+            font-size: clamp(44px, 12vw, 70px);
+        }
+
+        .cc-info {
+            padding: 8px 8px 10px;
+        }
+
+        .cc-name {
+            font-size: clamp(11px, 3vw, 15px);
+            letter-spacing: 1px;
+        }
+
+        #btn-confirm {
+            font-size: 16px;
+            letter-spacing: 3px;
+            padding: 14px 30px;
+            clip-path: none;
+            border-radius: 4px;
+            width: 90vw;
+            max-width: 320px;
+        }
+
+        /* ── MAPA / SIDEBAR ── */
+        .map-layout-container {
+            flex-direction: column;
+            height: auto;
+            min-height: 100vh;
+        }
+
+        .map-sidebar {
+            width: 100%;
+            height: auto;
+            border-right: none;
+            border-bottom: 1px solid rgba(0, 238, 255, 0.15);
+            padding: 16px;
+            gap: 14px;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .map-sidebar .sidebar-section {
+            flex: 1 1 140px;
+            min-width: 130px;
+        }
+
+        #sidebar-avatar-container {
+            width: 70px !important;
+            height: 70px !important;
+        }
+
+        #map-char-name {
+            font-size: 1.2rem !important;
+        }
+
+        .hud-title {
+            font-size: 1.4rem;
+        }
+
+        .stat-row {
+            font-size: 0.85rem;
+        }
+
+        .sidebar-btn {
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .map-main-area {
+            padding: 16px 10px;
+            overflow-y: auto;
+        }
+
+        /* ── PANTALLA DE JUEGO CON CONTROLES TÁCTILES ── */
+        #s-game {
+            overflow: hidden;
+        }
+
+        #s-game .map-layout-container {
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #s-game .map-sidebar {
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 100%;
+            height: auto;
+            max-height: 130px;
+            overflow: hidden;
+            padding: 8px 12px;
+            gap: 8px;
+            border-bottom: 1px solid rgba(0, 238, 255, 0.15);
+            border-right: none;
+        }
+
+        #s-game .map-sidebar>div {
+            flex: 1 1 120px;
+        }
+
+        .game-main-area {
+            height: calc(100vh - 130px - 140px);
+            /* sidebar + controles táctiles */
+            padding: 0;
+        }
+
+        .canvas-container {
+            max-height: 100%;
+        }
+
+        button[onclick="returnToMap()"] {
+            top: auto !important;
+            bottom: 150px !important;
+            right: 10px !important;
+            font-size: 0.9rem !important;
+            padding: 6px 12px !important;
+        }
+
+        /* ── QUIZ MODAL ── */
+        #quiz-modal {
+            padding: 10px;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+
+        .qz-header {
+            padding: 10px 16px;
+            margin-bottom: 12px;
+        }
+
+        .qz-door-icon {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .qz-title {
+            font-size: clamp(18px, 5vw, 26px);
+            letter-spacing: 3px;
+        }
+
+        .qz-subtitle {
+            font-size: 7px;
+            letter-spacing: 1px;
+        }
+
+        .qz-box {
+            padding: 16px;
+        }
+
+        .qz-question {
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
+
+        .qz-opt {
+            font-size: 13px;
+            padding: 11px 14px;
+        }
+
+        .qz-btn-next {
+            font-size: 15px;
+            padding: 10px 24px;
+            width: 100%;
+        }
+
+        .qz-result-btn {
+            font-size: 14px;
+            padding: 10px 16px;
+        }
+
+        /* ── PANTALLA FINAL / VICTORIA ── */
+        .vic-box {
+            padding: 20px 16px;
+        }
+
+        .vic-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .final-box {
+            padding: 16px;
+            width: 96%;
+        }
+
+        .final-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .final-btns {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .fbtn {
+            width: 100%;
+            font-size: 14px;
+            padding: 12px;
+        }
+
+        /* ── NODOS DEL MAPA ── */
+        .map-container {
+            gap: 30px;
+            padding: 20px 10px;
+        }
+
+        .map-node-wrapper {
+            width: 100px;
+        }
+
+        .map-node {
+            width: 52px;
+            height: 52px;
+            font-size: 1rem;
+        }
+
+        .node-name {
+            font-size: 0.65rem;
+            max-width: 90px;
+        }
+
+        /* ── NOTIFICACIONES ── */
+        .notif {
+            font-size: 10px;
+            padding: 6px 14px;
+            max-width: 90vw;
+        }
+    }
+
+    /* ═══════════════════════════════════════════
+       CONTROLES TÁCTILES (D-PAD + BOTONES ACCIÓN)
+       ═══════════════════════════════════════════ */
+    #mobile-controls {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 140px;
+        z-index: 9000;
+        display: none;
+        /* Se activa por JS si es táctil */
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px 16px;
+        background: linear-gradient(0deg, rgba(0, 5, 12, 0.92) 0%, rgba(0, 5, 12, 0.6) 80%, transparent 100%);
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    #mobile-controls.active {
+        display: flex;
+    }
+
+    /* Lado izquierdo — D-Pad de movimiento */
+    .mc-dpad {
+        display: grid;
+        grid-template-columns: repeat(3, 52px);
+        grid-template-rows: repeat(2, 52px);
+        gap: 5px;
+        pointer-events: all;
+    }
+
+    .mc-dpad-top {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .mc-dpad-left {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .mc-dpad-right {
+        grid-column: 3;
+        grid-row: 2;
+    }
+
+    /* Lado derecho — Botones de acción */
+    .mc-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 52px);
+        grid-template-rows: repeat(2, 52px);
+        gap: 5px;
+        pointer-events: all;
+    }
+
+    /* Botón base */
+    .mc-btn {
+        width: 52px;
+        height: 52px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(0, 10, 20, 0.75);
+        color: #fff;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        touch-action: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.1s, transform 0.1s;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .mc-btn:active,
+    .mc-btn.pressed {
+        background: rgba(0, 238, 255, 0.2);
+        border-color: rgba(0, 238, 255, 0.6);
+        transform: scale(0.93);
+        box-shadow: 0 0 12px rgba(0, 238, 255, 0.4);
+    }
+
+    /* Colores por tipo */
+    .mc-btn-jump {
+        border-color: rgba(0, 238, 255, 0.4);
+        color: var(--c2);
+    }
+
+    .mc-btn-atk {
+        border-color: rgba(255, 50, 80, 0.5);
+        color: var(--r2);
+        font-size: 18px;
+    }
+
+    .mc-btn-inter {
+        border-color: rgba(245, 178, 0, 0.5);
+        color: var(--g2);
+        font-size: 16px;
+        letter-spacing: 0;
+        font-family: var(--beb);
+    }
+
+    .mc-btn-ext {
+        border-color: rgba(0, 238, 102, 0.4);
+        color: var(--gr2);
+        font-size: 18px;
+    }
 </style>
