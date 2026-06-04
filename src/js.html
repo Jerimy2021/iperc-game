@@ -258,18 +258,35 @@
         QZ.levelId = ZONE ? ZONE.id : 1;
         const bank = QUIZ_BANK[QZ.levelId] || QUIZ_BANK[1];
         QZ.questions = [...bank];
-        QZ.current = 0;
-        QZ.answers = [];
         QZ.selected = null;
         QZ.timerLeft = QZ.timerTotal = 120;
         $('sdoor-hint').style.display = 'none';
+
+        const iconEl = document.querySelector('.qz-door-icon');
+        if (iconEl) iconEl.textContent = '⚡';
+
+        const titleEl = document.querySelector('.qz-title');
+        if (titleEl) titleEl.textContent = 'PORTAL RÁPIDO';
+
+        const subEl = document.querySelector('.qz-subtitle');
+        if (subEl) subEl.textContent = 'PUERTA SECRETA · ACCESO RESTRINGIDO · RESPONDE 2 DE 3';
+
+        const timerLabel = $('qz-timer-label');
+        if (timerLabel) timerLabel.style.display = 'block';
+
+        const timerBarWrap = document.querySelector('.qz-timer-bar-wrap');
+        if (timerBarWrap) timerBarWrap.style.display = 'block';
+
         renderQuizQuestion();
         updateQuizProgress();
+
         $('quiz-modal').classList.add('on');
+
         // Reset timer fill
         const fill = $('qz-timer-fill');
         if (fill) {fill.style.width = '100%'; fill.style.transition = 'none';}
         setTimeout(() => {if (fill) fill.style.transition = 'width .2s linear';}, 50);
+
         // Start countdown
         clearInterval(QZ.timerInterval);
         QZ.timerInterval = setInterval(quizTimerTick, 1000);
@@ -284,9 +301,17 @@
         $('qz-question').textContent = q.q;
         $('qz-feedback').textContent = '';
         $('qz-feedback').style.color = '';
-        $('qz-btn-next').style.display = 'none';
+
+        const nextBtn = $('qz-btn-next');
+        if (nextBtn) {
+            nextBtn.style.display = 'none';
+            nextBtn.textContent = 'SIGUIENTE →';
+            nextBtn.onclick = quizNext;
+        }
+
         $('qz-main').style.display = 'block';
         $('qz-result').style.display = 'none';
+
         const opts = $('qz-options');
         opts.innerHTML = '';
         q.opts.forEach((o, i) => {
@@ -360,7 +385,6 @@
         });
     }
 
-    /* ── Evaluate quiz result ── */
     /* ── Evaluate quiz result ── */
     function quizEvaluate() {
         clearInterval(QZ.timerInterval);
