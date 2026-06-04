@@ -251,6 +251,8 @@
     /* ── Open Quiz Modal ── */
     function openQuiz() {
         if (QZ.active) return;
+        QZ.current = 0;
+        QZ.answers = [];
         if (RUNNING) {RUNNING = false; cancelAnimationFrame(RAF);}
         QZ.active = true;
         QZ.levelId = ZONE ? ZONE.id : 1;
@@ -493,20 +495,20 @@
         emoji: '⚠️',
         color: '#dd1133',
         objective: 'NVL1: Toca los ítems 📋 para recogerlos. Usa [SPC] para neutralizar peligros ⚠️. ¡Haz ambas cosas para abrir el PORTAL!',
-        lesson: 'La Severidad mide las consecuencias potenciales de un evento peligroso. A=Catastrófico, B=Severo, C=Moderado, D=Leve.',
+        lesson: 'Clasificación de severidad: Sin lesión (0), No incapacitante (2), Incapacitante temporal (4), Permanente (6), Fatalidad (8).',
         bg: ['#87ceeb', '#6ab8e8', '#4ea8e0'],
         floor: '#c84b0a',
         xp: 100,
         hazards: [
-            {emoji: '🏗️', type: 'Prensa Industrial', desc: 'Aplastamiento de extremidades', sev: 4, sevLbl: 'A', sevColor: '#ff2244', pers: 3, freq: 3, prep: 2, acc: 2},
-            {emoji: '⚡', type: 'Cable Eléctrico', desc: 'Electrocución por contacto', sev: 4, sevLbl: 'A', sevColor: '#ff2244', pers: 2, freq: 2, prep: 2, acc: 2},
-            {emoji: '☣️', type: 'Ácido Sulfúrico', desc: 'Quemaduras químicas graves', sev: 3, sevLbl: 'B', sevColor: '#ff8800', pers: 2, freq: 2, prep: 2, acc: 2},
-            {emoji: '🔥', type: 'Incendio', desc: 'Quemaduras y humo tóxico', sev: 3, sevLbl: 'B', sevColor: '#ff8800', pers: 2, freq: 2, prep: 2, acc: 2},
+            {emoji: '🏗️', type: 'Prensa Industrial', desc: 'Aplastamiento de extremidades', sev: 8, sevLbl: '8', sevColor: '#ff2244', pers: 3, freq: 3, prep: 2, acc: 2},
+            {emoji: '⚡', type: 'Cable Eléctrico', desc: 'Electrocución por contacto', sev: 8, sevLbl: '8', sevColor: '#ff2244', pers: 2, freq: 2, prep: 2, acc: 2},
+            {emoji: '☣️', type: 'Ácido Sulfúrico', desc: 'Quemaduras químicas graves', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 2, freq: 2, prep: 2, acc: 2},
+            {emoji: '🔥', type: 'Incendio', desc: 'Quemaduras y humo tóxico', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 2, freq: 2, prep: 2, acc: 2},
         ],
         collectibles: [
             {emoji: '📋', type: 'FICHA IPERC', ctrl: 'proc', label: 'Registro Severidad', color: '#f5b200'},
             {emoji: '📸', type: 'EVIDENCIA', ctrl: 'sig', label: 'Foto de Peligro', color: '#f5b200'},
-            {emoji: '📊', type: 'MATRIZ', ctrl: 'train', label: 'Análisis A-D', color: '#f5b200'},
+            {emoji: '📊', type: 'MATRIZ', ctrl: 'train', label: 'Análisis de Severidad', color: '#f5b200'},
             {emoji: '🔍', type: 'INSPECCIÓN', ctrl: 'ing', label: 'Check de Severidad', color: '#f5b200'},
         ],
     };
@@ -524,11 +526,10 @@
         floor: '#c04208',
         xp: 120,
         isProbabilityLevel: true,
-        // Workers to rescue, hazards are environmental (avoid them to reach workers)
         hazards: [
-            {emoji: '🪨', type: 'Derrumbe', desc: 'Zona de caída de rocas', sev: 3, sevLbl: 'B', sevColor: '#ff8800', pers: 3, freq: 3, prep: 2, acc: 2},
-            {emoji: '💨', type: 'Gas Tóxico', desc: 'Nube de vapores peligrosos', sev: 3, sevLbl: 'B', sevColor: '#ff8800', pers: 2, freq: 2, prep: 2, acc: 2},
-            {emoji: '🕳️', type: 'Zanja', desc: 'Riesgo de caída en zanjas', sev: 2, sevLbl: 'C', sevColor: '#ffaa00', pers: 2, freq: 2, prep: 1, acc: 1},
+            {emoji: '🪨', type: 'Derrumbe', desc: 'Zona de caída de rocas', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 3, freq: 3, prep: 2, acc: 2},
+            {emoji: '💨', type: 'Gas Tóxico', desc: 'Nube de vapores peligrosos', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 2, freq: 2, prep: 2, acc: 2},
+            {emoji: '🕳️', type: 'Zanja', desc: 'Riesgo de caída en zanjas', sev: 4, sevLbl: '4', sevColor: '#ffaa00', pers: 2, freq: 2, prep: 1, acc: 1},
         ],
         collectibles: [
             {emoji: '🧑‍🏭', type: 'TRABAJADOR', ctrl: 'epp', label: 'Trabajador Rescatado', color: '#00ee66', isWorker: true},
@@ -552,8 +553,8 @@
         xp: 150,
         isEPPLevel: true,
         hazards: [
-            {emoji: '🏭', type: 'Máquina Giratoria', desc: 'Atrapamiento por partes móviles', sev: 4, sevLbl: 'A', sevColor: '#ff2244', pers: 2, freq: 3, prep: 1, acc: 2},
-            {emoji: '🧪', type: 'Reactivo Químico', desc: 'Contacto con sustancia corrosiva', sev: 3, sevLbl: 'B', sevColor: '#ff8800', pers: 2, freq: 2, prep: 1, acc: 2},
+            {emoji: '🏭', type: 'Máquina Giratoria', desc: 'Atrapamiento por partes móviles', sev: 8, sevLbl: '8', sevColor: '#ff2244', pers: 2, freq: 3, prep: 1, acc: 2},
+            {emoji: '🧪', type: 'Reactivo Químico', desc: 'Contacto con sustancia corrosiva', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 2, freq: 2, prep: 1, acc: 2},
         ],
         collectibles: [
             {emoji: '🪖', type: 'EPP', ctrl: 'epp', label: 'Casco de Seguridad', color: '#f5b200', eppReduce: .12},
@@ -572,15 +573,15 @@
         emoji: '🛡️',
         color: '#00eeff',
         objective: 'Aplica medidas de control: señalización, barreras, procedimientos, capacitación. ¡Reduce el riesgo residual!',
-        lesson: 'La jerarquía de controles: 1) Eliminar, 2) Sustituir, 3) Ingeniería, 4) Admin./Señalética, 5) EPP. Siempre prioriza los controles más altos.',
+        lesson: 'La jerarquía de controles: 1) Eliminar, 2) Sustituir, 3) Ingeniería, 4) Admin./Señalética, 5) EPP.',
         bg: ['#87ceeb', '#6ab8e8', '#4ea8e0'],
         floor: '#c04508',
         xp: 180,
         isControlLevel: true,
         hazards: [
-            {emoji: '⚠️', type: 'Zona Sin Señalizar', desc: 'Área de riesgo no demarcada', sev: 2, sevLbl: 'C', sevColor: '#ffaa00', pers: 4, freq: 3, prep: 1, acc: 1},
-            {emoji: '🚧', type: 'Área Sin Barrera', desc: 'Sin protección física', sev: 3, sevLbl: 'B', sevColor: '#ff8800', pers: 3, freq: 3, prep: 1, acc: 2},
-            {emoji: '📵', type: 'Sin Procedimiento', desc: 'Trabajo sin instrucción formal', sev: 3, sevLbl: 'B', sevColor: '#ff8800', pers: 3, freq: 2, prep: 1, acc: 2},
+            {emoji: '⚠️', type: 'Zona Sin Señalizar', desc: 'Área de riesgo no demarcada', sev: 4, sevLbl: '4', sevColor: '#ffaa00', pers: 4, freq: 3, prep: 1, acc: 1},
+            {emoji: '🚧', type: 'Área Sin Barrera', desc: 'Sin protección física', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 3, freq: 3, prep: 1, acc: 2},
+            {emoji: '📵', type: 'Sin Procedimiento', desc: 'Trabajo sin instrucción formal', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 3, freq: 2, prep: 1, acc: 2},
         ],
         collectibles: [
             {emoji: '🚦', type: 'CONTROL', ctrl: 'sig', label: 'Señalización de Seguridad', color: '#00eeff', ctrlReduce: .15},
@@ -591,23 +592,23 @@
         ],
     };
 
-    // LEVEL 3 NEW: LOTO + CELULAR — conducta segura y procedimientos de bloqueo
+    // LEVEL 3 NEW: LOTO + CELULAR
     const LVL3_LOTO = {
         id: 3,
         phase: '🔴 FASE 2 · CONDUCTA SEGURA',
         name: 'NVL 3 · LOTO & CELULAR',
         emoji: '🔐',
         color: '#ff8800',
-        objective: 'Recoge los CANDADOS LOTO 🔒 para bloquear equipos peligrosos. Los celulares 📱 son distractores — ¡IGNÓRALOS! Solo perderás XP si los usas voluntariamente con [E].',
-        lesson: 'LOTO (Lockout/Tagout): bloqueo y etiquetado de energías peligrosas antes de intervenir equipos. El uso del celular en zonas operativas causa accidentes.',
+        objective: 'Recoge los CANDADOS LOTO 🔒 para bloquear equipos peligrosos. Los celulares 📱 son distractores — ¡IGNÓRALOS!',
+        lesson: 'LOTO (Lockout/Tagout): bloqueo y etiquetado de energías peligrosas antes de intervenir equipos.',
         bg: ['#87ceeb', '#6ebae8', '#50a8e0'],
         floor: '#c84a0b',
         xp: 130,
         isLotoLevel: true,
         hazards: [
-            {emoji: '⚙️', type: 'Máquina Sin Bloquear', desc: 'Equipo activo sin LOTO aplicado', sev: 4, sevLbl: 'A', sevColor: '#ff2244', pers: 3, freq: 3, prep: 1, acc: 2},
-            {emoji: '🔌', type: 'Panel Eléctrico', desc: 'Energía activa sin candado', sev: 4, sevLbl: 'A', sevColor: '#ff2244', pers: 2, freq: 2, prep: 1, acc: 2},
-            {emoji: '🏭', type: 'Válvula Presión', desc: 'Sistema presurizado sin bloqueo', sev: 3, sevLbl: 'B', sevColor: '#ff8800', pers: 2, freq: 2, prep: 1, acc: 2},
+            {emoji: '⚙️', type: 'Máquina Sin Bloquear', desc: 'Equipo activo sin LOTO aplicado', sev: 8, sevLbl: '8', sevColor: '#ff2244', pers: 3, freq: 3, prep: 1, acc: 2},
+            {emoji: '🔌', type: 'Panel Eléctrico', desc: 'Energía activa sin candado', sev: 8, sevLbl: '8', sevColor: '#ff2244', pers: 2, freq: 2, prep: 1, acc: 2},
+            {emoji: '🏭', type: 'Válvula Presión', desc: 'Sistema presurizado sin bloqueo', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 2, freq: 2, prep: 1, acc: 2},
         ],
         collectibles: [
             {emoji: '🔒', type: 'CANDADO LOTO', ctrl: 'proc', label: 'Candado Rojo LOTO', color: '#ff5500', isLoto: true, lotoReduce: .18},
@@ -617,22 +618,22 @@
         ],
     };
 
-    // LEVEL 5 NEW: CRUCE SEGURO — tráfico y peatones
+    // LEVEL 5 NEW: CRUCE SEGURO
     const LVL5_CRUCE = {
         id: 5,
         phase: '🟡 FASE 3 · SEGURIDAD VIAL',
         name: 'NVL 5 · CRUCE SEGURO',
         emoji: '🚦',
         color: '#00ee66',
-        objective: '¡Elige la RUTA SEGURA (vía peatonal)! Evita las rutas de riesgo 🚧. Sigue el semáforo y el plan de tráfico.',
-        lesson: 'En zonas operativas el cruce seguro salva vidas: usa siempre la vía peatonal demarcada, respeta el semáforo y el plan de tráfico.',
+        objective: '¡Elige la RUTA SEGURA (vía peatonal)! Evita las rutas de riesgo 🚧. Sigue el semáforo.',
+        lesson: 'En zonas operativas el cruce seguro salva vidas: usa siempre la vía peatonal demarcada, respeta el semáforo.',
         bg: ['#87ceeb', '#6ab8e8', '#4ea8e0'],
         floor: '#bf4208',
         xp: 160,
         isCruceLevel: true,
         hazards: [
-            {emoji: '🚗', type: 'Vehículo Pesado', desc: 'Atropello en zona de tránsito', sev: 4, sevLbl: 'A', sevColor: '#ff2244', pers: 4, freq: 3, prep: 1, acc: 2},
-            {emoji: '🚛', type: 'Camión de Carga', desc: 'Zona de maniobra sin resguardo', sev: 4, sevLbl: 'A', sevColor: '#ff2244', pers: 3, freq: 3, prep: 1, acc: 2},
+            {emoji: '🚗', type: 'Vehículo Pesado', desc: 'Atropello en zona de tránsito', sev: 8, sevLbl: '8', sevColor: '#ff2244', pers: 4, freq: 3, prep: 1, acc: 2},
+            {emoji: '🚛', type: 'Camión de Carga', desc: 'Zona de maniobra sin resguardo', sev: 8, sevLbl: '8', sevColor: '#ff2244', pers: 3, freq: 3, prep: 1, acc: 2},
         ],
         collectibles: [
             {emoji: '🚦', type: 'SEMÁFORO', ctrl: 'sig', label: 'Respetar Semáforo', color: '#00ee66', cruceItem: true, cruceReduce: .20},
@@ -642,20 +643,17 @@
         ],
     };
 
-    // LEVEL 4: EPP — Ahora usa correctamente los datos de EPP (LVL3_DATA)
     const LVL4_EPP = {...LVL3_DATA, id: 4, phase: '🟡 FASE 2 · CONTROLES', name: 'NVL 4 · EQUIPOS EPP'};
-
-    // LEVEL 6: CONTROLES — Ahora usa correctamente los datos de CONTROLES (LVL4_DATA)
     const LVL6_CTRL = {...LVL4_DATA, id: 6, phase: '🟡 FASE 3 · CONTROLES', name: 'NVL 6 · CONTROLES'};
 
-    // LEVEL 7: BOSS FINAL — Extintor + Jefe
+    // LEVEL 7: BOSS FINAL
     const LVL7_BOSS = {
         id: 7,
         phase: '🔴 FASE FINAL · EXTINTOR',
         name: 'NVL 7 · JEFE FINAL',
         emoji: '🧯',
         color: '#ff3355',
-        objective: '¡USA EL EXTINTOR 🧯 para apagar al MONSTRUO DE FUEGO! Recoge el extintor y aplícalo [SPC] al acercarte al jefe.',
+        objective: '¡USA EL EXTINTOR 🧯 para apagar al MONSTRUO DE FUEGO!',
         lesson: 'El extintor es la herramienta de primera respuesta ante un incendio. Recuerda: PASS — Jalar, Apuntar, Presionar, Barrer.',
         bg: ['#1a2e6a', '#12225a', '#0c1a48'],
         floor: '#a83808',
@@ -698,11 +696,17 @@
     function show(id) {
         document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
         document.getElementById(id).classList.add('on');
+
         // Show/hide fixed game UI elements
         const inGame = id === 's-game';
         const rm = $('risk-meter'); if (rm) rm.style.display = inGame ? 'block' : 'none';
         const ghud = $('ghud'); if (ghud) ghud.style.display = inGame ? 'flex' : 'none';
         const sh = $('sdoor-hint'); if (sh) sh.style.display = 'none';
+        //Mostrar controles táctiles SOLO durante el juego
+        const mc = $('mobile-controls');
+        if (mc) {
+            mc.style.display = inGame ? 'block' : 'none';
+        }
     }
     function $(id) {return document.getElementById(id);}
 
@@ -1658,7 +1662,6 @@
         }
         if (ZONE.id === 3) {// LOTO
             G.controlReduction += G.lotoReduction;
-            // Phone penalty: phone uses reduce XP
             if (G.phoneUses > 0) {
                 const pen = G.phoneUses * 15;
                 G.xp = Math.max(0, G.xp - pen);
@@ -1694,17 +1697,194 @@
         }
         G.xp += ZONE.xp; chkLvl();
 
-        // ── Advance currentLevel pointer ──
-        // This was the key bug: currentLevel wasn't being advanced
+        // ── 🟢 CORRECCIÓN 2 (PARTE A): Guardar progreso y proteger nivel máximo ──
         const nextLvlIdx = G.currentLevel + 1;
         const isLast = nextLvlIdx >= ALL_LEVELS.length;
-        if (!isLast) {
-            G.currentLevel = nextLvlIdx;
+
+        // Guardamos cuál es el nivel correlativo que tocaría jugar en secuencia directa
+        G.nextLevelToPlay = isLast ? G.currentLevel : nextLvlIdx;
+
+        // Inicializamos o actualizamos el récord del nivel máximo desbloqueado históricamente
+        if (typeof G.maxLevelUnlocked === 'undefined') {
+            G.maxLevelUnlocked = nextLvlIdx;
+        } else {
+            G.maxLevelUnlocked = Math.max(G.maxLevelUnlocked, nextLvlIdx);
         }
 
+        // Protegemos G.currentLevel para que mantenga el nivel más alto y no bloquee el mapa
+        G.currentLevel = Math.min(G.maxLevelUnlocked, ALL_LEVELS.length - 1);
+
         stopBGM();
-        snd('good');
-        showVictoryOverlay(isLast);
+        snd('lvlup');
+        notify('Cargando preguntas de seguridad...', 'i');
+
+        google.script.run
+            .withSuccessHandler(function (preguntasTraidas) {
+                prepararQuizDeNivel(preguntasTraidas, isLast);
+            })
+            .withFailureHandler(function (error) {
+                console.error("Error al cargar trivia:", error);
+                showVictoryOverlay(isLast);
+            })
+            .obtenerPreguntasAleatorias();
+    }
+
+    /* ═══════════════════════════════════════════
+               LÓGICA DE TRIVIA OBLIGATORIA POR NIVEL
+            ═══════════════════════════════════════════ */
+    let TRIVIA_ACTUAL = {
+        preguntas: [],
+        indice: 0,
+        correctas: 0,
+        isLastLevel: false,
+        respondido: false,
+        detalleRespuestas: []
+    };
+
+    // 1. Inicia el cuestionario cuando llegan los datos de Apps Script
+    function prepararQuizDeNivel(preguntas, isLast) {
+        TRIVIA_ACTUAL.preguntas = preguntas;
+        TRIVIA_ACTUAL.indice = 0;
+        TRIVIA_ACTUAL.correctas = 0;
+        TRIVIA_ACTUAL.isLastLevel = isLast;
+        TRIVIA_ACTUAL.detalleRespuestas = [];
+
+        document.querySelector('.qz-door-icon').textContent = '📝';
+        document.querySelector('.qz-title').textContent = 'CHECK DE SEGURIDAD OBLIGATORIO';
+        document.querySelector('.qz-subtitle').textContent = 'Demuestra tus conocimientos para avanzar de nivel.';
+
+        $('qz-timer-label').style.display = 'none';
+        document.querySelector('.qz-timer-bar-wrap').style.display = 'none';
+
+        $('qz-main').style.display = 'block';
+        $('qz-result').style.display = 'none';
+
+        $('quiz-modal').classList.add('on');
+
+        mostrarPreguntaTrivia();
+    }
+
+    // 2. Renderiza la pregunta en pantalla
+    function mostrarPreguntaTrivia() {
+        TRIVIA_ACTUAL.respondido = false;
+        const q = TRIVIA_ACTUAL.preguntas[TRIVIA_ACTUAL.indice];
+
+        const tema = q.tema ? q.tema : 'IPERC';
+        $('qz-q-num').textContent = `PREGUNTA ${TRIVIA_ACTUAL.indice + 1} DE ${TRIVIA_ACTUAL.preguntas.length} — ${tema}`;
+        $('qz-question').textContent = q.pregunta;
+
+        const optsContainer = $('qz-options');
+        optsContainer.innerHTML = '';
+
+        q.opciones.forEach((opcion, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'qz-opt';
+            btn.textContent = opcion;
+            btn.onclick = () => evaluarRespuestaTrivia(index, btn);
+            optsContainer.appendChild(btn);
+        });
+
+        $('qz-feedback').innerHTML = '';
+        $('qz-btn-next').style.display = 'none';
+        $('qz-btn-next').onclick = siguientePreguntaTrivia;
+    }
+    // 4. Pasa a la siguiente o termina
+    function siguientePreguntaTrivia() {
+        TRIVIA_ACTUAL.indice++;
+        // Si aún quedan preguntas, mostramos la siguiente
+        if (TRIVIA_ACTUAL.indice < TRIVIA_ACTUAL.preguntas.length) {
+            mostrarPreguntaTrivia();
+        } else {
+            // Si ya no hay preguntas, guardamos
+            guardarResultadosYContinuar();
+        }
+    }
+
+    // 3. Evalúa si el clic del usuario es correcto o incorrecto
+    function evaluarRespuestaTrivia(selectedIndex, btnElement) {
+        if (TRIVIA_ACTUAL.respondido) return;
+        TRIVIA_ACTUAL.respondido = true;
+
+        const q = TRIVIA_ACTUAL.preguntas[TRIVIA_ACTUAL.indice];
+        const seleccionada = q.opciones[selectedIndex];
+        const esCorrecta = (String(seleccionada).trim() === String(q.correcta).trim());
+
+        // <-- NUEVO: Guardamos el historial de esta pregunta
+        TRIVIA_ACTUAL.detalleRespuestas.push({
+            p: q.pregunta,
+            r: seleccionada,
+            c: q.correcta
+        });
+
+        const botones = $('qz-options').querySelectorAll('.qz-opt');
+        botones.forEach(b => b.style.opacity = '0.5');
+        btnElement.style.opacity = '1';
+
+        if (esCorrecta) {
+            TRIVIA_ACTUAL.correctas++;
+            btnElement.style.background = 'rgba(0, 238, 102, 0.2)';
+            btnElement.style.borderColor = '#00ee66';
+            $('qz-feedback').innerHTML = '<span style="color:#00ee66; font-weight:bold;">✅ ¡Respuesta Correcta!</span>';
+            if (typeof snd === 'function') snd('good');
+        } else {
+            btnElement.style.background = 'rgba(255, 51, 85, 0.2)';
+            btnElement.style.borderColor = '#ff3355';
+            $('qz-feedback').innerHTML = `<span style="color:#ff3355; font-weight:bold;">❌ Incorrecto.</span><br><span style="font-size:0.85rem;color:#ccc">La correcta era: ${q.correcta}</span>`;
+            if (typeof snd === 'function') snd('hit');
+        }
+
+        if (TRIVIA_ACTUAL.indice === TRIVIA_ACTUAL.preguntas.length - 1) {
+            $('qz-btn-next').textContent = 'FINALIZAR Y GUARDAR →';
+        } else {
+            $('qz-btn-next').textContent = 'SIGUIENTE PREGUNTA →';
+        }
+
+        $('qz-btn-next').style.display = 'block';
+    }
+
+    // 5. Envía los datos al servidor y libera el juego
+    function guardarResultadosYContinuar() {
+        // Mostramos pantalla de guardando...
+        $('qz-main').style.display = 'none';
+        $('qz-result').style.display = 'block';
+        $('qz-result-icon').textContent = '💾';
+        $('qz-result-title').textContent = 'GUARDANDO RESULTADOS...';
+        $('qz-result-msg').innerHTML = `Has respondido <b style="color:var(--cyan)">${TRIVIA_ACTUAL.correctas} de ${TRIVIA_ACTUAL.preguntas.length}</b> correctamente.<br><br><span style="color:#aaa;">Sincronizando con la base de datos...</span>`;
+
+        // Escondemos los botones originales del portal rápido para evitar que el usuario cancele el guardado
+        const resultBtns = $('qz-result').querySelectorAll('button');
+        resultBtns.forEach(b => b.style.display = 'none');
+
+        // Preparamos los datos para tu función "guardarResultadosQuiz"
+        const charName = (typeof CHARS !== 'undefined' && G.charIdx !== null) ? CHARS[G.charIdx].name : "Desconocido";
+
+        const datos = {
+            fecha: new Date().toLocaleString('es-PE'),
+            nivel: ZONE.name,
+            personaje: charName,
+            puntaje: TRIVIA_ACTUAL.correctas,
+            totalPreguntas: TRIVIA_ACTUAL.preguntas.length,
+            resultado: (TRIVIA_ACTUAL.correctas >= 2 ? "APROBADO" : "DESAPROBADO"),
+            detalle: TRIVIA_ACTUAL.detalleRespuestas
+        };
+
+        // Mandamos a Apps Script
+        google.script.run
+            .withSuccessHandler(function () {
+                // Al terminar de guardar exitosamente: cerramos quiz y mostramos la victoria original!
+                $('quiz-modal').classList.remove('on');
+                // Restauramos la vista de los botones por si el Portal Rápido se usa después
+                resultBtns.forEach(b => b.style.display = 'inline-block');
+                showVictoryOverlay(TRIVIA_ACTUAL.isLastLevel);
+            })
+            .withFailureHandler(function (error) {
+                console.error("Error al guardar quiz:", error);
+                // Si falla el internet, lo dejamos pasar igual para no arruinarle el juego
+                $('quiz-modal').classList.remove('on');
+                resultBtns.forEach(b => b.style.display = 'inline-block');
+                showVictoryOverlay(TRIVIA_ACTUAL.isLastLevel);
+            })
+            .guardarResultadosQuiz(datos);
     }
 
     function showVictoryOverlay(isLast) {
@@ -1786,7 +1966,9 @@
         if (G._isLast) {
             showFinalResult();
         } else {
-            // G.currentLevel was already incremented in finishLevel()
+            if (typeof G.nextLevelToPlay !== 'undefined') {
+                G.currentLevel = G.nextLevelToPlay;
+            }
             startPlatformer(ALL_LEVELS[G.currentLevel]);
         }
     }
@@ -3460,18 +3642,39 @@
             CX.stroke();
             */
             // Proximity popup
+            // Proximity popup (Cajita Amarilla de Peligro)
             if (Math.abs(h.px - PL.x) < 150) {
-                const bx = Math.min(hx + 2, W - 168), by = Math.max(hy - 78, 56);
+                // Aumentamos la altura de la caja de 64 a 74 píxeles para que quepa bien todo
+                const bx = Math.min(hx + 2, W - 168), by = Math.max(hy - 88, 46);
+
+                // Dibujar Fondo y Borde Amarillo
                 CX.fillStyle = 'rgba(255,220,30,.97)'; CX.strokeStyle = 'rgba(180,130,0,.9)'; CX.lineWidth = 1.5;
-                roundRect(bx, by, 164, 64, 4); CX.fill(); CX.stroke();
+                roundRect(bx, by, 164, 74, 4); CX.fill(); CX.stroke(); // <--- Aquí cambiamos la altura a 74
+
+                // Cabecera "Peligro Identificado"
                 CX.font = '6px "JetBrains Mono",monospace'; CX.fillStyle = 'rgba(80,50,0,.85)'; CX.textAlign = 'left';
-                CX.fillText('▸ PELIGRO IDENTIFICADO', bx + 8, by + 13);
-                CX.font = '9px "Exo 2",sans-serif'; CX.fillStyle = 'rgba(30,20,0,.95)';
-                CX.fillText(h.type + ': ' + h.desc.substring(0, 24), bx + 8, by + 27);
-                CX.font = '7px "JetBrains Mono",monospace';
-                CX.fillStyle = h.sevColor || '#cc4400'; CX.fillText('SEV: ' + h.sevLbl, bx + 8, by + 40);
-                CX.fillStyle = '#005520'; CX.fillText('Personas: ' + h.pers, bx + 8, by + 52);
-                CX.fillStyle = '#7a3d00'; CX.fillText('[SPC] Neutralizar', bx + 90, by + 52);
+                CX.fillText('▸ PELIGRO IDENTIFICADO', bx + 8, by + 12);
+
+                // Línea 1: TIPO DE PELIGRO (Prensa Industrial)
+                CX.font = 'bold 10px "Exo 2",sans-serif'; CX.fillStyle = 'rgba(30,20,0,.95)';
+                CX.fillText(h.type.toUpperCase(), bx + 8, by + 26);
+
+                // Línea 2: DESCRIPCIÓN DEL DAÑO (Aplastamiento de extremidades) - ¡Sin recortes!
+                CX.font = 'italic 8.5px "Exo 2",sans-serif'; CX.fillStyle = 'rgba(80,30,0,.9)';
+                CX.fillText(h.desc, bx + 8, by + 38);
+
+                // Datos Técnicos abajo (Severidad y Personas)
+                CX.font = 'bold 8px "JetBrains Mono",monospace';
+
+                CX.fillStyle = h.sevColor || '#cc4400';
+                CX.fillText('SEV: ' + h.sevLbl, bx + 8, by + 50);
+
+                CX.fillStyle = '#005520';
+                CX.fillText('| Personas: ' + h.pers, bx + 45, by + 50);
+
+                CX.fillStyle = '#7a3d00';
+                CX.textAlign = 'right';
+                CX.fillText('[SPC] Neutralizar', bx + 156, by + 64);
                 CX.textAlign = 'left';
             }
         }
@@ -4381,68 +4584,81 @@
 
     /* ── MOBILE CONTROLS (D-PAD COMPLETO) ── */
     function addMobileControls() {
-        // Crear el contenedor con la clase CSS del nuevo diseño
         const mc = document.createElement('div');
         mc.id = 'mobile-controls';
-        mc.className = 'active';
+        mc.className = '';
+        mc.style.display = 'none';
 
         mc.innerHTML = `
-          <!-- D-PAD IZQUIERDO: Movimiento -->
-          <div class="mc-dpad">
-            <button class="mc-btn mc-btn-jump mc-dpad-top"   id="mc-up">▲</button>
-            <button class="mc-btn mc-dpad-left"              id="mc-left">◀</button>
-            <button class="mc-btn mc-dpad-right"             id="mc-right">▶</button>
-          </div>
+              <div class="mc-dpad">
+                <button class="mc-btn mc-btn-jump mc-dpad-top"   id="mc-up">▲</button>
+                <button class="mc-btn mc-dpad-left"              id="mc-left">◀</button>
+                <button class="mc-btn mc-dpad-right"             id="mc-right">▶</button>
+              </div>
 
-          <!-- BOTONES DERECHO: Acción -->
-          <div class="mc-actions">
-            <button class="mc-btn mc-btn-atk"   id="mc-atk"   style="grid-column:2;grid-row:1;">⚔</button>
-            <button class="mc-btn mc-btn-inter" id="mc-inter"  style="grid-column:1;grid-row:1;">[F]</button>
-            <button class="mc-btn mc-btn-ext"   id="mc-ext"    style="grid-column:1;grid-row:2;">🧯</button>
-          </div>`;
+              <div class="mc-actions">
+                <button class="mc-btn" id="mc-inter" style="grid-column:1; grid-row:1;">[F]</button>
+                <button class="mc-btn" id="mc-atk"   style="grid-column:2; grid-row:1;">⚔</button>
+                <button class="mc-btn" id="mc-ext"   style="grid-column:1 / span 2; grid-row:2;">🧯</button>
+              </div>`;
 
         document.body.appendChild(mc);
 
         // ── Asignar eventos táctiles robustos ──
+        // ── Asignar eventos táctiles robustos ──
         function bindKey(btnId, keyName, onlyTap) {
             const btn = document.getElementById(btnId);
             if (!btn) return;
+
             if (onlyTap) {
-                // Acción puntual (no mantener pulsado)
                 btn.addEventListener('touchstart', e => {
                     e.preventDefault();
                     btn.classList.add('pressed');
-                    if (keyName === '__atk__' && typeof doAtk === 'function') doAtk();
-                    else if (keyName === '__inter__') {
-                        // Simula tecla F — interactuar / abrir puerta
-                        const ev = new KeyboardEvent('keydown', {key: 'f', bubbles: true});
-                        document.dispatchEvent(ev);
-                    } else if (keyName === '__ext__') {
-                        const ev = new KeyboardEvent('keydown', {key: ' ', bubbles: true});
-                        document.dispatchEvent(ev);
+
+                    if (keyName === '__atk__' && typeof doAtk === 'function') {
+                        doAtk();
                     }
+                    else if (keyName === '__inter__') {
+                        KEYS['f'] = true;
+                        if (typeof onKey === 'function') onKey('f');
+                        setTimeout(() => {KEYS['f'] = false;}, 150);
+                    }
+                    else if (keyName === '__ext__') {
+                        KEYS[' '] = true;
+                        if (typeof onKey === 'function') onKey(' ');
+                        setTimeout(() => {KEYS[' '] = false;}, 150);
+                    }
+
                     setTimeout(() => btn.classList.remove('pressed'), 180);
                 }, {passive: false});
             } else {
-                // Tecla mantenida (movimiento)
                 btn.addEventListener('touchstart', e => {
                     e.preventDefault();
                     btn.classList.add('pressed');
                     KEYS[keyName] = true;
                 }, {passive: false});
-                btn.addEventListener('touchend', e => {e.preventDefault(); btn.classList.remove('pressed'); KEYS[keyName] = false;}, {passive: false});
-                btn.addEventListener('touchcancel', e => {e.preventDefault(); btn.classList.remove('pressed'); KEYS[keyName] = false;}, {passive: false});
+
+                btn.addEventListener('touchend', e => {
+                    e.preventDefault();
+                    btn.classList.remove('pressed');
+                    KEYS[keyName] = false;
+                }, {passive: false});
+
+                btn.addEventListener('touchcancel', e => {
+                    e.preventDefault();
+                    btn.classList.remove('pressed');
+                    KEYS[keyName] = false;
+                }, {passive: false});
             }
         }
 
         bindKey('mc-left', 'a', false);
         bindKey('mc-right', 'd', false);
-        bindKey('mc-up', 'arrowup', false);  // saltar
+        bindKey('mc-up', 'arrowup', false);
         bindKey('mc-atk', '__atk__', true);
         bindKey('mc-inter', '__inter__', true);
         bindKey('mc-ext', '__ext__', true);
 
-        // Ocultar el hint de teclado en pantalla de juego cuando hay táctil
         const hint = document.querySelector('.hkeys');
         if (hint) hint.style.display = 'none';
     }
