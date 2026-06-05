@@ -504,10 +504,10 @@
 
     /* ── CHARACTERS ── */
     const CHARS = [
-        {name: 'INSPECTOR', role: 'Especialista de Campo', color: '#c89000', hp: 100, spd: 3.0, special: 'Visualiza peligros ocultos y tiene mayor rango.', desc: 'Especialista en reconocimiento y detección de condiciones subestándar.', bars: {exp: 60, cap: 70, lead: 80}},
-        {name: 'ANALISTA', role: 'Especialista IPERC', color: '#00c8d4', hp: 80, spd: 3.2, special: 'Otorga un 20% más de XP por control.', desc: 'Especialista en evaluación cuantitativa y desarrollo de la matriz IPERC.', bars: {exp: 80, cap: 90, lead: 60}},
+        {name: 'LOTOTITO', role: 'Especialista de Campo', color: '#c89000', hp: 100, spd: 3.0, special: 'Visualiza peligros ocultos y tiene mayor rango.', desc: 'Especialista en reconocimiento y detección de condiciones subestándar.', bars: {exp: 60, cap: 70, lead: 80}},
+        {name: 'SEGURITO', role: 'Especialista IPERC', color: '#00c8d4', hp: 80, spd: 3.2, special: 'Otorga un 20% más de XP por control.', desc: 'Especialista en evaluación cuantitativa y desarrollo de la matriz IPERC.', bars: {exp: 80, cap: 90, lead: 60}},
         {name: 'BRIGADISTA', role: 'Primera Línea', color: '#ff3355', hp: 120, spd: 2.8, special: 'Inicia con 25% más de vida y resiste un impacto.', desc: 'Primera línea de respuesta. Mitigación de impactos severos.', bars: {exp: 70, cap: 80, lead: 90}},
-        {name: 'GERENTE SST', role: 'Líder del Sistema', color: '#aa55ff', hp: 90, spd: 3.0, special: 'Reduce automáticamente un 15% del riesgo residual.', desc: 'Planificación del sistema de gestión para reducir el riesgo residual.', bars: {exp: 100, cap: 100, lead: 100}}
+        {name: 'SEGURITA', role: 'Líder del Sistema', color: '#aa55ff', hp: 90, spd: 3.0, special: 'Reduce automáticamente un 15% del riesgo residual.', desc: 'Planificación del sistema de gestión para reducir el riesgo residual.', bars: {exp: 100, cap: 100, lead: 100}}
     ];
 
     /* ── LEVEL DEFINITIONS ── */
@@ -559,7 +559,7 @@
             {emoji: '🧑‍🏭', type: 'TRABAJADOR', ctrl: 'epp', label: 'Trabajador Rescatado', color: '#00ee66', isWorker: true},
             {emoji: '👷', type: 'OPERARIO', ctrl: 'ing', label: 'Operario Rescatado', color: '#00ee66', isWorker: true},
             {emoji: '👩‍🔧', type: 'TÉCNICA', ctrl: 'sig', label: 'Técnica Rescatada', color: '#00ee66', isWorker: true},
-            {emoji: '🧑‍🔬', type: 'ANALISTA', ctrl: 'proc', label: 'Analista Rescatado', color: '#00ee66', isWorker: true},
+            {emoji: '🧑‍🔬', type: 'SEGURITO', ctrl: 'proc', label: 'Analista Rescatado', color: '#00ee66', isWorker: true},
         ],
     };
 
@@ -1523,9 +1523,9 @@
         if (PL.atkCd > 0) return;
         PL.attacking = true; PL.atkTimer = 20; PL.atkCd = 28;
         // Extinguisher has a longer range than fists
-        // INSPECTOR (Mayor rango de ataque)
+        // LOTOTITO (Mayor rango de ataque)
         let baseRange = 58;
-        if (CHARS[G.charIdx] && CHARS[G.charIdx].name === 'INSPECTOR') baseRange = 85;
+        if (CHARS[G.charIdx] && CHARS[G.charIdx].name === 'LOTOTITO') baseRange = 85;
         const extRange = G.extinguisherHeld && ZONE && ZONE.isBossLevel ? 110 : baseRange;
         const ax = PL.facing === 1 ? PL.x + PL.w : PL.x - extRange;
         // Hit regular hazards
@@ -1588,7 +1588,7 @@
     function neutralize(h) {
         h.alive = false; P_NEUT++;
         let xg = 55 + h.sev * 10;
-        if (CHARS[G.charIdx].name === 'ANALISTA') xg = Math.round(xg * 1.2);
+        if (CHARS[G.charIdx].name === 'SEGURITO') xg = Math.round(xg * 1.2);
         G.xp += xg; chkLvl();
         spawnP(h.px + h.w / 2, h.py + h.h / 2, 'rgba(0,238,255,0.7)', 16);
         ft(h.px, h.py - 12, 'NEUTRALIZADO +' + xg + 'XP', '#00ffee');
@@ -1602,7 +1602,7 @@
     function pickUp(c) {
         c.collected = true; C_COLL++;
         let xg = 40;
-        if (CHARS[G.charIdx].name === 'ANALISTA') xg = Math.round(xg * 1.2);
+        if (CHARS[G.charIdx].name === 'SEGURITO') xg = Math.round(xg * 1.2);
         G.xp += xg; chkLvl();
         spawnP(c.px + c.w / 2, c.py, 'rgba(245,178,0,0.7)', 14);
         snd(c.isWorker ? 'rescue' : 'collect');
@@ -2018,8 +2018,8 @@
     }
 
     /* ─────────────────────────────
-       FINAL IPERC RESULT SCREEN
-    ───────────────────────────── */
+           FINAL IPERC RESULT SCREEN
+        ───────────────────────────── */
     function showFinalResult() {
         show('s-final');
         const totalRed = Math.min(85, Math.round((G.eppReduction + G.controlReduction) * 100));
@@ -2027,78 +2027,113 @@
         const col = G.residualRisk < 1.5 ? 'var(--gr2)' : G.residualRisk < 3 ? 'var(--y2)' : G.residualRisk < 5 ? 'var(--or2)' : 'var(--r2)';
         const won = G.residualRisk < 3;
         const stars = won && G.residualRisk < 1.5 ? '⭐⭐⭐' : won ? '⭐⭐' : '⭐';
+
         // Save high score
         const prev = parseInt(localStorage.getItem('iperc_hiscore') || '0');
         if (G.xp > prev) localStorage.setItem('iperc_hiscore', G.xp);
 
         $('final-box').innerHTML = `
-    <div style="text-align:center;margin-bottom:20px">
-      <div class="final-title" style="color:${won ? 'var(--g2)' : 'var(--r2)'};">${won ? '🏆 MISIÓN CUMPLIDA' : '⚠️ RIESGO RESIDUAL ALTO'}</div>
-      <div class="final-sub">${stars} · XP TOTAL: ${G.xp} · ${CHARS[G.charIdx].name}</div>
-    </div>
-    <div class="final-iperc-result">
-      <div class="fir-title">▸ CÁLCULO IPERC COMPLETO ◂</div>
-      <div class="fir-row">
-        <span class="fir-label">Severidad Identificada</span>
-        <span class="fir-val" style="color:var(--r2)">${G.severityScore} pts</span>
-      </div>
-      <div class="fir-row">
-        <span class="fir-label">Probabilidad / Exposición</span>
-        <span class="fir-val" style="color:var(--or2)">${G.probabilityScore} pts</span>
-      </div>
-      <div class="fir-row" style="border-color:rgba(200,0,40,.2)">
-        <span class="fir-label">🔴 Riesgo Inicial (S×P/100)</span>
-        <span class="fir-val" style="color:var(--r2)">${G.initialRisk.toFixed(1)}</span>
-      </div>
-      <div style="height:10px"></div>
-      <div class="fir-row">
-        <span class="fir-label">EPP Aplicados</span>
-        <span class="fir-val" style="color:var(--g2)">-${Math.round(G.eppReduction * 100)}%</span>
-      </div>
-      <div class="fir-row">
-        <span class="fir-label">Controles Aplicados</span>
-        <span class="fir-val" style="color:var(--c2)">-${Math.round(G.controlReduction * 100)}%</span>
-      </div>
-      <div class="fir-row" style="border-color:rgba(0,${won ? '200' : 100},${won ? '68' : 0},.2)">
-        <span class="fir-label" style="color:var(--txt);font-weight:600">✅ Riesgo Residual Final</span>
-        <span class="fir-val" style="color:${col};font-size:24px">${G.residualRisk.toFixed(1)} <span style="font-size:12px">${label}</span></span>
-      </div>
-    </div>
-    <div class="final-grid">
-      <div class="fg-item"><div class="fg-val" style="color:var(--g2)">${G.xp}</div><div class="fg-lbl">XP TOTAL</div></div>
-      <div class="fg-item"><div class="fg-val" style="color:var(--gr2)">${G.workersRescued}</div><div class="fg-lbl">RESCATADOS</div></div>
-      <div class="fg-item"><div class="fg-val" style="color:#ff5500">${G.lotoApplied}</div><div class="fg-lbl">CANDADOS LOTO</div></div>
-      <div class="fg-item"><div class="fg-val" style="color:${G.phoneUses === 0 ? 'var(--gr2)' : 'var(--r2)'}">${G.phoneUses}</div><div class="fg-lbl">USOS CELULAR</div></div>
-      <div class="fg-item"><div class="fg-val" style="color:${G.safeRouteChosen ? 'var(--gr2)' : 'var(--r2)'}"> ${G.safeRouteChosen ? '✅' : '❌'}</div><div class="fg-lbl">RUTA SEGURA</div></div>
-      <div class="fg-item"><div class="fg-val" style="color:#ff8800">${G.extinguisherUses}</div><div class="fg-lbl">USOS EXTINTOR</div></div>
-    </div>
-    <p class="final-msg">${won
+        <div style="text-align:center;margin-bottom:20px">
+          <div class="final-title" style="color:${won ? 'var(--g2)' : 'var(--r2)'};">${won ? '🏆 MISIÓN CUMPLIDA' : '⚠️ RIESGO RESIDUAL ALTO'}</div>
+          <div class="final-sub">${stars} · XP TOTAL: ${G.xp} · ${CHARS[G.charIdx].name}</div>
+        </div>
+        <div class="final-iperc-result">
+          <div class="fir-title">▸ CÁLCULO IPERC COMPLETO ◂</div>
+          <div class="fir-row">
+            <span class="fir-label">Severidad Identificada</span>
+            <span class="fir-val" style="color:var(--r2)">${G.severityScore} pts</span>
+          </div>
+          <div class="fir-row">
+            <span class="fir-label">Probabilidad / Exposición</span>
+            <span class="fir-val" style="color:var(--or2)">${G.probabilityScore} pts</span>
+          </div>
+          <div class="fir-row" style="border-color:rgba(200,0,40,.2)">
+            <span class="fir-label">🔴 Riesgo Inicial (S×P/100)</span>
+            <span class="fir-val" style="color:var(--r2)">${G.initialRisk.toFixed(1)}</span>
+          </div>
+          <div style="height:10px"></div>
+          <div class="fir-row">
+            <span class="fir-label">EPP Aplicados</span>
+            <span class="fir-val" style="color:var(--g2)">-${Math.round(G.eppReduction * 100)}%</span>
+          </div>
+          <div class="fir-row">
+            <span class="fir-label">Controles Aplicados</span>
+            <span class="fir-val" style="color:var(--c2)">-${Math.round(G.controlReduction * 100)}%</span>
+          </div>
+          <div class="fir-row" style="border-color:rgba(0,${won ? '200' : 100},${won ? '68' : 0},.2)">
+            <span class="fir-label" style="color:var(--txt);font-weight:600">✅ Riesgo Residual Final</span>
+            <span class="fir-val" style="color:${col};font-size:24px">${G.residualRisk.toFixed(1)} <span style="font-size:12px">${label}</span></span>
+          </div>
+        </div>
+        <div class="final-grid">
+          <div class="fg-item"><div class="fg-val" style="color:var(--g2)">${G.xp}</div><div class="fg-lbl">XP TOTAL</div></div>
+          <div class="fg-item"><div class="fg-val" style="color:var(--gr2)">${G.workersRescued}</div><div class="fg-lbl">RESCATADOS</div></div>
+          <div class="fg-item"><div class="fg-val" style="color:#ff5500">${G.lotoApplied}</div><div class="fg-lbl">CANDADOS LOTO</div></div>
+          <div class="fg-item"><div class="fg-val" style="color:${G.phoneUses === 0 ? 'var(--gr2)' : 'var(--r2)'}">${G.phoneUses}</div><div class="fg-lbl">USOS CELULAR</div></div>
+          <div class="fg-item"><div class="fg-val" style="color:${G.safeRouteChosen ? 'var(--gr2)' : 'var(--r2)'}"> ${G.safeRouteChosen ? '✅' : '❌'}</div><div class="fg-lbl">RUTA SEGURA</div></div>
+          <div class="fg-item"><div class="fg-val" style="color:#ff8800">${G.extinguisherUses}</div><div class="fg-lbl">USOS EXTINTOR</div></div>
+        </div>
+        <p class="final-msg">${won
                 ? '¡Excelente gestión IPERC! Identificaste los peligros, evaluaste el riesgo correctamente y aplicaste controles efectivos. El riesgo residual está en niveles aceptables. ¡Eres un profesional en Seguridad y Salud en el Trabajo!'
                 : 'El riesgo residual sigue siendo elevado. Recuerda: más EPP y más controles de ingeniería/administrativos reducen el riesgo. Aplica la jerarquía: Eliminar → Sustituir → Ingeniería → Administrativo → EPP.'
             }</p>
-    <div class="final-btns">
-      <button class="fbtn fbtn-g" onclick="fullRestart()">🔄 NUEVA PARTIDA</button>
-      <button class="fbtn fbtn-b" onclick="show('s-map');buildMap()">↩ AL MAPA</button>
-    </div>
-    <div id="rating-box" style="margin-top:24px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:22px 20px;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;">
-      <div style="font-family:var(--jb);font-size:10px;color:var(--mut);letter-spacing:3px;margin-bottom:6px;">ENCUESTA RÁPIDA</div>
-      <div style="font-family:var(--exo);font-size:15px;font-weight:700;color:var(--txt);margin-bottom:4px;">¿Te pareció entretenido IPERC ZONE para tu aprendizaje?</div>
-      <div style="font-family:var(--exo);font-size:12px;color:var(--mut);margin-bottom:16px;">Tu opinión nos ayuda a mejorar</div>
-      <div id="stars-row" style="display:flex;justify-content:center;gap:10px;margin-bottom:10px;">
-        ${[1, 2, 3, 4, 5].map(n => `<span data-star="${n}" onclick="rateStar(${n})" onmouseover="hoverStar(${n})" onmouseleave="hoverStar(0)" style="font-size:clamp(28px,6vw,38px);cursor:pointer;filter:grayscale(1);opacity:0.35;transition:all .15s;user-select:none;">⭐</span>`).join('')}
-      </div>
-      <div id="rating-label" style="font-family:var(--jb);font-size:11px;color:var(--mut);letter-spacing:2px;min-height:18px;margin-bottom:14px;transition:all .2s;"></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:16px;padding:0 4px;">
-        <span style="font-size:11px;color:var(--mut)">😟 Para nada</span>
-        <span style="font-size:11px;color:var(--mut)">🤩 ¡Muchísimo!</span>
-      </div>
-      <button id="btn-enviar-rating" onclick="enviarRating()" disabled
-        style="font-family:var(--beb);font-size:15px;letter-spacing:3px;border:2px solid var(--b3);cursor:not-allowed;
-        padding:11px 36px;background:rgba(0,0,0,.3);color:var(--mut);transition:all .25s;border-radius:4px;width:100%;">
-        ENVIAR CALIFICACIÓN
-      </button>
-      <div id="rating-sent" style="display:none;font-family:var(--jb);font-size:11px;color:var(--gr2);letter-spacing:2px;margin-top:10px;">✓ ¡GRACIAS POR TU OPINIÓN!</div>
-    </div>`;
+        <div class="final-btns">
+          <button class="fbtn fbtn-g" onclick="fullRestart()">🔄 NUEVA PARTIDA</button>
+          <button class="fbtn fbtn-b" onclick="show('s-map');buildMap()">↩ AL MAPA</button>
+        </div>
+
+        <div id="rating-box" style="margin-top:24px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:22px 20px;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;">
+          <div style="font-family:var(--jb);font-size:10px;color:var(--mut);letter-spacing:3px;margin-bottom:6px;">ENCUESTA RÁPIDA</div>
+          <div style="font-family:var(--exo);font-size:15px;font-weight:700;color:var(--txt);margin-bottom:4px;">¿Te pareció entretenido IPERC ZONE para tu aprendizaje?</div>
+          <div style="font-family:var(--exo);font-size:12px;color:var(--mut);margin-bottom:16px;">Tu opinión nos ayuda a mejorar</div>
+
+          <div id="stars-row" style="display:flex;justify-content:center;gap:10px;margin-bottom:10px;">
+            ${[1, 2, 3, 4, 5].map(n => `<span data-star="${n}" onclick="rateStar(${n})" onmouseover="hoverStar(${n})" onmouseleave="hoverStar(0)" style="font-size:clamp(28px,6vw,38px);cursor:pointer;filter:grayscale(1);opacity:0.35;transition:all .15s;user-select:none;">⭐</span>`).join('')}
+          </div>
+
+          <div id="rating-label" style="font-family:var(--jb);font-size:11px;color:var(--mut);letter-spacing:2px;min-height:18px;margin-bottom:10px;transition:all .2s;"></div>
+
+          <div style="display:flex;justify-content:space-between;margin-bottom:16px;padding:0 4px;">
+            <span style="font-size:11px;color:var(--mut)">😟 Para nada</span>
+            <span style="font-size:11px;color:var(--mut)">🤩 ¡Muchísimo!</span>
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <input type="text" id="input-dni" placeholder="Ingresa tu DNI (8 dígitos)" maxlength="8"
+                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); validarEncuesta();"
+                   style="width: 100%; padding: 12px; border-radius: 4px; border: 1px solid var(--b3); background: rgba(0,0,0,0.5); color: #00eeff; font-family: var(--jb); text-align: center; font-size: 16px; box-sizing: border-box; outline: none; letter-spacing: 2px;">
+          </div>
+
+          <button id="btn-enviar-rating" onclick="enviarRating()" disabled
+                  style="font-family:var(--beb);font-size:15px;letter-spacing:3px;border:2px solid var(--b3);cursor:not-allowed;
+                  padding:11px 36px;background:rgba(0,0,0,.3);color:var(--mut);transition:all .25s;border-radius:4px;width:100%;">
+            ENVIAR CALIFICACIÓN Y DNI
+          </button>
+
+          <div id="rating-sent" style="display:none;font-family:var(--jb);font-size:11px;color:var(--gr2);letter-spacing:2px;margin-top:10px;">✓ ¡GRACIAS, DATOS GUARDADOS!</div>
+        </div>`;
+    }
+
+    function validarEncuesta() {
+        const dniEl = document.getElementById('input-dni');
+        const dni = dniEl ? dniEl.value : '';
+        const rating = window._gameRating || 0;
+        const btn = $('btn-enviar-rating');
+        if (!btn) return;
+
+        if (rating > 0 && dni.length === 8) {
+            btn.disabled = false;
+            btn.style.cursor = 'pointer';
+            btn.style.borderColor = 'var(--gr2)';
+            btn.style.color = 'var(--gr2)';
+            btn.style.background = 'rgba(0,80,30,.2)';
+        } else {
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.style.borderColor = 'var(--b3)';
+            btn.style.color = 'var(--mut)';
+            btn.style.background = 'rgba(0,0,0,.3)';
+        }
     }
 
     /* ─────────────────────────────
@@ -2127,22 +2162,18 @@
         const stars = document.querySelectorAll('#stars-row span');
         const labels = ['', '😟 Para nada', '😕 Poco entretenido', '😐 Más o menos', '😊 Bastante entretenido', '🤩 ¡Muy entretenido!'];
         const colors = ['', '#ff5577', '#ff8844', '#f5b200', '#88cc44', '#00ee66'];
+
         stars.forEach((s, i) => {
             s.style.filter = i < n ? 'none' : 'grayscale(1)';
             s.style.opacity = i < n ? '1' : '0.3';
             s.style.transform = i === n - 1 ? 'scale(1.25)' : 'scale(1)';
         });
+
         const lbl = $('rating-label');
         if (lbl) {lbl.textContent = labels[n]; lbl.style.color = colors[n];}
+
         window._gameRating = n;
-        const btn = $('btn-enviar-rating');
-        if (btn) {
-            btn.disabled = false;
-            btn.style.cursor = 'pointer';
-            btn.style.borderColor = 'var(--gr2)';
-            btn.style.color = 'var(--gr2)';
-            btn.style.background = 'rgba(0,80,30,.2)';
-        }
+        validarEncuesta();
     }
 
     function hoverStar(n) {
@@ -2154,27 +2185,41 @@
             s.style.transform = 'scale(1)';
         });
     }
+
     function enviarRating() {
         const rating = window._gameRating;
         if (!rating) return;
+
+        const dniEl = document.getElementById('input-dni');
+        const dniValue = dniEl ? dniEl.value : '';
+
+        const btn = $('btn-enviar-rating');
+        if (btn) {
+            btn.textContent = 'GUARDANDO...';
+            btn.disabled = true;
+        }
+        if (dniEl) dniEl.disabled = true;
+
         const labels = ['', 'Para nada', 'Poco entretenido', 'Más o menos', 'Bastante entretenido', '¡Muy entretenido!'];
         const ch = CHARS[G.charIdx] || {name: '—'};
 
-        // 🌟 NUEVO: Enviar datos de la encuesta a Google Sheets de forma silenciosa
         if (typeof google !== 'undefined' && google.script) {
             const ratingData = {
                 fecha: new Date().toLocaleString('es-PE'),
+                dni: dniValue,
                 personaje: ch.name,
-                // Juntamos el número de estrellas con el texto para que lo leas más fácil en Excel
                 estrellas: rating + " Estrellas - " + labels[rating],
-                // Añadimos la XP y el riesgo residual al estado final
                 estado: "Completado (XP: " + G.xp + " / Riesgo: " + G.residualRisk.toFixed(1) + ")"
             };
-            google.script.run.guardarEncuestaFinal(ratingData);
-        }
 
-        // Llamamos a la función que muestra el "Gracias por tu opinión" en el juego
-        mostrarEnviado();
+            google.script.run
+                .withSuccessHandler(function () {
+                    mostrarEnviado();
+                })
+                .guardarEncuestaFinal(ratingData);
+        } else {
+            mostrarEnviado();
+        }
     }
 
     function mostrarEnviado() {
@@ -4012,7 +4057,7 @@
         const hw = W / 2, hh = H / 2;
 
         if (idx === 0) {
-            // ══ INSPECTOR — Guerrero orco: armadura roja/marrón oscuro, casco blanco con marca roja, espada ══
+            // ══ LOTOTITO — Guerrero orco: armadura roja/marrón oscuro, casco blanco con marca roja, espada ══
             // Shadow under feet
             cx.fillStyle = 'rgba(0,0,0,0.25)';
             cx.beginPath(); cx.ellipse(0, hh * 0.98, hw * 0.8, hh * 0.07, 0, 0, Math.PI * 2); cx.fill();
@@ -4135,7 +4180,7 @@
             cx.fillStyle = '#ff4400'; cx.fillRect(-hw * 0.26, -hh * 0.92, 3, 2); cx.fillRect(hw * 0.07, -hh * 0.92, 3, 2);
 
         } else if (idx === 1) {
-            // ══ ANALISTA — Arquera de pelo rojo, armadura hoja verde, arco largo ══
+            // ══ SEGURITO — Arquera de pelo rojo, armadura hoja verde, arco largo ══
             // Shadow
             cx.fillStyle = 'rgba(0,0,0,0.2)';
             cx.beginPath(); cx.ellipse(0, hh * 0.99, hw * 0.6, hh * 0.06, 0, 0, Math.PI * 2); cx.fill();
@@ -4382,7 +4427,7 @@
             cx.fillStyle = '#ffffff'; cx.beginPath(); cx.ellipse(0, -hh * 1.58, 1.5, 3, 0, 0, Math.PI * 2); cx.fill();
 
         } else {
-            // ══ GERENTE SST — Gólem de piedra masivo, ojo ámbar, barba de musgo ══
+            // ══ SEGURITA — Gólem de piedra masivo, ojo ámbar, barba de musgo ══
             // Shadow
             cx.fillStyle = 'rgba(0,0,0,0.3)';
             cx.beginPath(); cx.ellipse(0, hh * 0.99, hw * 1.1, hh * 0.08, 0, 0, Math.PI * 2); cx.fill();
@@ -4548,8 +4593,8 @@
         // Probability approximation
         const expScore = ZONE && ZONE.isProbabilityLevel ? (C_TOT - C_COLL) / Math.max(1, C_TOT) * 4 : 2;
         const initRisk = Math.round(sevScore * expScore);
-        //GERENTE SST (-15% Riesgo Residual)
-        let bonusGerente = (CHARS[G.charIdx] && CHARS[G.charIdx].name === 'GERENTE SST') ? 15 : 0;
+        //SEGURITA (-15% Riesgo Residual)
+        let bonusGerente = (CHARS[G.charIdx] && CHARS[G.charIdx].name === 'SEGURITA') ? 15 : 0;
         const ctrlRed = Math.min(85, Math.round((G.eppReduction + G.controlReduction) * 100) + bonusGerente);
         const residual = Math.round(initRisk * (1 - ctrlRed / 100));
 

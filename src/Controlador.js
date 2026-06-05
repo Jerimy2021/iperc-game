@@ -51,18 +51,18 @@ function guardarEncuestaFinal(datos) {
   // 3. Si no existe, la creamos con sus propios títulos
   if (!hoja) {
     hoja = libro.insertSheet("EncuestaFinal");
-    hoja.appendRow(["FECHA Y HORA", "PERSONAJE JUGADO", "CALIFICACIÓN (ESTRELLAS)", "RESULTADO DEL JUEGO"]);
-    // Le ponemos color naranja para diferenciarla de la del Quiz
-    hoja.getRange("A1:D1").setFontWeight("bold").setBackground("#ff8800").setFontColor("#ffffff");
+    hoja.appendRow(["FECHA Y HORA", "DNI", "PERSONAJE JUGADO", "CALIFICACIÓN (ESTRELLAS)", "RESULTADO DEL JUEGO"]);
+    hoja.getRange("A1:E1").setFontWeight("bold").setBackground("#ff8800").setFontColor("#ffffff");
     hoja.setFrozenRows(1);
   }
 
   // 4. Guardamos la fila
   hoja.appendRow([
     datos.fecha,
+    datos.dni,
     datos.personaje,
     datos.estrellas,
-    datos.estado // (Si ganó o perdió el juego)
+    datos.estado
   ]);
 }
 
