@@ -224,12 +224,3 @@ npx tsc
 - Que cualquier JS que manipule clases use `classList` (no `className` que sobrescriba clases existentes).
 
 ---
-
-## ¿Quieres que lo haga por ti?
-
-Puedo:
-- aplicar los snippets directamente a `src/index.html` y `src/Controlador.js` (si me das OK)
-- crear ejemplos interactivos o pruebas de integración
-- añadir un workflow de CI (GitHub Actions) para compilar y validar
-
-Dime qué prefieres y lo hago.

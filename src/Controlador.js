@@ -42,23 +42,20 @@ function guardarResultadosQuiz(datos) {
  * Recibe los datos de la Encuesta Final y los guarda en una hoja separada.
  */
 function guardarEncuestaFinal(datos) {
-  // 1. Abrimos el mismo documento
   var libro = SpreadsheetApp.openById("1WYTSFB5EQzlRsE-nviv_Re19NoxATwG_8Hromo53_JM");
-
-  // 2. Buscamos la pestaña "EncuestaFinal"
   var hoja = libro.getSheetByName("EncuestaFinal");
 
-  // 3. Si no existe, la creamos con sus propios títulos
   if (!hoja) {
     hoja = libro.insertSheet("EncuestaFinal");
-    hoja.appendRow(["FECHA Y HORA", "DNI", "PERSONAJE JUGADO", "CALIFICACIÓN (ESTRELLAS)", "RESULTADO DEL JUEGO"]);
-    hoja.getRange("A1:E1").setFontWeight("bold").setBackground("#ff8800").setFontColor("#ffffff");
+    hoja.appendRow(["FECHA Y HORA", "ID PAÍS", "ID OPERACIÓN", "DNI", "PERSONAJE JUGADO", "CALIFICACIÓN (ESTRELLAS)", "RESULTADO DEL JUEGO"]);
+    hoja.getRange("A1:G1").setFontWeight("bold").setBackground("#ff8800").setFontColor("#ffffff");
     hoja.setFrozenRows(1);
   }
 
-  // 4. Guardamos la fila
   hoja.appendRow([
     datos.fecha,
+    datos.paisId,
+    datos.operacionId,
     datos.dni,
     datos.personaje,
     datos.estrellas,
@@ -107,34 +104,30 @@ function obtenerPreguntasAleatorias() {
  * Recibe los datos del Quiz desde el juego y los guarda en una nueva fila.
  */
 function guardarResultadosQuiz(datos) {
-  // 1. Abrimos el documento EXCLUSIVAMENTE por su ID
   var libro = SpreadsheetApp.openById("1JRIWwsiZyBWhVM9DN_KMEdkDVM0m7Izqmi_p-QonoBE");
-
-  // 2. Busca si ya existe la pestaña "ResultadosQuiz"
   var hoja = libro.getSheetByName("ResultadosQuiz");
 
-  // 3. Si la hoja no existe, la crea y le pone los encabezados (títulos ampliados)
   if (!hoja) {
     hoja = libro.insertSheet("ResultadosQuiz");
     hoja.appendRow([
-      "FECHA Y HORA", "NIVEL DE JUEGO", "PERSONAJE",
+      "FECHA Y HORA", "ID PAÍS", "ID OPERACIÓN", "NIVEL DE JUEGO", "PERSONAJE",
       "PREGUNTA 1", "TU RESPUESTA 1", "CORRECTA 1",
       "PREGUNTA 2", "TU RESPUESTA 2", "CORRECTA 2",
       "PREGUNTA 3", "TU RESPUESTA 3", "CORRECTA 3",
       "PUNTAJE", "RESULTADO FINAL"
     ]);
-    hoja.getRange("A1:N1").setFontWeight("bold").setBackground("#00eeff").setFontColor("#000000");
+    hoja.getRange("A1:P1").setFontWeight("bold").setBackground("#00eeff").setFontColor("#000000");
     hoja.setFrozenRows(1);
   }
 
-  // 4. Preparamos el array de datos asegurándonos de que si faltan preguntas no de error
   var p1 = datos.detalle[0] || { p: "-", r: "-", c: "-" };
   var p2 = datos.detalle[1] || { p: "-", r: "-", c: "-" };
   var p3 = datos.detalle[2] || { p: "-", r: "-", c: "-" };
 
-  // 5. Añade la nueva fila
   hoja.appendRow([
     datos.fecha,
+    datos.paisId,
+    datos.operacionId,
     datos.nivel,
     datos.personaje,
     p1.p, p1.r, p1.c,
@@ -143,4 +136,41 @@ function guardarResultadosQuiz(datos) {
     datos.puntaje + " / " + datos.totalPreguntas,
     datos.resultado
   ]);
+}
+
+/**
+ * Obtiene las Plantas y Países desde la hoja "Planta" como Diccionarios (ID + Label)
+ */
+function obtenerDatosUbicacion() {
+  var libro = SpreadsheetApp.openById("1JRIWwsiZyBWhVM9DN_KMEdkDVM0m7Izqmi_p-QonoBE");
+  var hoja = libro.getSheetByName("Planta");
+
+  if (!hoja) return { operaciones: [], paises: [] };
+
+  var datos = hoja.getDataRange().getValues();
+  var operaciones = [];
+  var paises = [];
+
+  // Recorremos los datos desde la fila 1 (ignorando los títulos en la fila 0)
+  for (var i = 1; i < datos.length; i++) {
+    var fila = datos[i];
+
+    // --- LECTURA DE OPERACIÓN (ID, Sociedad, Planta, Producto) ---
+    // Columnas: A(0)=ID, B(1)=Sociedad, C(2)=Planta, D(3)=Producto
+    if (fila[0] && fila[0] !== "") {
+      var idOperacion = fila[0];
+      // Juntamos los textos para que el usuario entienda qué está seleccionando
+      var textoOperacion = fila[1] + " - " + fila[2] + " (" + fila[3] + ")";
+
+      operaciones.push({ id: idOperacion, label: textoOperacion });
+    }
+
+    // --- LECTURA DE PAÍSES ---
+    // Columnas: F(5)=IDPaises, G(6)=Paises
+    if (fila[5] && fila[5] !== "") {
+      paises.push({ id: fila[5], label: fila[6] });
+    }
+  }
+
+  return { operaciones: operaciones, paises: paises };
 }

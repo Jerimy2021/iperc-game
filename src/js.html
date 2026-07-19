@@ -395,7 +395,6 @@
         const MIN_CORRECT = 2; // Al menos 2 de 3
         const passed = (correct >= MIN_CORRECT);
 
-        // 🌟 NUEVO: Enviar datos a Google Sheets de forma silenciosa
         if (typeof google !== 'undefined' && google.script) {
             const quizData = {
                 fecha: new Date().toLocaleString(),
@@ -403,9 +402,13 @@
                 personaje: (typeof CHARS !== 'undefined' && typeof G !== 'undefined' && CHARS[G.charIdx]) ? CHARS[G.charIdx].name : 'Anónimo',
                 puntaje: correct,
                 totalPreguntas: total,
-                resultado: passed ? 'APROBADO' : 'REPROBADO'
+                resultado: passed ? 'APROBADO' : 'REPROBADO',
+                paisId: ubicacionSeleccionada.paisId,
+                operacionId: ubicacionSeleccionada.operacionId,
+
+                // NOTA: Recuerda que tu backend (Code.gs) espera leer "datos.detalle" para las 3 preguntas
+                detalle: QZ.questionDetails || [] // Ajusta esta variable según cómo guardes las 3 preguntas en tu código
             };
-            // Llama a la función del backend en Apps Script
             google.script.run.guardarResultadosQuiz(quizData);
         }
 
@@ -2209,7 +2212,9 @@
                 dni: dniValue,
                 personaje: ch.name,
                 estrellas: rating + " Estrellas - " + labels[rating],
-                estado: "Completado (Riesgo Inicial: " + G.initialRisk + " / Riesgo Residual: " + G.residualRisk.toFixed(1) + ")"
+                estado: "Completado (Riesgo Inicial: " + G.initialRisk + " / Riesgo Residual: " + G.residualRisk.toFixed(1) + ")",
+                paisId: ubicacionSeleccionada.paisId,
+                operacionId: ubicacionSeleccionada.operacionId
             };
 
             google.script.run
@@ -4751,7 +4756,73 @@
         if (typeof buildMap === 'function') buildMap();
     }
 
+    /* ════════════════════════════════════════════════
+      NUEVO BLOQUE: SELECCIÓN DE UBICACIÓN
+    ════════════════════════════════════════════════ */
+
+    // Variables globales para guardar la selección (Guardamos el ID y el Nombre por si acaso)
+    var ubicacionSeleccionada = {
+        paisId: "",
+        paisNombre: "",
+        operacionId: "",
+        operacionNombre: ""
+    };
+
     function iniciarJuego() {
+        document.getElementById('modal-ubicacion').style.display = 'flex';
+        google.script.run
+            .withSuccessHandler(llenarDesplegables)
+            .obtenerDatosUbicacion();
+    }
+
+    function llenarDesplegables(datos) {
+        var selectPais = document.getElementById('select-pais');
+        var selectPlanta = document.getElementById('select-planta');
+
+        selectPais.innerHTML = '<option value="">-- Selecciona un País --</option>';
+        selectPlanta.innerHTML = '<option value="">-- Selecciona tu Operación --</option>';
+
+        // Llenar Países
+        datos.paises.forEach(function(pais) {
+            var opt = document.createElement('option');
+            opt.value = pais.id; // <-- AQUÍ GUARDAMOS EL ID
+            opt.innerHTML = pais.label; // Lo que ve el usuario
+            opt.setAttribute('data-nombre', pais.label); // Guardamos el nombre extra
+            selectPais.appendChild(opt);
+        });
+
+        // Llenar Operaciones (Sociedad - Planta - Producto)
+        datos.operaciones.forEach(function(op) {
+            var opt = document.createElement('option');
+            opt.value = op.id; // <-- AQUÍ GUARDAMOS EL ID
+            opt.innerHTML = op.label; // Ejemplo: "Alicorp - COPSA - Salsas"
+            opt.setAttribute('data-nombre', op.label);
+            selectPlanta.appendChild(opt);
+        });
+    }
+
+    function cerrarModalUbicacion() {
+        document.getElementById('modal-ubicacion').style.display = 'none';
+    }
+
+    function confirmarUbicacion() {
+        var selectPais = document.getElementById('select-pais');
+        var selectPlanta = document.getElementById('select-planta');
+
+        if (selectPais.value === "" || selectPlanta.value === "") {
+            alert("Por favor, completa ambos campos para continuar.");
+            return;
+        }
+
+        // Guardamos los IDs seleccionados
+        ubicacionSeleccionada.paisId = selectPais.value;
+        ubicacionSeleccionada.paisNombre = selectPais.options[selectPais.selectedIndex].getAttribute('data-nombre');
+
+        ubicacionSeleccionada.operacionId = selectPlanta.value;
+        ubicacionSeleccionada.operacionNombre = selectPlanta.options[selectPlanta.selectedIndex].getAttribute('data-nombre');
+
+        cerrarModalUbicacion();
+
         var titleScreen = document.getElementById('s-title');
         if (titleScreen) titleScreen.classList.remove('on');
         var charScreen = document.getElementById('s-char');

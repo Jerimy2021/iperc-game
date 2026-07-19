@@ -66,6 +66,32 @@
         </div>
     </div>
 
+    <!-- ═══ MODAL: REGISTRO DE UBICACIÓN ═══ -->
+        <div id="modal-ubicacion" class="modal-overlay" style="display: none;">
+            <div class="modal-content" style="max-width: 450px;">
+                <h2 style="color: var(--cyan); margin-bottom: 20px; font-family: var(--beb); letter-spacing: 2px;">REGISTRO DE OPERACIÓN</h2>
+
+                <div style="text-align: left; font-family: var(--exo); margin-bottom: 15px;">
+                    <label style="color: var(--mut); font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 5px;">SELECCIONA TU PAÍS:</label>
+                    <select id="select-pais" style="width: 100%; padding: 10px; background: rgba(0, 15, 30, 0.8); border: 1px solid var(--b3); color: white; font-family: var(--exo); outline: none;">
+                        <option value="">Cargando países...</option>
+                    </select>
+                </div>
+
+                <div style="text-align: left; font-family: var(--exo); margin-bottom: 25px;">
+                    <label style="color: var(--mut); font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 5px;">SOCIEDAD - PLANTA - PRODUCTO:</label>
+                    <select id="select-planta" style="width: 100%; padding: 10px; background: rgba(0, 15, 30, 0.8); border: 1px solid var(--b3); color: white; font-family: var(--exo); outline: none;">
+                        <option value="">Cargando operaciones...</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-menu btn-secondary" style="flex: 1; padding: 10px;" onclick="cerrarModalUbicacion()">CANCELAR</button>
+                    <button class="btn-menu btn-primary" style="flex: 1; padding: 10px;" onclick="confirmarUbicacion()">CONTINUAR ▶</button>
+                </div>
+            </div>
+        </div>
+
     <!-- ═══ SCREEN: CHARACTER SELECT ═══ -->
     <div id="s-char" class="scr">
         <div style="text-align:center;padding-top:28px;">
