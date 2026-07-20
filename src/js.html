@@ -385,7 +385,7 @@
         });
     }
 
-    /* ── Evaluate quiz result ── */
+    /* ── Evaluate quiz result (Portal Rápido) ── */
     function quizEvaluate() {
         clearInterval(QZ.timerInterval);
         QZ.timerInterval = null;
@@ -397,25 +397,22 @@
 
         if (typeof google !== 'undefined' && google.script) {
             const quizData = {
-                fecha: new Date().toLocaleString(),
+                fecha: new Date().toLocaleString('es-PE'),
                 nivel: (typeof ZONE !== 'undefined' && ZONE) ? ZONE.name : 'Nivel Desconocido',
                 personaje: (typeof CHARS !== 'undefined' && typeof G !== 'undefined' && CHARS[G.charIdx]) ? CHARS[G.charIdx].name : 'Anónimo',
                 puntaje: correct,
                 totalPreguntas: total,
                 resultado: passed ? 'APROBADO' : 'REPROBADO',
-                paisId: ubicacionSeleccionada.paisId,
-                operacionId: ubicacionSeleccionada.operacionId,
-
-                // NOTA: Recuerda que tu backend (Code.gs) espera leer "datos.detalle" para las 3 preguntas
-                detalle: QZ.questionDetails || [] // Ajusta esta variable según cómo guardes las 3 preguntas en tu código
+                paisId: (typeof ubicacionSeleccionada !== 'undefined') ? ubicacionSeleccionada.paisId : 'Sin ID',
+                operacionId: (typeof ubicacionSeleccionada !== 'undefined') ? ubicacionSeleccionada.operacionId : 'Sin ID',
+                detalle: QZ.questionDetails || []
             };
-            google.script.run.guardarResultadosQuiz(quizData);
+            google.script.run.guardarResultadosQuizPortalRapido(quizData);
         }
 
         updateQuizProgress();
 
         if (passed) {
-            // 2 o 3 correctas — ¡teletransporte!
             $('qz-main').style.display = 'none';
             $('qz-result').style.display = 'block';
             $('qz-result-icon').textContent = '⚡';
@@ -426,15 +423,14 @@
                 : `Respondiste ${correct}/${total} — cumples el mínimo requerido (2 de 3).`;
 
             $('qz-result-msg').innerHTML = `
-                    <strong style="color:var(--cyan)">${correct}/${total} respuestas correctas</strong><br><br>
-                    ${perfectMsg}<br><br>
-                    <span style="color:var(--gr2)">⚡ Serás transportado al tramo final, cerca del último ícono.</span>
-                `;
-            $('qz-tp-btn').style.display = 'inline-block';
+                <strong style="color:var(--cyan)">${correct}/${total} respuestas correctas</strong><br><br>
+                ${perfectMsg}<br><br>
+                <span style="color:var(--gr2)">⚡ Serás transportado al tramo final, cerca del último ícono.</span>
+            `;
+                $('qz-tp-btn').style.display = 'inline-block';
 
             if (typeof snd === 'function') snd('lvlup');
         } else {
-            // Reprobado
             if (typeof quizFail === 'function') {
                 quizFail(`${correct}/${total} respuestas correctas. Se necesitan al menos 2 de 3 para el acceso.`);
             }
@@ -1878,11 +1874,9 @@
         $('qz-result-title').textContent = 'GUARDANDO RESULTADOS...';
         $('qz-result-msg').innerHTML = `Has respondido <b style="color:var(--cyan)">${TRIVIA_ACTUAL.correctas} de ${TRIVIA_ACTUAL.preguntas.length}</b> correctamente.<br><br><span style="color:#aaa;">Sincronizando con la base de datos...</span>`;
 
-        // Escondemos los botones originales del portal rápido para evitar que el usuario cancele el guardado
         const resultBtns = $('qz-result').querySelectorAll('button');
         resultBtns.forEach(b => b.style.display = 'none');
 
-        // Preparamos los datos para tu función "guardarResultadosQuiz"
         const charName = (typeof CHARS !== 'undefined' && G.charIdx !== null) ? CHARS[G.charIdx].name : "Desconocido";
 
         const datos = {
@@ -1891,22 +1885,21 @@
             personaje: charName,
             puntaje: TRIVIA_ACTUAL.correctas,
             totalPreguntas: TRIVIA_ACTUAL.preguntas.length,
-            resultado: (TRIVIA_ACTUAL.correctas >= 2 ? "APROBADO" : "DESAPROBADO"),
-            detalle: TRIVIA_ACTUAL.detalleRespuestas
+            resultado: (TRIVIA_ACTUAL.correctas >= 2 ? "APROBADO" : "REPROBADO"),
+            paisId: (typeof ubicacionSeleccionada !== 'undefined') ? ubicacionSeleccionada.paisId : 'Sin ID',
+            operacionId: (typeof ubicacionSeleccionada !== 'undefined') ? ubicacionSeleccionada.operacionId : 'Sin ID',
+            detalle: TRIVIA_ACTUAL.detalleRespuestas || []
         };
 
         // Mandamos a Apps Script
         google.script.run
             .withSuccessHandler(function () {
-                // Al terminar de guardar exitosamente: cerramos quiz y mostramos la victoria original!
                 $('quiz-modal').classList.remove('on');
-                // Restauramos la vista de los botones por si el Portal Rápido se usa después
                 resultBtns.forEach(b => b.style.display = 'inline-block');
                 showVictoryOverlay(TRIVIA_ACTUAL.isLastLevel);
             })
             .withFailureHandler(function (error) {
                 console.error("Error al guardar quiz:", error);
-                // Si falla el internet, lo dejamos pasar igual para no arruinarle el juego
                 $('quiz-modal').classList.remove('on');
                 resultBtns.forEach(b => b.style.display = 'inline-block');
                 showVictoryOverlay(TRIVIA_ACTUAL.isLastLevel);
