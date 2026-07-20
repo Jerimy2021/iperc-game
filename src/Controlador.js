@@ -159,8 +159,8 @@ function obtenerDatosUbicacion() {
     // Columnas: A(0)=ID, B(1)=Sociedad, C(2)=Planta, D(3)=Producto
     if (fila[0] && fila[0] !== "") {
       var idOperacion = fila[0];
-      // Juntamos los textos para que el usuario entienda qué está seleccionando
-      var textoOperacion = fila[1] + " - " + fila[2] + " (" + fila[3] + ")";
+      // Extraemos el Producto
+      var textoOperacion = fila[3];
 
       operaciones.push({ id: idOperacion, label: textoOperacion });
     }
