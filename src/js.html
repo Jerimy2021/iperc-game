@@ -4056,126 +4056,117 @@
 
         if (idx === 0) {
             // ══ LOTOTITO — Guerrero orco: armadura roja/marrón oscuro, casco blanco con marca roja, espada ══
-            // Shadow under feet
-            cx.fillStyle = 'rgba(0,0,0,0.25)';
-            cx.beginPath(); cx.ellipse(0, hh * 0.98, hw * 0.8, hh * 0.07, 0, 0, Math.PI * 2); cx.fill();
+            // Sombra bajo los pies
+              cx.fillStyle = 'rgba(0,0,0,0.25)';
+              cx.beginPath(); cx.ellipse(0, hh * 0.98, hw * 0.8, hh * 0.07, 0, 0, Math.PI * 2); cx.fill();
 
-            // === PIERNAS ===
-            // Bota izquierda (marrón oscuro)
-            const bootG = cx.createLinearGradient(-hw * 0.55, hh * 0.6, -hw * 0.05, hh);
-            bootG.addColorStop(0, '#3d1a06'); bootG.addColorStop(1, '#1e0d03');
-            cx.fillStyle = bootG; cx.fillRect(-hw * 0.55, hh * 0.65, W * 0.42, hh * 0.35);
-            // Bota derecha
-            cx.fillStyle = bootG; cx.fillRect(hw * 0.12, hh * 0.65, W * 0.42, hh * 0.35);
-            // Armadura pierna izquierda (rojo oscuro)
-            const legAr = cx.createLinearGradient(-hw * 0.6, hh * 0.1, 0, hh * 0.65);
-            legAr.addColorStop(0, '#7a1515'); legAr.addColorStop(0.5, '#9a1f1f'); legAr.addColorStop(1, '#5a0e0e');
-            cx.fillStyle = legAr; cx.fillRect(-hw * 0.58, hh * 0.12, W * 0.43, hh * 0.55);
-            cx.fillStyle = legAr; cx.fillRect(hw * 0.12, hh * 0.12, W * 0.43, hh * 0.55);
-            // Ribetes metálicos en armadura piernas
-            cx.fillStyle = '#4a4a4a';
-            cx.fillRect(-hw * 0.58, hh * 0.12, W * 0.43, hh * 0.035); cx.fillRect(-hw * 0.58, hh * 0.38, W * 0.43, hh * 0.035);
-            cx.fillRect(hw * 0.12, hh * 0.12, W * 0.43, hh * 0.035); cx.fillRect(hw * 0.12, hh * 0.38, W * 0.43, hh * 0.035);
+              // === PIERNAS Y BOTAS ===
+              // Botas (Negras)
+              cx.fillStyle = '#111111';
+              cx.beginPath(); cx.ellipse(-hw * 0.35, hh * 0.85, hw * 0.3, hh * 0.15, 0, 0, Math.PI * 2); cx.fill();
+              cx.beginPath(); cx.ellipse(hw * 0.35, hh * 0.85, hw * 0.3, hh * 0.15, 0, 0, Math.PI * 2); cx.fill();
+              // Piernas (Amarillas)
+              cx.fillStyle = '#ffde00';
+              cx.fillRect(-hw * 0.55, hh * 0.4, hw * 0.4, hh * 0.4);
+              cx.fillRect(hw * 0.15, hh * 0.4, hw * 0.4, hh * 0.4);
+              // Rodilleras (Rojas)
+              cx.fillStyle = '#d3121b';
+              cx.beginPath(); cx.ellipse(-hw * 0.35, hh * 0.65, hw * 0.2, hh * 0.1, 0, 0, Math.PI * 2); cx.fill();
+              cx.beginPath(); cx.ellipse(hw * 0.35, hh * 0.65, hw * 0.2, hh * 0.1, 0, 0, Math.PI * 2); cx.fill();
 
-            // === FALDA / FUR LOINCLOTH ===
-            cx.fillStyle = '#c8b878';
-            cx.beginPath(); cx.moveTo(-hw * 0.75, hh * 0.08); cx.lineTo(hw * 0.75, hh * 0.08);
-            cx.lineTo(hw * 0.5, hh * 0.35); cx.lineTo(-hw * 0.5, hh * 0.35); cx.closePath(); cx.fill();
-            // Fur texture strands
-            cx.strokeStyle = '#a09060'; cx.lineWidth = 1;
-            for (let f = -3; f <= 3; f++) {cx.beginPath(); cx.moveTo(f * hw * 0.18, hh * 0.08); cx.lineTo(f * hw * 0.15, hh * 0.33); cx.stroke();}
+              // === BRAZOS ===
+              cx.fillStyle = '#ffde00';
+              // Brazo derecho (descansando a su lado)
+              cx.beginPath(); cx.ellipse(hw * 0.7, -hh * 0.1, hw * 0.2, hh * 0.3, -0.2, 0, Math.PI * 2); cx.fill();
+              // Brazo izquierdo (levantado)
+              cx.beginPath(); cx.ellipse(-hw * 0.7, -hh * 0.2, hw * 0.2, hh * 0.3, 0.5, 0, Math.PI * 2); cx.fill();
 
-            // === CINTURÓN ===
-            const beltG = cx.createLinearGradient(-hw * 0.9, 0, hw * 0.9, 0);
-            beltG.addColorStop(0, '#111'); beltG.addColorStop(0.5, '#2a2a2a'); beltG.addColorStop(1, '#111');
-            cx.fillStyle = beltG; cx.fillRect(-hw * 0.9, hh * 0.04, W * 0.85, hh * 0.1);
-            // Hebilla dorada
-            cx.fillStyle = '#c8a000'; cx.fillRect(-hw * 0.12, hh * 0.04, hw * 0.25, hh * 0.1);
-            cx.fillStyle = '#ffcc00'; cx.fillRect(-hw * 0.07, hh * 0.055, hw * 0.15, hh * 0.06);
+              // Hombreras (Rojas)
+              cx.fillStyle = '#d3121b';
+              cx.beginPath(); cx.ellipse(hw * 0.75, -hh * 0.3, hw * 0.15, hh * 0.15, 0, 0, Math.PI * 2); cx.fill();
+              cx.beginPath(); cx.ellipse(-hw * 0.75, -hh * 0.3, hw * 0.15, hh * 0.15, 0, 0, Math.PI * 2); cx.fill();
 
-            // === CUERPO (piel orco verde-amarillo) ===
-            const bodyG = cx.createRadialGradient(-hw * 0.15, -hh * 0.3, 2, 0, -hh * 0.25, hw * 0.9);
-            bodyG.addColorStop(0, '#b8c825'); bodyG.addColorStop(0.5, '#8b9a1a'); bodyG.addColorStop(1, '#607010');
-            cx.fillStyle = bodyG;
-            cx.beginPath(); cx.ellipse(0, -hh * 0.28, hw * 0.82, hh * 0.52, 0, 0, Math.PI * 2); cx.fill();
+              // Guantes (Rojos)
+              // Mano derecha (abajo)
+              cx.beginPath(); cx.ellipse(hw * 0.8, hh * 0.2, hw * 0.25, hh * 0.15, 0, 0, Math.PI * 2); cx.fill();
+              // Mano izquierda (arriba - signo de la paz)
+              cx.beginPath(); cx.ellipse(-hw * 0.8, -hh * 0.45, hw * 0.25, hh * 0.2, 0, 0, Math.PI * 2); cx.fill();
+              cx.fillRect(-hw * 0.95, -hh * 0.6, hw * 0.1, hh * 0.2); // Dedo 1
+              cx.fillRect(-hw * 0.75, -hh * 0.6, hw * 0.1, hh * 0.2); // Dedo 2
 
-            // === ARMADURA PECHO (placas rojo oscuro) ===
-            const chestG = cx.createLinearGradient(-hw * 0.7, -hh * 0.75, hw * 0.7, -hh * 0.15);
-            chestG.addColorStop(0, '#aa2020'); chestG.addColorStop(0.5, '#7a1515'); chestG.addColorStop(1, '#5a0e0e');
-            cx.fillStyle = chestG;
-            cx.beginPath(); cx.moveTo(-hw * 0.72, -hh * 0.72); cx.lineTo(hw * 0.72, -hh * 0.72); cx.lineTo(hw * 0.62, -hh * 0.15); cx.lineTo(-hw * 0.62, -hh * 0.15); cx.closePath(); cx.fill();
-            // Líneas placas
-            cx.fillStyle = 'rgba(0,0,0,0.4)';
-            cx.fillRect(-hw * 0.68, -hh * 0.5, W * 0.62, hh * 0.06); cx.fillRect(-hw * 0.65, -hh * 0.3, W * 0.58, hh * 0.06);
-            // Hebillas/remaches
-            cx.fillStyle = '#555'; cx.fillRect(-3, -hh * 0.7, 6, hh * 0.06);
+              // === CUERPO ===
+              // Torso (Amarillo)
+              cx.fillStyle = '#ffde00';
+              cx.beginPath(); cx.ellipse(0, -hh * 0.05, hw * 0.8, hh * 0.55, 0, 0, Math.PI * 2); cx.fill();
+              // Abstracción de Logos en el pecho (Azul, Rojo, Verde)
+              cx.fillStyle = '#1e3c87'; cx.fillRect(-hw * 0.4, -hh * 0.35, hw * 0.2, hh * 0.1);
+              cx.fillStyle = '#d3121b'; cx.beginPath(); cx.arc(hw * 0.3, -hh * 0.3, hw * 0.15, 0, Math.PI * 2); cx.fill();
+              cx.fillStyle = '#e52420'; cx.fillRect(-hw * 0.4, -hh * 0.15, hw * 0.3, hh * 0.08);
+              cx.fillStyle = '#409c38'; cx.fillRect(hw * 0.15, -hh * 0.15, hw * 0.25, hh * 0.1);
 
-            // === HOMBRERAS (spaulders rojos con borde metálico) ===
-            const spG = cx.createLinearGradient(0, -hh * 0.8, 0, -hh * 0.4);
-            spG.addColorStop(0, '#9a1f1f'); spG.addColorStop(1, '#5a0e0e');
-            cx.fillStyle = spG;
-            cx.beginPath(); cx.moveTo(-hw * 1.05, -hh * 0.78); cx.lineTo(-hw * 0.55, -hh * 0.78); cx.lineTo(-hw * 0.52, -hh * 0.42); cx.lineTo(-hw * 1.0, -hh * 0.42); cx.closePath(); cx.fill();
-            cx.beginPath(); cx.moveTo(hw * 1.05, -hh * 0.78); cx.lineTo(hw * 0.55, -hh * 0.78); cx.lineTo(hw * 0.52, -hh * 0.42); cx.lineTo(hw * 1.0, -hh * 0.42); cx.closePath(); cx.fill();
-            // Bordes metálicos hombreras
-            cx.strokeStyle = '#4a4a4a'; cx.lineWidth = 1.5;
-            cx.beginPath(); cx.moveTo(-hw * 1.05, -hh * 0.78); cx.lineTo(-hw * 0.55, -hh * 0.78); cx.lineTo(-hw * 0.52, -hh * 0.42); cx.stroke();
-            cx.beginPath(); cx.moveTo(hw * 1.05, -hh * 0.78); cx.lineTo(hw * 0.55, -hh * 0.78); cx.lineTo(hw * 0.52, -hh * 0.42); cx.stroke();
+              // === CINTURÓN ===
+              // Correa (Marrón)
+              cx.fillStyle = '#8c5a2b';
+              cx.fillRect(-hw * 0.85, hh * 0.15, hw * 1.7, hh * 0.15);
+              // Hebilla (Azul)
+              cx.strokeStyle = '#0066cc'; cx.lineWidth = 3;
+              cx.strokeRect(-hw * 0.2, hh * 0.12, hw * 0.4, hh * 0.2);
+              cx.fillStyle = '#0066cc'; cx.fillRect(-hw * 0.1, hh * 0.2, hw * 0.2, hh * 0.04);
+              // Herramienta (Llave inglesa azul abstracta)
+              cx.fillRect(hw * 0.3, hh * 0.15, hw * 0.1, hh * 0.3);
+              cx.beginPath(); cx.arc(hw * 0.35, hh * 0.15, hw * 0.15, 0, Math.PI * 2); cx.fill();
+              // Papel/Checklist colgando (Blanco)
+              cx.fillStyle = '#ffffff';
+              cx.fillRect(hw * 0.6, hh * 0.15, hw * 0.25, hh * 0.4);
+              cx.strokeStyle = '#000000'; cx.lineWidth = 1;
+              cx.strokeRect(hw * 0.6, hh * 0.15, hw * 0.25, hh * 0.4);
+              cx.beginPath(); cx.moveTo(hw * 0.65, hh * 0.25); cx.lineTo(hw * 0.8, hh * 0.25); cx.stroke();
+              cx.beginPath(); cx.moveTo(hw * 0.65, hh * 0.35); cx.lineTo(hw * 0.8, hh * 0.35); cx.stroke();
 
-            // === BRAZOS (piel orco) ===
-            const armG = cx.createLinearGradient(-hw - 4, -hh * 0.45, 0, -hh * 0.45);
-            armG.addColorStop(0, '#7a8a18'); armG.addColorStop(1, '#aaba20');
-            cx.fillStyle = armG; cx.fillRect(-hw - 3, -hh * 0.42, hw * 0.5, hh * 0.55);
-            cx.fillStyle = '#aaba20'; cx.fillRect(hw * 0.55, -hh * 0.42, hw * 0.5, hh * 0.55);
+              // === CUELLO ===
+              cx.fillStyle = '#0099e6';
+              cx.fillRect(-hw * 0.3, -hh * 0.5, hw * 0.6, hh * 0.1);
 
-            // === ESPADA (izquierda, sosteniéndola hacia arriba) ===
-            // Empuñadura
-            cx.fillStyle = '#6a5020'; cx.fillRect(-hw - 5, hh * 0.08, hw * 0.38, hh * 0.18);
-            cx.fillStyle = '#8a7030'; cx.fillRect(-hw - 4, hh * 0.1, hw * 0.32, hh * 0.12);
-            // Guardamano
-            cx.fillStyle = '#3a3a3a'; cx.fillRect(-hw - 8, -hh * 0.05, hw * 0.6, 5);
-            cx.fillStyle = '#555'; cx.fillRect(-hw - 7, -hh * 0.04, hw * 0.55, 3);
-            // Hoja de espada (gris metálico brillante)
-            const bladeG = cx.createLinearGradient(-hw - 2, -hh * 0.6, -hw + 2, -hh * 0.6);
-            bladeG.addColorStop(0, '#aaa'); bladeG.addColorStop(0.5, '#eee'); bladeG.addColorStop(1, '#888');
-            cx.fillStyle = bladeG; cx.fillRect(-hw - 2, -hh * 0.6, 4, hh * 0.68);
-            cx.fillStyle = 'rgba(255,255,255,0.5)'; cx.fillRect(-hw - 1, -hh * 0.58, 1.5, hh * 0.6);
+              // === CABEZA ===
+              // Base cabeza (Amarilla)
+              cx.fillStyle = '#ffde00';
+              cx.beginPath(); cx.ellipse(0, -hh * 0.75, hw * 0.7, hh * 0.45, 0, 0, Math.PI * 2); cx.fill();
 
-            // === MANOPLA / MAZO (derecha) ===
-            cx.fillStyle = '#3a3a3a'; cx.fillRect(hw * 0.52, hh * 0.06, hw * 0.55, hh * 0.3);
-            const gaunG = cx.createLinearGradient(hw * 0.52, hh * 0.06, hw * 1.1, hh * 0.36);
-            gaunG.addColorStop(0, '#aa2020'); gaunG.addColorStop(1, '#7a1010');
-            cx.fillStyle = gaunG; cx.fillRect(hw * 0.56, hh * 0.07, hw * 0.45, hh * 0.26);
-            // Líneas mazo
-            cx.strokeStyle = '#555'; cx.lineWidth = 1;
-            cx.beginPath(); cx.moveTo(hw * 0.56, hh * 0.2); cx.lineTo(hw * 1.0, hh * 0.2); cx.stroke();
+              // Orejeras (Rojas)
+              cx.fillStyle = '#d3121b';
+              cx.fillRect(-hw * 0.85, -hh * 0.85, hw * 0.2, hh * 0.25);
+              cx.fillRect(hw * 0.65, -hh * 0.85, hw * 0.2, hh * 0.25);
 
-            // === CUELLO ===
-            cx.fillStyle = '#8b9a1a'; cx.fillRect(-hw * 0.22, -hh * 0.82, W * 0.22, hh * 0.2);
-            // Melena peluda (marrón rojizo)
-            cx.fillStyle = '#8a3010';
-            cx.beginPath(); cx.ellipse(0, -hh * 0.7, hw * 0.62, hh * 0.22, 0, Math.PI, 0); cx.fill();
-            cx.beginPath(); cx.ellipse(hw * 0.4, -hh * 0.72, hw * 0.25, hh * 0.15, 0.3, 0, Math.PI * 2); cx.fill();
+              // Lentes/Antifaz (Verde)
+              cx.fillStyle = '#2c9f3e';
+              cx.beginPath(); cx.ellipse(0, -hh * 0.7, hw * 0.55, hh * 0.25, 0, 0, Math.PI * 2); cx.fill();
 
-            // === CASCO BLANCO CON MARCA ROJA ===
-            // Base del casco (blanco hueso)
-            const helmG = cx.createRadialGradient(-hw * 0.15, -hh * 0.95, 2, 0, -hh * 0.9, hw * 0.65);
-            helmG.addColorStop(0, '#f0ebe0'); helmG.addColorStop(0.6, '#d8d0c0'); helmG.addColorStop(1, '#b8b0a0');
-            cx.fillStyle = helmG;
-            cx.beginPath(); cx.ellipse(0, -hh * 0.9, hw * 0.62, hh * 0.32, 0, 0, Math.PI * 2); cx.fill();
-            // Marca roja central (símbolo en T o espiral)
-            cx.fillStyle = '#cc1122';
-            cx.beginPath(); cx.moveTo(-2, -hh * 1.05); cx.bezierCurveTo(-hw * 0.25, -hh * 0.92, hw * 0.25, -hh * 0.92, 2, -hh * 1.05); cx.fill();
-            cx.fillRect(-3, -hh * 1.0, 6, hh * 0.3); // línea vertical
-            cx.fillRect(-hw * 0.2, -hh * 0.82, W * 0.4, hh * 0.07); // línea horizontal
-            // Cuernos del casco
-            cx.fillStyle = '#d8d0c0';
-            cx.beginPath(); cx.moveTo(-hw * 0.22, -hh * 1.08); cx.lineTo(-hw * 0.15, -hh * 1.32); cx.lineTo(-hw * 0.05, -hh * 1.08); cx.closePath(); cx.fill();
-            cx.beginPath(); cx.moveTo(hw * 0.08, -hh * 1.08); cx.lineTo(hw * 0.15, -hh * 1.32); cx.lineTo(hw * 0.25, -hh * 1.08); cx.closePath(); cx.fill();
-            // Adorno dorado del casco
-            cx.fillStyle = '#c8a000'; cx.fillRect(-hw * 0.5, -hh * 0.72, W * 0.46, hh * 0.05);
-            // Ojos del orco (rajas oscuras bajo el casco)
-            cx.fillStyle = '#1a1a1a'; cx.fillRect(-hw * 0.28, -hh * 0.92, 6, 3); cx.fillRect(hw * 0.05, -hh * 0.92, 6, 3);
-            cx.fillStyle = '#ff4400'; cx.fillRect(-hw * 0.26, -hh * 0.92, 3, 2); cx.fillRect(hw * 0.07, -hh * 0.92, 3, 2);
+              // Ojos (Blancos con pupilas negras)
+              cx.fillStyle = '#ffffff';
+              cx.beginPath(); cx.ellipse(-hw * 0.2, -hh * 0.75, hw * 0.15, hh * 0.15, 0, 0, Math.PI * 2); cx.fill();
+              cx.beginPath(); cx.ellipse(hw * 0.2, -hh * 0.75, hw * 0.15, hh * 0.15, 0, 0, Math.PI * 2); cx.fill();
+              cx.fillStyle = '#000000';
+              cx.beginPath(); cx.ellipse(-hw * 0.2, -hh * 0.75, hw * 0.07, hh * 0.07, 0, 0, Math.PI * 2); cx.fill();
+              cx.beginPath(); cx.ellipse(hw * 0.2, -hh * 0.75, hw * 0.07, hh * 0.07, 0, 0, Math.PI * 2); cx.fill();
+
+              // Nariz (Amarilla oscura)
+              cx.fillStyle = '#e6c300';
+              cx.beginPath(); cx.ellipse(0, -hh * 0.55, hw * 0.15, hh * 0.08, 0, 0, Math.PI * 2); cx.fill();
+
+              // Boca (Línea negra sonriente)
+              cx.strokeStyle = '#000000'; cx.lineWidth = 1.5;
+              cx.beginPath(); cx.arc(0, -hh * 0.5, hw * 0.25, 0.2, Math.PI - 0.2); cx.stroke();
+
+              // Letra 'a' en la frente (Rojo)
+              cx.fillStyle = '#d3121b';
+              cx.font = 'bold 12px Arial';
+              cx.fillText('a', 0, -hh * 1.0);
+
+              // Antena (Tallo verde y bola roja)
+              cx.strokeStyle = '#2c9f3e'; cx.lineWidth = 4;
+              cx.beginPath(); cx.moveTo(0, -hh * 1.15); cx.quadraticCurveTo(hw * 0.1, -hh * 1.3, hw * 0.2, -hh * 1.4); cx.stroke();
+              cx.fillStyle = '#d3121b';
+              cx.beginPath(); cx.ellipse(hw * 0.2, -hh * 1.45, hw * 0.1, hh * 0.08, 0, 0, Math.PI * 2); cx.fill();
 
         } else if (idx === 1) {
             // ══ SEGURITO — Arquera de pelo rojo, armadura hoja verde, arco largo ══
