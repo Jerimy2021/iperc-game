@@ -1,8 +1,16 @@
 var ID_EXCEL_BASE_DATOS = "1JRIWwsiZyBWhVM9DN_KMEdkDVM0m7Izqmi_p-QonoBE";
+var BUILD_VERSION = '2026.08.06-1';
 
 function doGet() {
-  return HtmlService.createTemplateFromFile('index')
-    .evaluate()
+  var t = HtmlService.createTemplateFromFile('index');
+  t.buildVersion = BUILD_VERSION;
+  try {
+    t.datosUbicacion = JSON.stringify(obtenerDatosUbicacion());
+  } catch (e) {
+    Logger.log('doGet: fallo al precargar datos de ubicación: ' + e);
+    t.datosUbicacion = 'null';
+  }
+  return t.evaluate()
     .setTitle('IPERC ZONE — Educación en Seguridad Industrial')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);

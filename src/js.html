@@ -666,8 +666,58 @@
         ],
     };
 
-    const LVL4_EPP = {...LVL3_DATA, id: 4, phase: '🟡 FASE 2 · CONTROLES', name: 'NVL 4 · EQUIPOS EPP'};
-    const LVL6_CTRL = {...LVL4_DATA, id: 6, phase: '🟡 FASE 3 · CONTROLES', name: 'NVL 6 · CONTROLES'};
+    // LEVEL 4 NEW: EPP — el EPP reduce el daño, pero NO elimina el peligro
+    const LVL4_EPP = {
+        id: 4,
+        phase: '🟡 FASE 2 · CONTROLES',
+        name: 'NVL 4 · EQUIPOS EPP',
+        emoji: '🪖',
+        color: '#f5b200',
+        objective: 'El EPP 🪖 reduce el daño pero NO elimina el peligro. Usa los CONTROLES DE INGENIERÍA 🛠️ para desactivar las máquinas por completo.',
+        lesson: 'El EPP es el último recurso de la jerarquía de controles: protege a la persona, pero el peligro sigue activo. Solo un control de ingeniería lo elimina.',
+        bg: ['#87ceeb', '#6ebae8', '#50a8e0'],
+        floor: '#cc480a',
+        xp: 150,
+        isEPPLevel: true,
+        hazards: [
+            {emoji: '🏭', type: 'Máquina Giratoria', desc: 'Atrapamiento por partes móviles', sev: 8, sevLbl: '8', sevColor: '#ff2244', pers: 2, freq: 3, prep: 1, acc: 2},
+            {emoji: '🧪', type: 'Reactivo Químico', desc: 'Contacto con sustancia corrosiva', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 2, freq: 2, prep: 1, acc: 2},
+            {emoji: '⚡', type: 'Panel Energizado', desc: 'Contacto eléctrico directo', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 2, freq: 2, prep: 1, acc: 2, noControlAvailable: true},
+        ],
+        collectibles: [
+            {emoji: '🛠️', type: 'CONTROL ING.', ctrl: 'ing', label: 'Guarda de Máquina', color: '#00eeff', isEngControl: true, hazardIndex: 0, ctrlReduce: .20},
+            {emoji: '🛠️', type: 'CONTROL ING.', ctrl: 'ing', label: 'Contención de Químicos', color: '#00eeff', isEngControl: true, hazardIndex: 1, ctrlReduce: .20},
+            {emoji: '🪖', type: 'EPP', ctrl: 'epp', label: 'Casco de Seguridad', color: '#f5b200', eppReduce: .12},
+            {emoji: '🥽', type: 'EPP', ctrl: 'epp', label: 'Lentes de Seguridad', color: '#f5b200', eppReduce: .08},
+            {emoji: '🧤', type: 'EPP', ctrl: 'epp', label: 'Guantes Dieléctricos', color: '#f5b200', eppReduce: .10},
+        ],
+    };
+    // LEVEL 6 NEW: JERARQUÍA DE CONTROLES — el ORDEN de aplicación determina la efectividad
+    const LVL6_CTRL = {
+        id: 6,
+        phase: '🟡 FASE 3 · CONTROLES',
+        name: 'NVL 6 · CONTROLES',
+        emoji: '🛡️',
+        color: '#00eeff',
+        objective: 'Aplica los controles en el ORDEN correcto de la jerarquía: Eliminación e Ingeniería PRIMERO. Recoger señalética o procedimientos antes desperdicia su efectividad.',
+        lesson: 'Jerarquía de controles: 1) Eliminar, 2) Sustituir, 3) Ingeniería, 4) Administrativo/Señalética, 5) EPP. Un control de menor jerarquía aplicado antes que uno superior disponible reduce menos el riesgo.',
+        bg: ['#87ceeb', '#6ab8e8', '#4ea8e0'],
+        floor: '#c04508',
+        xp: 180,
+        isControlLevel: true,
+        hazards: [
+            {emoji: '⚠️', type: 'Zona Sin Señalizar', desc: 'Área de riesgo no demarcada', sev: 4, sevLbl: '4', sevColor: '#ffaa00', pers: 4, freq: 3, prep: 1, acc: 1},
+            {emoji: '🚧', type: 'Área Sin Barrera', desc: 'Sin protección física', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 3, freq: 3, prep: 1, acc: 2},
+            {emoji: '📵', type: 'Sin Procedimiento', desc: 'Trabajo sin instrucción formal', sev: 6, sevLbl: '6', sevColor: '#ff8800', pers: 3, freq: 2, prep: 1, acc: 2},
+        ],
+        collectibles: [
+            {emoji: '🔇', type: 'CONTROL', ctrl: 'elim', label: 'Eliminación del Peligro', color: '#00eeff', ctrlTier: 1, ctrlReduce: .30},
+            {emoji: '🚧', type: 'CONTROL', ctrl: 'ing', label: 'Barrera de Ingeniería', color: '#00eeff', ctrlTier: 2, ctrlReduce: .20},
+            {emoji: '📋', type: 'CONTROL', ctrl: 'proc', label: 'Procedimiento Escrito', color: '#00eeff', ctrlTier: 3, ctrlReduce: .15},
+            {emoji: '🎓', type: 'CONTROL', ctrl: 'train', label: 'Capacitación de Personal', color: '#00eeff', ctrlTier: 3, ctrlReduce: .12},
+            {emoji: '🚦', type: 'CONTROL', ctrl: 'sig', label: 'Señalización de Seguridad', color: '#00eeff', ctrlTier: 3, ctrlReduce: .15},
+        ],
+    };
 
     // LEVEL 7: BOSS FINAL
     const LVL7_BOSS = {
@@ -1144,6 +1194,7 @@
     let PHONE = {active: false, timer: 0, cd: 0, penalty: 0}; // celular distractor
     let CRUCE = {routes: [], chosen: null, semaphore: 'red', semTimer: 0, cars: [], carSpawnTimer: 0, carZone: null, redLightHitTimer: 0}; // cruce seguro
     let EXTINGUISHER = {x: 0, y: 0, w: 32, h: 36, collected: false, bt: 0}; // extintor
+    let CTRL_ORDER_LOG = []; // jerarquía de controles: registro de orden de recolección {tier, optimal}
     const KEYS = {};
 
     document.addEventListener('keydown', e => {
@@ -1243,6 +1294,7 @@
         PHONE = {active: false, timer: 0, cd: 0, penalty: 0};
         CRUCE = {routes: [], chosen: null, semaphore: 'red', semTimer: 0};
         EXTINGUISHER = {x: 0, y: 0, w: 32, h: 36, collected: false, bt: 0};
+        CTRL_ORDER_LOG = [];
         // Reset secret door state for new level
         QZ.doorLocked = false; QZ.doorLockTimer = 0; QZ.active = false;
         clearInterval(QZ.timerInterval); QZ.timerInterval = null;
@@ -1530,7 +1582,13 @@
         // Hit regular hazards
         for (const h of HZDS) {
             if (!h.alive) continue;
-            if (h.px + h.w > ax && h.px < ax + extRange && h.py + h.h > PL.y && h.py < PL.y + PL.h + 20) neutralize(h);
+            if (h.px + h.w > ax && h.px < ax + extRange && h.py + h.h > PL.y && h.py < PL.y + PL.h + 20) {
+                if (h.noControlAvailable) {
+                    ft(h.px, h.py - 12, 'SIN CONTROL DISPONIBLE', '#f5b200');
+                } else {
+                    neutralize(h);
+                }
+            }
         }
         // Hit boss — must have extinguisher in boss level
         if (BOSS && BOSS.alive) {
@@ -1622,6 +1680,16 @@
             ft(c.px, c.py - 12, c.label, '#00ee66');
             notify('🚦 ' + c.label + ' — RUTA SEGURA REFORZADA', 'g');
             const el = $('hv-ruta'); if (el) {el.textContent = 'SEGURA'; el.style.color = '#00ee66';}
+        } else if (c.isEngControl) {
+            // Control de ingeniería: elimina por completo el peligro asignado (a diferencia del EPP, que solo reduce el daño)
+            const target = HZDS[c.hazardIndex];
+            if (target && target.alive) {
+                target.alive = false; P_NEUT++;
+                spawnP(target.px + target.w / 2, target.py + target.h / 2, 'rgba(0,238,255,0.7)', 16);
+            }
+            G.controlReduction += c.ctrlReduce || .18;
+            ft(c.px, c.py - 12, c.label, '#00eeff');
+            notify('🛠️ ' + c.label + ' — peligro ELIMINADO por completo (no solo protegido)', 'g');
         } else if (ZONE.isEPPLevel) {
             G.eppReduction += c.eppReduce || .09;
             G.collectedEPP.push(c.label);
@@ -1629,10 +1697,16 @@
             notify('🪖 EPP: ' + c.label + ' activado', 'g');
             const el = $('hv-ctrl-count'); if (el) el.textContent = C_COLL + '/' + C_TOT;
         } else if (ZONE.isControlLevel) {
-            G.controlReduction += c.ctrlReduce || .12;
+            // Jerarquía de controles: el ORDEN de recolección determina la efectividad.
+            // Si queda un control de mayor jerarquía (tier menor) sin recoger, este pickup fue subóptimo.
+            const remainingBetter = COLS.some(o => !o.collected && o.ctrlTier < c.ctrlTier);
+            const optimal = !remainingBetter;
+            const mult = optimal ? 1 : 0.5;
+            CTRL_ORDER_LOG.push({tier: c.ctrlTier, optimal: optimal});
+            G.controlReduction += (c.ctrlReduce || .12) * mult;
             G.collectedControls.push(c.label);
-            ft(c.px, c.py - 12, c.label, '#00eeff');
-            notify('🛡️ CONTROL: ' + c.label + ' aplicado', 'g');
+            ft(c.px, c.py - 12, optimal ? 'JERARQUÍA ÓPTIMA' : 'JERARQUÍA SUBÓPTIMA', optimal ? '#00ee66' : '#ff8800');
+            notify((optimal ? '✅ ' : '⚠️ ') + c.label + (optimal ? ' — aplicado en el orden correcto' : ' — había un control más efectivo disponible primero'), optimal ? 'g' : 'w');
             const el = $('hv-ctrl-count'); if (el) el.textContent = C_COLL + '/' + C_TOT;
         } else {
             ft(c.px, c.py - 12, '+' + c.label, '#f5b200');
@@ -1690,6 +1764,17 @@
                 G.xp = Math.max(0, G.xp - pen);
                 G.phonePenalty = pen;
                 notify('📱 PENALIZACIÓN TOTAL por celular: -' + pen + ' XP', 'b');
+            }
+        }
+        if (ZONE.id === 4) {// EPP — el EPP reduce el daño, pero no elimina los peligros controlables
+            const hazardsLeftActive = HZDS.filter(h => !h.noControlAvailable && h.alive).length;
+            G.hazardsLeftActive = hazardsLeftActive;
+            if (hazardsLeftActive > 0) {
+                const pen = hazardsLeftActive * 15;
+                G.xp = Math.max(0, G.xp - pen);
+                notify('⚠️ ' + hazardsLeftActive + ' peligro(s) con control disponible siguieron activos — el EPP protege, pero no los elimina. -' + pen + ' XP', 'b');
+            } else {
+                notify('✅ Todos los peligros con control disponible fueron eliminados con ingeniería', 'g');
             }
         }
         if (ZONE.id === 5) {// Cruce
@@ -1934,11 +2019,15 @@
       <div class="vs-item"><div class="vs-val" style="color:var(--r2)">-${G.phonePenalty || 0} XP</div><div class="vs-lbl">PENALIZACIÓN CELULAR</div></div>`;
             iperc_info = `🔒 <strong>LOTO APLICADO: ${G.lotoApplied} candados — reducción de riesgo: ${Math.round(G.lotoReduction * 100)}%</strong><br>${G.phoneUses > 0 ? `📱 Usaste el celular ${G.phoneUses} veces — perdiste ${G.phonePenalty} XP por conducta insegura.` : '📱 ¡Excelente! No usaste el celular — conducta segura perfecta.'}`;
         } else if (z.id === 4) {
+            const engControlsTotal = z.collectibles.filter(c => c.isEngControl).length;
+            const engControlsApplied = HZDS.filter(h => !h.noControlAvailable && !h.alive).length;
+            const eppTotal = z.collectibles.length - engControlsTotal;
+            const residualHazard = HZDS.find(h => h.noControlAvailable);
             statsHTML = `
-      <div class="vs-item"><div class="vs-val" style="color:var(--g2)">${G.collectedEPP.length}/${z.collectibles.length}</div><div class="vs-lbl">EPP RECOLECTADOS</div></div>
-      <div class="vs-item"><div class="vs-val" style="color:var(--c2)">${Math.round(G.eppReduction * 100)}%</div><div class="vs-lbl">REDUCCIÓN POR EPP</div></div>
-      <div class="vs-item"><div class="vs-val" style="color:var(--g2)">+${z.xp} XP</div><div class="vs-lbl">EXPERIENCIA</div></div>`;
-            iperc_info = `🪖 <strong>EPP ACTIVOS:</strong> ${G.collectedEPP.join(', ') || 'Ninguno'}<br>Reducción de riesgo por EPP: ${Math.round(G.eppReduction * 100)}%<br>Recuerda: EPP es el último recurso en la jerarquía de controles.`;
+      <div class="vs-item"><div class="vs-val" style="color:var(--c2)">${engControlsApplied}/${engControlsTotal}</div><div class="vs-lbl">PELIGROS ELIMINADOS (ING.)</div></div>
+      <div class="vs-item"><div class="vs-val" style="color:var(--g2)">${G.collectedEPP.length}/${eppTotal}</div><div class="vs-lbl">EPP RECOLECTADOS</div></div>
+      <div class="vs-item"><div class="vs-val" style="color:${G.hazardsLeftActive > 0 ? 'var(--r2)' : 'var(--gr2)'}">${G.hazardsLeftActive || 0}</div><div class="vs-lbl">PELIGROS AÚN ACTIVOS</div></div>`;
+            iperc_info = `🛠️ <strong>CONTROLES DE INGENIERÍA:</strong> ${engControlsApplied}/${engControlsTotal} peligros controlables eliminados por completo.<br>🪖 El EPP redujo el daño en ${Math.round(G.eppReduction * 100)}%${G.hazardsLeftActive > 0 ? ', pero ' + G.hazardsLeftActive + ' peligro(s) con control disponible seguían activos al salir.' : ' — ¡eliminaste todos los peligros controlables con ingeniería!'}${residualHazard ? '<br>⚠️ RIESGO RESIDUAL: ' + residualHazard.type + ' no tenía control de ingeniería disponible — el EPP fue tu única protección ante él.' : ''}<br>Recuerda: EPP es el último recurso en la jerarquía de controles.`;
         } else if (z.id === 5) {
             const rutaLabel = G.safeRouteChosen === true ? '✅ RUTA SEGURA' : G.safeRouteChosen === false ? '❌ RUTA PELIGROSA' : '—';
             statsHTML = `
@@ -2212,6 +2301,10 @@
 
             google.script.run
                 .withSuccessHandler(function () {
+                    mostrarEnviado();
+                })
+                .withFailureHandler(function (error) {
+                    console.error('guardarEncuestaFinal falló:', error);
                     mostrarEnviado();
                 })
                 .guardarEncuestaFinal(ratingData);
@@ -3962,6 +4055,44 @@
         CX.fillStyle = open ? '#00ee66' : '#ffffff';
         CX.fillText(txt, x + w / 2, barY - 6);     // Frente
 
+        // === LECTURA DE PELIGROS ACTIVOS (solo nivel EPP: el EPP no los elimina) ===
+        if (ZONE && ZONE.isEPPLevel && HZDS) {
+            const activeAddressable = HZDS.filter(h => !h.noControlAvailable && h.alive).length;
+            const hazTxt = activeAddressable > 0 ? `⚠ PELIGROS ACTIVOS: ${activeAddressable}` : '✅ PELIGROS ACTIVOS: 0';
+            const hazColor = activeAddressable > 0 ? '#ff3355' : '#00ee66';
+            CX.font = 'bold 9px "JetBrains Mono", monospace';
+            CX.textAlign = 'center';
+            CX.fillStyle = 'rgba(0, 0, 0, 0.9)';
+            CX.fillText(hazTxt, x + w / 2, barY - 18 + 1); // Sombra
+            CX.fillStyle = hazColor;
+            CX.fillText(hazTxt, x + w / 2, barY - 18);     // Frente
+
+            // Peligro sin control de ingeniería disponible: riesgo residual, no falla del jugador
+            const residual = HZDS.find(h => h.noControlAvailable);
+            if (residual) {
+                const resTxt = `RIESGO RESIDUAL: ${residual.type} — sin control disponible`;
+                CX.font = 'bold 8px "JetBrains Mono", monospace';
+                CX.fillStyle = 'rgba(0, 0, 0, 0.9)';
+                CX.fillText(resTxt, x + w / 2, barY - 30 + 1); // Sombra
+                CX.fillStyle = '#f5b200';
+                CX.fillText(resTxt, x + w / 2, barY - 30);     // Frente
+            }
+        }
+
+        // === LECTURA DE EFICIENCIA DE JERARQUÍA (solo nivel de Controles) ===
+        if (ZONE && ZONE.isControlLevel && CTRL_ORDER_LOG.length > 0) {
+            const optimalCount = CTRL_ORDER_LOG.filter(e => e.optimal).length;
+            const efficiencyPct = Math.round((optimalCount / CTRL_ORDER_LOG.length) * 100);
+            const effTxt = `JERARQUÍA: ${efficiencyPct}% ÓPTIMA (${optimalCount}/${CTRL_ORDER_LOG.length})`;
+            const effColor = efficiencyPct === 100 ? '#00ee66' : efficiencyPct >= 50 ? '#f5b200' : '#ff3355';
+            CX.font = 'bold 9px "JetBrains Mono", monospace';
+            CX.textAlign = 'center';
+            CX.fillStyle = 'rgba(0, 0, 0, 0.9)';
+            CX.fillText(effTxt, x + w / 2, barY - 18 + 1); // Sombra
+            CX.fillStyle = effColor;
+            CX.fillText(effTxt, x + w / 2, barY - 18);     // Frente
+        }
+
         // === ESTRUCTURA DE LA COMPUERTA (Chasis Industrial Metálico) ===
         const frameColor = open ? '#112211' : '#221111';
         const glowColor = open ? '#00ee66' : '#ff3355';
@@ -4754,9 +4885,65 @@
 
     function iniciarJuego() {
         document.getElementById('modal-ubicacion').style.display = 'flex';
+        ocultarErrorUbicacion();
+        var datosPrecargados = window.UBICACION_PRECARGADA;
+        var preloadValido = datosPrecargados &&
+            datosPrecargados.paises && datosPrecargados.paises.length &&
+            datosPrecargados.operaciones && datosPrecargados.operaciones.length;
+
+        if (preloadValido) {
+            llenarDesplegables(datosPrecargados);
+        } else {
+            cargarUbicacionRemota();
+        }
+    }
+
+    var ubicacionRequestId = 0;
+
+    function cargarUbicacionRemota() {
+        var requestId = ++ubicacionRequestId;
+        var retryBtn = document.getElementById('btn-reintentar-ubicacion');
+        if (retryBtn) retryBtn.disabled = true;
+
         google.script.run
-            .withSuccessHandler(llenarDesplegables)
+            .withSuccessHandler(function (datos) {
+                if (requestId !== ubicacionRequestId) return; // respuesta obsoleta, ignorar
+                if (retryBtn) retryBtn.disabled = false;
+                llenarDesplegables(datos);
+            })
+            .withFailureHandler(function (error) {
+                if (requestId !== ubicacionRequestId) return; // respuesta obsoleta, ignorar
+                if (retryBtn) retryBtn.disabled = false;
+                mostrarErrorUbicacion(error);
+            })
             .obtenerDatosUbicacion();
+    }
+
+    function mostrarErrorUbicacion(error) {
+        var selectPais = document.getElementById('select-pais');
+        var selectPlanta = document.getElementById('select-planta');
+        selectPais.innerHTML = '<option value="">⚠ Error al cargar</option>';
+        selectPlanta.innerHTML = '<option value="">⚠ Error al cargar</option>';
+        var errorBox = document.getElementById('ubicacion-error');
+        if (errorBox) errorBox.style.display = 'block';
+        actualizarEstadoContinuar();
+    }
+
+    function ocultarErrorUbicacion() {
+        var errorBox = document.getElementById('ubicacion-error');
+        if (errorBox) errorBox.style.display = 'none';
+    }
+
+    function reintentarCargaUbicacion() {
+        ocultarErrorUbicacion();
+        var selectPais = document.getElementById('select-pais');
+        var selectPlanta = document.getElementById('select-planta');
+        selectPais.innerHTML = '<option value="">Cargando países...</option>';
+        selectPlanta.innerHTML = '<option value="">Cargando productos...</option>';
+        selectPais.classList.remove('ubic-select-error');
+        selectPlanta.classList.remove('ubic-select-error');
+        actualizarEstadoContinuar();
+        cargarUbicacionRemota();
     }
 
     function llenarDesplegables(datos) {
@@ -4765,6 +4952,8 @@
 
         selectPais.innerHTML = '<option value="">-- Selecciona un País --</option>';
         selectPlanta.innerHTML = '<option value="">-- Selecciona tu Producto --</option>';
+        selectPais.classList.remove('ubic-select-error');
+        selectPlanta.classList.remove('ubic-select-error');
 
         // Llenar Países
         datos.paises.forEach(function(pais) {
@@ -4783,6 +4972,20 @@
             opt.setAttribute('data-nombre', op.label);
             selectPlanta.appendChild(opt);
         });
+
+        actualizarEstadoContinuar();
+    }
+
+    function actualizarEstadoContinuar() {
+        var selectPais = document.getElementById('select-pais');
+        var selectPlanta = document.getElementById('select-planta');
+        var btnContinuar = document.getElementById('btn-continuar-ubicacion');
+        if (!selectPais || !selectPlanta || !btnContinuar) return;
+
+        btnContinuar.disabled = (selectPais.value === "" || selectPlanta.value === "");
+
+        if (selectPais.value !== "") selectPais.classList.remove('ubic-select-error');
+        if (selectPlanta.value !== "") selectPlanta.classList.remove('ubic-select-error');
     }
 
     function cerrarModalUbicacion() {
@@ -4793,8 +4996,12 @@
         var selectPais = document.getElementById('select-pais');
         var selectPlanta = document.getElementById('select-planta');
 
-        if (selectPais.value === "" || selectPlanta.value === "") {
-            alert("Por favor, completa ambos campos para continuar.");
+        var paisValido = selectPais.value !== "";
+        var plantaValida = selectPlanta.value !== "";
+        selectPais.classList.toggle('ubic-select-error', !paisValido);
+        selectPlanta.classList.toggle('ubic-select-error', !plantaValida);
+
+        if (!paisValido || !plantaValida) {
             return;
         }
 

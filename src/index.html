@@ -22,6 +22,9 @@
 
     <!-- ═══ SCREEN: TITLE ═══ -->
     <div id="s-title" class="scr on">
+        <div id="build-stamp"
+            style="position: absolute; bottom: 8px; right: 12px; font-family: var(--jb); font-size: 9px; color: var(--mut); opacity: 0.5; letter-spacing: 1px; pointer-events: none; z-index: 1;">
+            <?= buildVersion ?></div>
         <div class="title-wrap">
             <div class="title-zone">IPERC</div>
             <div class="title-iperc">ZONE</div>
@@ -73,21 +76,28 @@
 
                 <div style="text-align: left; font-family: var(--exo); margin-bottom: 15px;">
                     <label style="color: var(--mut); font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 5px;">SELECCIONA TU PAÍS:</label>
-                    <select id="select-pais" style="width: 100%; padding: 10px; background: rgba(0, 15, 30, 0.8); border: 1px solid var(--b3); color: white; font-family: var(--exo); outline: none;">
+                    <select id="select-pais" onchange="actualizarEstadoContinuar()" style="width: 100%; padding: 10px; background: rgba(0, 15, 30, 0.8); border: 1px solid var(--b3); color: white; font-family: var(--exo); outline: none;">
                         <option value="">Cargando países...</option>
                     </select>
                 </div>
 
                 <div style="text-align: left; font-family: var(--exo); margin-bottom: 25px;">
                     <label style="color: var(--mut); font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 5px;">SELECCIONA TU PRODUCTO:</label>
-                    <select id="select-planta" style="width: 100%; padding: 10px; background: rgba(0, 15, 30, 0.8); border: 1px solid var(--b3); color: white; font-family: var(--exo); outline: none;">
+                    <select id="select-planta" onchange="actualizarEstadoContinuar()" style="width: 100%; padding: 10px; background: rgba(0, 15, 30, 0.8); border: 1px solid var(--b3); color: white; font-family: var(--exo); outline: none;">
                         <option value="">Cargando productos...</option>
                     </select>
                 </div>
 
+                <div id="ubicacion-error" style="display: none; text-align: center; margin-bottom: 15px; padding: 10px; border: 1px solid var(--r2); background: rgba(255,51,85,0.08); border-radius: 4px;">
+                    <div style="color: var(--r2); font-family: var(--exo); font-size: 12px; margin-bottom: 10px; letter-spacing: 0.5px;">
+                        ⚠ NO SE PUDO CARGAR LA LISTA. VERIFICA TU CONEXIÓN.
+                    </div>
+                    <button id="btn-reintentar-ubicacion" class="btn-menu btn-secondary" style="padding: 8px 20px;" onclick="reintentarCargaUbicacion()">↻ REINTENTAR</button>
+                </div>
+
                 <div style="display: flex; gap: 10px;">
                     <button class="btn-menu btn-secondary" style="flex: 1; padding: 10px;" onclick="cerrarModalUbicacion()">CANCELAR</button>
-                    <button class="btn-menu btn-primary" style="flex: 1; padding: 10px;" onclick="confirmarUbicacion()">CONTINUAR ▶</button>
+                    <button id="btn-continuar-ubicacion" class="btn-menu btn-primary" style="flex: 1; padding: 10px;" onclick="confirmarUbicacion()" disabled>CONTINUAR ▶</button>
                 </div>
             </div>
         </div>
@@ -345,6 +355,10 @@
         </div>
     </div>
     <div id="sdoor-hint">⚡ PORTAL RÁPIDO ACTIVO → [F] ACTIVAR</div>
+    <script>
+        window.UBICACION_PRECARGADA = <?!= datosUbicacion.replace(/<\/script/gi, '<\\/script') ?>;
+        window.BUILD_VERSION = <?!= JSON.stringify(buildVersion) ?>;
+    </script>
     <?!= include('js'); ?>
 </body>
 
