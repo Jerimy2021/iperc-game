@@ -519,8 +519,8 @@
         color: '#dd1133',
         objective: 'NVL1: Toca los ítems 📋 para recogerlos. Usa [SPC] para neutralizar peligros ⚠️. ¡Haz ambas cosas para abrir el PORTAL!',
         lesson: 'Clasificación de severidad: Sin lesión (0), No incapacitante (2), Incapacitante temporal (4), Permanente (6), Fatalidad (8).',
-        bg: ['#3a1010', '#2a0a0a', '#1a0505'],
-        floor: '#4a3a35',
+        bg: ['#5a4f42', '#3c342b', '#221d18'],
+        floor: '#5a564e',
         xp: 100,
         hazards: [
             {emoji: '🏗️', type: 'Prensa Industrial', desc: 'Aplastamiento de extremidades', sev: 8, sevLbl: '8', sevColor: '#ff2244', pers: 3, freq: 3, prep: 2, acc: 2},
@@ -545,8 +545,8 @@
         color: '#ff8800',
         objective: '¡Rescata trabajadores expuestos! Cuantos más estén en riesgo, mayor la Probabilidad.',
         lesson: 'La Probabilidad depende de la frecuencia de exposición, número de personas expuestas y existencia de controles previos.',
-        bg: ['#8a7a5a', '#b8a878', '#4e4a3a'],
-        floor: '#4a4a48',
+        bg: ['#9aa0a6', '#7c8288', '#5a5f64'],
+        floor: '#6a6e72',
         xp: 120,
         isProbabilityLevel: true,
         hazards: [
@@ -625,7 +625,7 @@
         objective: 'Recoge los CANDADOS LOTO 🔒 para bloquear equipos peligrosos. Los celulares 📱 son distractores — ¡IGNÓRALOS!',
         lesson: 'LOTO (Lockout/Tagout): bloqueo y etiquetado de energías peligrosas antes de intervenir equipos.',
         bg: ['#0a1a2a', '#0f2438', '#081420'],
-        floor: '#2e3438',
+        floor: '#a89020',
         xp: 130,
         isLotoLevel: true,
         hazards: [
@@ -675,8 +675,8 @@
         color: '#f5b200',
         objective: 'El EPP 🪖 reduce el daño pero NO elimina el peligro. Usa los CONTROLES DE INGENIERÍA 🛠️ para desactivar las máquinas por completo.',
         lesson: 'El EPP es el último recurso de la jerarquía de controles: protege a la persona, pero el peligro sigue activo. Solo un control de ingeniería lo elimina.',
-        bg: ['#4a3a1a', '#6a5228', '#2a2010'],
-        floor: '#3a342e',
+        bg: ['#c8c8c2', '#a8a8a0', '#787870'],
+        floor: '#8a8a86',
         xp: 150,
         isEPPLevel: true,
         hazards: [
@@ -701,8 +701,8 @@
         color: '#00eeff',
         objective: 'Aplica los controles en el ORDEN correcto de la jerarquía: Eliminación e Ingeniería PRIMERO. Recoger señalética o procedimientos antes desperdicia su efectividad.',
         lesson: 'Jerarquía de controles: 1) Eliminar, 2) Sustituir, 3) Ingeniería, 4) Administrativo/Señalética, 5) EPP. Un control de menor jerarquía aplicado antes que uno superior disponible reduce menos el riesgo.',
-        bg: ['#1a2838', '#24344a', '#101822'],
-        floor: '#4a5a68',
+        bg: ['#2a4a68', '#4a76a0', '#7a9cb8'],
+        floor: '#767a7e',
         xp: 180,
         isControlLevel: true,
         hazards: [
@@ -3452,201 +3452,306 @@
         }
     }
     /* ═══════════════════════════════════════════
-       NVL 1 · SEVERIDAD — INDUSTRIAL SCENERY (atmósfera, sin colisión)
+       NVL 1 · SEVERIDAD — PLANTA: SALA DE PRODUCCIÓN (atmósfera, sin colisión)
     ═══════════════════════════════════════════ */
     function drawSeverityScenery(W, H) {
         if (!ZONE || ZONE.id !== 1) return;
-        const t = Date.now();
         const floorY = H * .82;
 
-        // ── Background tank silhouettes ──
-        const tanks = [
-            {x: W * .10, w: W * .11, h: H * .30},
-            {x: W * .82, w: W * .10, h: H * .26},
-        ];
-        tanks.forEach(tk => {
-            const ty = floorY - tk.h;
-            const tg = CX.createLinearGradient(tk.x, ty, tk.x + tk.w, ty);
-            tg.addColorStop(0, '#2a1d1a'); tg.addColorStop(.5, '#3d2822'); tg.addColorStop(1, '#231613');
-            CX.fillStyle = tg;
-            CX.fillRect(tk.x, ty, tk.w, tk.h);
-            // Domed top
-            CX.beginPath();
-            CX.ellipse(tk.x + tk.w / 2, ty, tk.w / 2, tk.w * .28, 0, Math.PI, 0, true);
-            CX.fill();
-            // Hazard collar band
-            CX.fillStyle = 'rgba(255,120,40,.25)';
-            CX.fillRect(tk.x, ty + tk.h * .35, tk.w, 4);
+        // ── Ceiling beams ──
+        CX.fillStyle = 'rgba(20,18,15,.5)';
+        for (let i = 0; i < 3; i++) CX.fillRect(0, H * (.02 + i * .045), W, 3);
+
+        // ── Clerestory windows — pale overcast daylight high on the wall ──
+        const winY = H * .07, winH = H * .09, winCount = 4, winGap = W * .03;
+        const winW = (W - winGap * (winCount + 1)) / winCount;
+        const wg = CX.createLinearGradient(0, winY, 0, winY + winH);
+        wg.addColorStop(0, 'rgba(210,215,220,.16)'); wg.addColorStop(1, 'rgba(210,215,220,.04)');
+        CX.fillStyle = wg;
+        CX.strokeStyle = 'rgba(140,145,150,.18)'; CX.lineWidth = 1;
+        for (let i = 0; i < winCount; i++) {
+            const wx = winGap + i * (winW + winGap);
+            CX.fillRect(wx, winY, winW, winH);
+            CX.beginPath(); CX.moveTo(wx + winW / 2, winY); CX.lineTo(wx + winW / 2, winY + winH); CX.stroke();
+        }
+
+        // ── Blue overhead process piping ──
+        const bpY = H * .17;
+        CX.strokeStyle = 'rgba(70,110,150,.35)'; CX.lineWidth = 5;
+        CX.beginPath(); CX.moveTo(0, bpY); CX.lineTo(W, bpY); CX.stroke();
+        CX.fillStyle = 'rgba(70,110,150,.35)';
+        for (let bx = W * .1; bx < W; bx += W * .22) CX.fillRect(bx - 2, bpY - 6, 4, 12);
+
+        // ── Red fire-suppression piping (shared plant language) ──
+        const rpY = H * .24;
+        CX.strokeStyle = 'rgba(160,40,40,.38)'; CX.lineWidth = 4;
+        CX.beginPath(); CX.moveTo(0, rpY); CX.lineTo(W, rpY); CX.stroke();
+        CX.fillStyle = 'rgba(160,40,40,.30)';
+        for (let dx = W * .18; dx < W; dx += W * .28) {
+            CX.fillRect(dx - 1, rpY, 2, 10);
+            CX.beginPath(); CX.arc(dx, rpY + 12, 2.5, 0, Math.PI * 2); CX.fill();
+        }
+
+        // ── Hanging pendant lights ──
+        [W * .30, W * .68].forEach(px => {
+            const py = H * .27;
+            const glow = CX.createRadialGradient(px, py + 10, 0, px, py + 10, 24);
+            glow.addColorStop(0, 'rgba(255,210,140,.20)'); glow.addColorStop(1, 'rgba(0,0,0,0)');
+            CX.fillStyle = glow; CX.fillRect(px - 24, py - 14, 48, 48);
+            CX.fillStyle = 'rgba(40,34,26,.5)';
+            CX.beginPath(); CX.moveTo(px - 6, py); CX.lineTo(px + 6, py); CX.lineTo(px, py + 10); CX.closePath(); CX.fill();
+            CX.fillStyle = 'rgba(255,220,150,.5)';
+            CX.beginPath(); CX.arc(px, py + 12, 3, 0, Math.PI * 2); CX.fill();
         });
 
-        // ── Hazard stripe band along the floor line ──
-        const stripeH = H * .05;
-        const stripeY = floorY - stripeH * .3;
+        // ── Concrete pillars framing the hall ──
+        [W * .04, W * .94].forEach(px => {
+            const pg = CX.createLinearGradient(px, 0, px + W * .025, 0);
+            pg.addColorStop(0, '#403a34'); pg.addColorStop(1, '#2a2622');
+            CX.fillStyle = pg; CX.fillRect(px, 0, W * .025, floorY);
+        });
+
+        // ── Oven housing silhouette ──
+        const ox = W * .78, oy = floorY - H * .32, ow = W * .16, oh = H * .32;
+        const og = CX.createLinearGradient(ox, oy, ox + ow, oy);
+        og.addColorStop(0, '#332821'); og.addColorStop(.5, '#463830'); og.addColorStop(1, '#2a201a');
+        CX.fillStyle = og; CX.fillRect(ox, oy, ow, oh);
+        CX.strokeStyle = 'rgba(255,140,60,.25)'; CX.lineWidth = 2;
+        CX.strokeRect(ox + ow * .25, oy + oh * .35, ow * .5, oh * .4);
+        const ogl = CX.createRadialGradient(ox + ow / 2, oy + oh * .55, 0, ox + ow / 2, oy + oh * .55, ow * .3);
+        ogl.addColorStop(0, 'rgba(255,120,30,.30)'); ogl.addColorStop(1, 'rgba(0,0,0,0)');
+        CX.fillStyle = ogl; CX.fillRect(ox, oy, ow, oh);
+
+        // ── Long conveyor line along the floor ──
+        const cvY = floorY - 6, cvH = 8;
+        CX.fillStyle = 'rgba(30,26,22,.5)'; CX.fillRect(0, cvY, W, cvH);
+        CX.fillStyle = 'rgba(90,84,74,.4)';
+        for (let rx = 10; rx < W; rx += 26) CX.fillRect(rx, cvY + 1, 3, cvH - 2);
+
+        // ── Yellow floor demarcation line ──
+        CX.strokeStyle = 'rgba(240,190,20,.4)'; CX.lineWidth = 2;
+        CX.beginPath(); CX.moveTo(0, floorY + 4); CX.lineTo(W, floorY + 4); CX.stroke();
+
+        // ── White zebra crossing patch ──
+        const zx = W * .40, zw = W * .16, zy = floorY - 2, zh = 6;
         CX.save();
-        CX.beginPath(); CX.rect(0, stripeY, W, stripeH); CX.clip();
-        CX.fillStyle = '#1a1210'; CX.fillRect(0, stripeY, W, stripeH);
-        CX.fillStyle = 'rgba(255,153,0,.55)';
-        const stripeW = 34, pitch = 70;
-        for (let sx = -stripeH; sx < W + stripeH; sx += pitch) {
+        CX.beginPath(); CX.rect(zx, zy, zw, zh); CX.clip();
+        CX.fillStyle = 'rgba(20,18,16,.5)'; CX.fillRect(zx, zy, zw, zh);
+        CX.fillStyle = 'rgba(230,230,225,.5)';
+        for (let sx = zx - zh; sx < zx + zw + zh; sx += 10) {
             CX.beginPath();
-            CX.moveTo(sx, stripeY + stripeH);
-            CX.lineTo(sx + stripeH, stripeY);
-            CX.lineTo(sx + stripeH + stripeW, stripeY);
-            CX.lineTo(sx + stripeW, stripeY + stripeH);
+            CX.moveTo(sx, zy + zh); CX.lineTo(sx + zh, zy);
+            CX.lineTo(sx + zh + 4, zy); CX.lineTo(sx + 4, zy + zh);
             CX.closePath(); CX.fill();
         }
         CX.restore();
 
-        // ── Drifting embers (time-seeded only — no persistent state, purely decorative) ──
-        const sparkCount = 8;
-        for (let i = 0; i < sparkCount; i++) {
-            const seed = i * 137.5;
-            const speed = 18 + (i % 3) * 6;
-            const loopH = H * .55;
-            const sy = floorY - ((t * speed / 1000 + seed) % loopH);
-            const baseX = W * (((seed * 9301 + 49297) % 233280) / 233280);
-            const sx = (baseX + Math.sin(t * .0015 + i) * 10 + W) % W;
-            const s = Math.sin(t * .004 + i * 1.7);
-            const alpha = 0.25 + 0.5 * s * s;
-            CX.fillStyle = `rgba(255,${140 + (i % 3) * 30},40,${alpha.toFixed(2)})`;
-            CX.beginPath();
-            CX.arc(sx, sy, 1.5 + (i % 3), 0, Math.PI * 2);
-            CX.fill();
-        }
+        // ── Yellow safety bollards ──
+        [W * .17, W * .83].forEach(bx => {
+            CX.fillStyle = 'rgba(230,180,20,.45)';
+            CX.fillRect(bx - 3, floorY - 16, 6, 16);
+            CX.beginPath(); CX.arc(bx, floorY - 16, 4, 0, Math.PI * 2); CX.fill();
+        });
+
+        // ── Small red hazard signage plate ──
+        CX.fillStyle = 'rgba(150,30,30,.4)';
+        CX.fillRect(W * .045, H * .32, W * .02, H * .03);
+        CX.strokeStyle = 'rgba(255,200,200,.3)'; CX.lineWidth = 1;
+        CX.strokeRect(W * .045, H * .32, W * .02, H * .03);
     }
 
     /* ═══════════════════════════════════════════
-       NVL 6 · CONTROLES — SALA DE CONTROL / BLUEPRINT (atmósfera, sin colisión)
+       NVL 6 · CONTROLES — PLANTA: PARQUE DE TANQUES (atmósfera, sin colisión)
     ═══════════════════════════════════════════ */
     function drawControlesScenery(W, H) {
         if (!ZONE || ZONE.id !== 6) return;
-        const t = Date.now();
+        const floorY = H * .82;
 
-        // ── Blueprint grid — sparse, low-alpha ──
-        CX.strokeStyle = 'rgba(140,190,230,.10)';
-        CX.lineWidth = 1;
-        const cols = 6, rows = 5;
-        for (let i = 1; i < cols; i++) {
-            const gx = (W / cols) * i;
-            CX.beginPath(); CX.moveTo(gx, 0); CX.lineTo(gx, H * .82); CX.stroke();
-        }
-        for (let j = 1; j < rows; j++) {
-            const gy = (H * .82 / rows) * j;
-            CX.beginPath(); CX.moveTo(0, gy); CX.lineTo(W, gy); CX.stroke();
-        }
-
-        // ── Hierarchy-of-controls pyramid outline (background, decorative) ──
-        const pyBaseW = W * .30, pyH = H * .40, pyCx = W * .5, pyBaseY = H * .78;
-        CX.strokeStyle = 'rgba(160,210,255,.16)';
-        CX.lineWidth = 1.5;
+        // ── Multi-level green steel structure with stairs ──
+        const scX = W * .08, scW = W * .16, scH = H * .46, scY = floorY - scH;
+        CX.strokeStyle = 'rgba(60,110,70,.35)'; CX.lineWidth = 3;
+        CX.beginPath(); CX.moveTo(scX, scY); CX.lineTo(scX, floorY); CX.stroke();
+        CX.beginPath(); CX.moveTo(scX + scW, scY); CX.lineTo(scX + scW, floorY); CX.stroke();
+        [.35, .68, 1].forEach(f => {
+            CX.beginPath(); CX.moveTo(scX, scY + scH * f); CX.lineTo(scX + scW, scY + scH * f); CX.stroke();
+        });
+        CX.strokeStyle = 'rgba(60,110,70,.22)'; CX.lineWidth = 2;
+        CX.beginPath(); CX.moveTo(scX, scY + scH * .35); CX.lineTo(scX + scW, scY + scH * .68); CX.stroke();
+        CX.beginPath(); CX.moveTo(scX, scY + scH * .68); CX.lineTo(scX + scW, scY + scH); CX.stroke();
+        // Stair zigzag along the structure's face
+        CX.strokeStyle = 'rgba(90,150,100,.30)'; CX.lineWidth = 2;
         CX.beginPath();
-        CX.moveTo(pyCx, pyBaseY - pyH);
-        CX.lineTo(pyCx - pyBaseW / 2, pyBaseY);
-        CX.lineTo(pyCx + pyBaseW / 2, pyBaseY);
-        CX.closePath();
+        CX.moveTo(scX + scW, floorY);
+        CX.lineTo(scX + scW * .5, scY + scH * .68);
+        CX.lineTo(scX + scW, scY + scH * .35);
+        CX.lineTo(scX + scW * .5, scY);
         CX.stroke();
-        // Tier dividers (Eliminar/Sustituir top → EPP base)
-        for (let k = 1; k <= 3; k++) {
-            const ty = pyBaseY - (pyH * k / 4);
-            const halfW = (pyBaseW / 2) * (k / 4);
-            CX.beginPath();
-            CX.moveTo(pyCx - halfW, ty);
-            CX.lineTo(pyCx + halfW, ty);
-            CX.stroke();
+
+        // ── Large gray storage tanks with top handrails and corrugation ──
+        [{x: W * .40, w: W * .16, h: H * .40}, {x: W * .70, w: W * .20, h: H * .48}].forEach(tk => {
+            const ty = floorY - tk.h;
+            const tg = CX.createLinearGradient(tk.x, ty, tk.x + tk.w, ty);
+            tg.addColorStop(0, '#606468'); tg.addColorStop(.5, '#7c8286'); tg.addColorStop(1, '#4c5054');
+            CX.fillStyle = tg; CX.fillRect(tk.x, ty, tk.w, tk.h);
+            CX.beginPath(); CX.ellipse(tk.x + tk.w / 2, ty, tk.w / 2, tk.w * .16, 0, Math.PI, 0, true); CX.fill();
+            CX.strokeStyle = 'rgba(230,190,20,.35)'; CX.lineWidth = 2;
+            CX.beginPath(); CX.moveTo(tk.x, ty + 6); CX.lineTo(tk.x + tk.w, ty + 6); CX.stroke();
+            CX.strokeStyle = 'rgba(30,30,30,.15)'; CX.lineWidth = 1;
+            for (let cx2 = tk.x + tk.w * .12; cx2 < tk.x + tk.w; cx2 += tk.w * .16) {
+                CX.beginPath(); CX.moveTo(cx2, ty + 10); CX.lineTo(cx2, floorY); CX.stroke();
+            }
+        });
+
+        // ── Elevated pipe rack ──
+        const rkY = H * .14;
+        CX.strokeStyle = 'rgba(120,124,128,.35)'; CX.lineWidth = 3;
+        CX.beginPath(); CX.moveTo(0, rkY); CX.lineTo(W, rkY); CX.stroke();
+        CX.strokeStyle = 'rgba(120,124,128,.22)'; CX.lineWidth = 2;
+        [W * .22, W * .55, W * .85].forEach(sx => {
+            CX.beginPath(); CX.moveTo(sx, rkY); CX.lineTo(sx - 10, rkY + 16); CX.stroke();
+            CX.beginPath(); CX.moveTo(sx, rkY); CX.lineTo(sx + 10, rkY + 16); CX.stroke();
+        });
+
+        // ── Red fire-suppression piping (shared plant language, reused verbatim) ──
+        const rpY = H * .24;
+        CX.strokeStyle = 'rgba(160,40,40,.38)'; CX.lineWidth = 4;
+        CX.beginPath(); CX.moveTo(0, rpY); CX.lineTo(W, rpY); CX.stroke();
+        CX.fillStyle = 'rgba(160,40,40,.30)';
+        for (let dx = W * .18; dx < W; dx += W * .28) {
+            CX.fillRect(dx - 1, rpY, 2, 10);
+            CX.beginPath(); CX.arc(dx, rpY + 12, 2.5, 0, Math.PI * 2); CX.fill();
         }
 
-        // ── Slow monitoring scan line sweeping the grid area ──
-        const scanY = (t * .03) % (H * .82);
-        CX.strokeStyle = 'rgba(120,200,255,.14)';
-        CX.lineWidth = 2;
-        CX.beginPath(); CX.moveTo(0, scanY); CX.lineTo(W, scanY); CX.stroke();
+        // ── Yellow floor demarcation line ──
+        CX.strokeStyle = 'rgba(240,190,20,.4)'; CX.lineWidth = 2;
+        CX.beginPath(); CX.moveTo(0, floorY + 4); CX.lineTo(W, floorY + 4); CX.stroke();
+
+        // ── Yellow safety bollards ──
+        [W * .30, W * .94].forEach(bx => {
+            CX.fillStyle = 'rgba(230,180,20,.45)';
+            CX.fillRect(bx - 3, floorY - 16, 6, 16);
+            CX.beginPath(); CX.arc(bx, floorY - 16, 4, 0, Math.PI * 2); CX.fill();
+        });
+
+        // ── Small red hazard signage plate ──
+        CX.fillStyle = 'rgba(150,30,30,.4)';
+        CX.fillRect(W * .955, H * .30, W * .02, H * .03);
+        CX.strokeStyle = 'rgba(255,200,200,.3)'; CX.lineWidth = 1;
+        CX.strokeRect(W * .955, H * .30, W * .02, H * .03);
     }
 
     /* ═══════════════════════════════════════════
-       NVL 4 · EPP — TALLER MECÁNICO (atmósfera, sin colisión)
+       NVL 4 · EPP — PLANTA: CELDA DE PALETIZADO ROBÓTICO (atmósfera, sin colisión)
     ═══════════════════════════════════════════ */
     function drawEPPScenery(W, H) {
         if (!ZONE || ZONE.id !== 4) return;
         const t = Date.now();
         const floorY = H * .82;
 
-        // Local, self-contained gear silhouette — no state outside this call
-        function drawGear(cx, cy, r, teeth, angle, hub, rim) {
-            CX.save();
-            CX.translate(cx, cy);
-            CX.rotate(angle);
-            CX.fillStyle = rim;
-            for (let i = 0; i < teeth; i++) {
-                CX.save();
-                CX.rotate((Math.PI * 2 / teeth) * i);
-                CX.fillRect(-r * .12, -r * 1.15, r * .24, r * .28);
-                CX.restore();
-            }
-            CX.beginPath(); CX.arc(0, 0, r * .85, 0, Math.PI * 2); CX.fill();
-            CX.fillStyle = hub;
-            CX.beginPath(); CX.arc(0, 0, r * .30, 0, Math.PI * 2); CX.fill();
-            CX.restore();
-        }
-
-        // ── Background gear rig (one slowly rotating, one static) ──
-        const gearAngle = (t * .00015) % (Math.PI * 2);
-        drawGear(W * .12, floorY - H * .20, H * .13, 5, gearAngle, '#241c14', '#382a1c');
-        drawGear(W * .865, floorY - H * .15, H * .09, 5, -gearAngle * 1.4, '#241c14', '#382a1c');
-
-        // ── Pegboard silhouette with hanging tool outlines ──
-        const pbX = W * .70, pbY = H * .12, pbW = W * .18, pbH = H * .30;
-        CX.fillStyle = 'rgba(40,30,20,.35)';
-        CX.fillRect(pbX, pbY, pbW, pbH);
-        CX.fillStyle = 'rgba(255,180,80,.18)';
-        [.2, .5, .8].forEach(f => {
-            CX.beginPath(); CX.arc(pbX + pbW * f, pbY + pbH * .15, 3, 0, Math.PI * 2); CX.fill();
+        // ── White interior wall panel seams ──
+        CX.strokeStyle = 'rgba(140,140,136,.25)'; CX.lineWidth = 1;
+        [W * .22, W * .46, W * .60].forEach(sx => {
+            CX.beginPath(); CX.moveTo(sx, H * .04); CX.lineTo(sx, floorY); CX.stroke();
         });
-        CX.strokeStyle = 'rgba(200,150,90,.30)'; CX.lineWidth = 2;
-        CX.beginPath(); CX.moveTo(pbX + pbW * .2, pbY + pbH * .18); CX.lineTo(pbX + pbW * .2, pbY + pbH * .70); CX.stroke();
-        CX.beginPath(); CX.moveTo(pbX + pbW * .5, pbY + pbH * .18); CX.lineTo(pbX + pbW * .5, pbY + pbH * .55); CX.stroke();
 
-        // ── Hazard stripe band along the floor line ──
-        const stripeH = H * .05, stripeY = floorY - stripeH * .3;
+        // ── Gray mesh safety fencing around the robot cell ──
+        const mx = W * .64, my = H * .10, mw = W * .30, mh = H * .40;
+        CX.strokeStyle = 'rgba(120,124,128,.30)'; CX.lineWidth = 1;
+        CX.strokeRect(mx, my, mw, mh);
+        for (let gx = mx + mw / 5; gx < mx + mw; gx += mw / 5) { CX.beginPath(); CX.moveTo(gx, my); CX.lineTo(gx, my + mh); CX.stroke(); }
+        for (let gy = my + mh / 4; gy < my + mh; gy += mh / 4) { CX.beginPath(); CX.moveTo(mx, gy); CX.lineTo(mx + mw, gy); CX.stroke(); }
+
+        // ── Orange articulated robot arm (slow palletizing sweep) ──
+        const armX = mx + mw * .5, armBaseY = floorY;
+        const sweep = Math.sin(t * .0006) * .5;
+        CX.fillStyle = 'rgba(230,110,20,.5)';
+        CX.beginPath(); CX.arc(armX, armBaseY, 9, 0, Math.PI * 2); CX.fill(); // base
         CX.save();
-        CX.beginPath(); CX.rect(0, stripeY, W, stripeH); CX.clip();
-        CX.fillStyle = '#1a1712'; CX.fillRect(0, stripeY, W, stripeH);
-        CX.fillStyle = 'rgba(255,180,40,.45)';
-        const stripeW = 34, pitch = 90;
-        for (let sx = -stripeH; sx < W + stripeH; sx += pitch) {
-            CX.beginPath();
-            CX.moveTo(sx, stripeY + stripeH);
-            CX.lineTo(sx + stripeH, stripeY);
-            CX.lineTo(sx + stripeH + stripeW, stripeY);
-            CX.lineTo(sx + stripeW, stripeY + stripeH);
-            CX.closePath(); CX.fill();
-        }
+        CX.translate(armX, armBaseY); CX.rotate(-Math.PI / 2 + sweep);
+        CX.fillRect(-5, -mh * .34, 10, mh * .34); // lower arm
+        CX.translate(0, -mh * .34);
+        CX.beginPath(); CX.arc(0, 0, 6, 0, Math.PI * 2); CX.fill(); // elbow joint
+        CX.rotate(-sweep * 1.6);
+        CX.fillRect(-4, -mh * .24, 8, mh * .24); // forearm
+        CX.fillRect(-7, -mh * .24 - 5, 14, 6); // gripper
         CX.restore();
+
+        // ── Roller conveyor along the floor ──
+        const cvY = floorY - 6, cvH = 8;
+        CX.fillStyle = 'rgba(80,80,76,.4)'; CX.fillRect(0, cvY, W, cvH);
+        CX.fillStyle = 'rgba(150,150,144,.4)';
+        for (let rx = 10; rx < W; rx += 24) CX.fillRect(rx, cvY + 1, 3, cvH - 2);
+
+        // ── Wooden pallet stack ──
+        const wx = W * .10, wy = floorY;
+        CX.fillStyle = 'rgba(120,90,55,.45)';
+        CX.fillRect(wx, wy - 20, W * .09, 6);
+        CX.fillRect(wx, wy - 10, W * .09, 6);
+
+        // ── Red fire-suppression piping (shared plant language, reused verbatim) ──
+        const rpY = H * .24;
+        CX.strokeStyle = 'rgba(160,40,40,.38)'; CX.lineWidth = 4;
+        CX.beginPath(); CX.moveTo(0, rpY); CX.lineTo(W, rpY); CX.stroke();
+        CX.fillStyle = 'rgba(160,40,40,.30)';
+        for (let dx = W * .18; dx < W; dx += W * .28) {
+            CX.fillRect(dx - 1, rpY, 2, 10);
+            CX.beginPath(); CX.arc(dx, rpY + 12, 2.5, 0, Math.PI * 2); CX.fill();
+        }
+
+        // ── Yellow floor demarcation line ──
+        CX.strokeStyle = 'rgba(240,190,20,.4)'; CX.lineWidth = 2;
+        CX.beginPath(); CX.moveTo(0, floorY + 4); CX.lineTo(W, floorY + 4); CX.stroke();
+
+        // ── Yellow safety bollards at the cell edge ──
+        [W * .58, W * .96].forEach(bx => {
+            CX.fillStyle = 'rgba(230,180,20,.45)';
+            CX.fillRect(bx - 3, floorY - 16, 6, 16);
+            CX.beginPath(); CX.arc(bx, floorY - 16, 4, 0, Math.PI * 2); CX.fill();
+        });
+
+        // ── Small red hazard signage plate ──
+        CX.fillStyle = 'rgba(150,30,30,.4)';
+        CX.fillRect(W * .045, H * .30, W * .02, H * .03);
+        CX.strokeStyle = 'rgba(255,200,200,.3)'; CX.lineWidth = 1;
+        CX.strokeRect(W * .045, H * .30, W * .02, H * .03);
     }
 
     /* ═══════════════════════════════════════════
-       NVL 3 · LOTO & CELULAR — SALA DE CONTROL ELÉCTRICO (atmósfera, sin colisión)
+       NVL 3 · LOTO & CELULAR — PLANTA: SALA DE BOMBEO (atmósfera, sin colisión)
     ═══════════════════════════════════════════ */
     function drawLotoScenery(W, H) {
         if (!ZONE || ZONE.id !== 3) return;
         const t = Date.now();
         const floorY = H * .82;
 
-        // ── Background electrical panel silhouettes ──
+        // ── Green vertical process vessels ──
+        [W * .08, W * .86].forEach(vx => {
+            const vw = W * .09, vh = H * .38, vy = floorY - vh;
+            const vg = CX.createLinearGradient(vx, vy, vx + vw, vy);
+            vg.addColorStop(0, '#1a3020'); vg.addColorStop(.5, '#2c4a30'); vg.addColorStop(1, '#152418');
+            CX.fillStyle = vg; CX.fillRect(vx, vy, vw, vh);
+            CX.beginPath(); CX.ellipse(vx + vw / 2, vy, vw / 2, vw * .26, 0, Math.PI, 0, true); CX.fill();
+            CX.fillStyle = 'rgba(120,200,140,.20)'; CX.fillRect(vx, vy + vh * .4, vw, 4);
+        });
+
+        // ── Blue structural framing (background steel) ──
+        CX.strokeStyle = 'rgba(70,110,150,.30)'; CX.lineWidth = 3;
+        [W * .30, W * .50, W * .70].forEach(fx => {
+            CX.beginPath(); CX.moveTo(fx, H * .06); CX.lineTo(fx, floorY); CX.stroke();
+        });
+
+        // ── Electrical cabinets with indicator lights ──
         const panels = [
-            {x: W * .06, y: H * .10, w: W * .13, h: H * .34},
-            {x: W * .42, y: H * .06, w: W * .11, h: H * .28},
-            {x: W * .80, y: H * .12, w: W * .14, h: H * .36},
+            {x: W * .30, y: H * .10, w: W * .12, h: H * .28},
+            {x: W * .58, y: H * .14, w: W * .11, h: H * .24},
         ];
         panels.forEach((pn, pi) => {
             CX.fillStyle = 'rgba(20,35,50,.55)';
             CX.fillRect(pn.x, pn.y, pn.w, pn.h);
             CX.strokeStyle = 'rgba(80,150,200,.25)'; CX.lineWidth = 1.5;
             CX.strokeRect(pn.x, pn.y, pn.w, pn.h);
-
-            // 2 indicator lights per panel, independent blink phase
             for (let li = 0; li < 2; li++) {
-                const lx = pn.x + pn.w * (li === 0 ? .3 : .7);
-                const ly = pn.y + pn.h * .2;
+                const lx = pn.x + pn.w * (li === 0 ? .3 : .7), ly = pn.y + pn.h * .2;
                 const phase = pi * 1.9 + li * 2.6;
                 const blink = 0.3 + 0.7 * Math.max(0, Math.sin(t * .003 + phase));
                 CX.fillStyle = li === 0 ? `rgba(0,220,140,${blink.toFixed(2)})` : `rgba(255,140,40,${blink.toFixed(2)})`;
@@ -3654,25 +3759,75 @@
             }
         });
 
-        // ── Faint conduit lines along the wall toward the floor ──
-        CX.strokeStyle = 'rgba(80,150,200,.14)';
-        CX.lineWidth = 2;
-        [W * .20, W * .60, W * .93].forEach(cx2 => {
-            CX.beginPath(); CX.moveTo(cx2, 0); CX.lineTo(cx2, floorY); CX.stroke();
+        // ── Red process piping connecting vessels to cabinets ──
+        CX.strokeStyle = 'rgba(160,40,40,.35)'; CX.lineWidth = 4;
+        [[W * .12, H * .30, W * .30, H * .30], [W * .90, H * .34, W * .69, H * .34]].forEach(([x1, y1, x2, y2]) => {
+            CX.beginPath(); CX.moveTo(x1, y1); CX.lineTo(x2, y2); CX.stroke();
         });
+
+        // ── Red fire-suppression piping (shared plant language, reused verbatim) ──
+        const rpY = H * .24;
+        CX.strokeStyle = 'rgba(160,40,40,.38)'; CX.lineWidth = 4;
+        CX.beginPath(); CX.moveTo(0, rpY); CX.lineTo(W, rpY); CX.stroke();
+        CX.fillStyle = 'rgba(160,40,40,.30)';
+        for (let dx = W * .18; dx < W; dx += W * .28) {
+            CX.fillRect(dx - 1, rpY, 2, 10);
+            CX.beginPath(); CX.arc(dx, rpY + 12, 2.5, 0, Math.PI * 2); CX.fill();
+        }
+
+        // ── Yellow platform decking band along the floor ──
+        const dkY = floorY - 5, dkH = 7;
+        CX.fillStyle = 'rgba(160,130,20,.30)'; CX.fillRect(0, dkY, W, dkH);
+        CX.strokeStyle = 'rgba(220,190,40,.35)'; CX.lineWidth = 1;
+        for (let gx = 8; gx < W; gx += 22) {
+            CX.beginPath(); CX.moveTo(gx, dkY); CX.lineTo(gx, dkY + dkH); CX.stroke();
+        }
+
+        // ── Small red PELIGRO signage plate ──
+        CX.fillStyle = 'rgba(150,30,30,.4)';
+        CX.fillRect(W * .955, H * .30, W * .02, H * .03);
+        CX.strokeStyle = 'rgba(255,200,200,.3)'; CX.lineWidth = 1;
+        CX.strokeRect(W * .955, H * .30, W * .02, H * .03);
     }
 
     /* ═══════════════════════════════════════════
-       NVL 2 · PROBABILIDAD — ZONA DE ALTA CIRCULACIÓN (atmósfera, sin colisión)
+       NVL 2 · PROBABILIDAD — PLANTA: PATIO DE MANIOBRAS (atmósfera, sin colisión)
     ═══════════════════════════════════════════ */
     function drawProbabilidadScenery(W, H) {
         if (!ZONE || ZONE.id !== 2) return;
-        const t = Date.now();
         const floorY = H * .82;
 
-        // ── Background worker silhouettes (non-interactive — distinct from rescuable collectibles) ──
-        const workers = [W * .15, W * .38, W * .60];
-        workers.forEach(wx => {
+        // ── Overcast haze bands — flat, not cartoon puffs ──
+        [H * .04, H * .12].forEach(hy => {
+            const hg = CX.createLinearGradient(0, hy, 0, hy + H * .05);
+            hg.addColorStop(0, 'rgba(230,232,234,.14)'); hg.addColorStop(1, 'rgba(230,232,234,0)');
+            CX.fillStyle = hg; CX.fillRect(0, hy, W, H * .05);
+        });
+
+        // ── Tall pallet racking (blue frame, orange beams, stacked pallets) ──
+        [W * .06, W * .88].forEach(rx => {
+            const rw = W * .10, rTop = floorY - H * .42;
+            CX.strokeStyle = 'rgba(60,100,150,.4)'; CX.lineWidth = 4;
+            CX.beginPath(); CX.moveTo(rx, rTop); CX.lineTo(rx, floorY); CX.stroke();
+            CX.beginPath(); CX.moveTo(rx + rw, rTop); CX.lineTo(rx + rw, floorY); CX.stroke();
+            CX.fillStyle = 'rgba(210,110,30,.4)';
+            [.35, .68].forEach(f => CX.fillRect(rx, rTop + (floorY - rTop) * f, rw, 5));
+            CX.fillStyle = 'rgba(120,90,55,.5)';
+            CX.fillRect(rx + 3, rTop + (floorY - rTop) * .35 - 14, rw - 6, 12);
+            CX.fillRect(rx + 3, rTop + (floorY - rTop) * .68 - 14, rw - 6, 12);
+        });
+
+        // ── Forklift silhouette, parked at the edge ──
+        const fx = W * .24, fy = floorY;
+        CX.fillStyle = 'rgba(40,36,30,.45)';
+        CX.fillRect(fx, fy - 16, 26, 14); // body
+        CX.fillRect(fx + 22, fy - 34, 3, 34); // mast
+        CX.fillRect(fx + 26, fy - 24, 8, 3); // fork
+        CX.beginPath(); CX.arc(fx + 5, fy, 4, 0, Math.PI * 2); CX.fill();
+        CX.beginPath(); CX.arc(fx + 19, fy, 4, 0, Math.PI * 2); CX.fill();
+
+        // ── Background workers in reflective vests (non-interactive — distinct from rescuable collectibles) ──
+        [W * .42, W * .60].forEach(wx => {
             const wy = floorY;
             CX.fillStyle = 'rgba(30,26,20,.45)';
             CX.beginPath(); CX.arc(wx, wy - 34, 7, 0, Math.PI * 2); CX.fill(); // head
@@ -3680,40 +3835,60 @@
             CX.moveTo(wx - 8, wy - 27); CX.lineTo(wx + 8, wy - 27);
             CX.lineTo(wx + 11, wy); CX.lineTo(wx - 11, wy);
             CX.closePath(); CX.fill(); // body
+            CX.fillStyle = 'rgba(255,190,20,.5)';
+            CX.fillRect(wx - 9, wy - 20, 18, 4); // reflective vest stripe
         });
 
-        // ── Caution tape strung between two background posts ──
-        const postY0 = floorY - H * .22, postX0 = W * .72, postX1 = W * .95;
-        CX.fillStyle = 'rgba(40,35,25,.5)';
-        CX.fillRect(postX0 - 3, postY0, 6, floorY - postY0);
-        CX.fillRect(postX1 - 3, postY0, 6, floorY - postY0);
-        const tapeY = postY0 + 6, tapeH = H * .035;
+        // ── Red fire-suppression piping (shared plant language, reused verbatim) ──
+        const rpY = H * .24;
+        CX.strokeStyle = 'rgba(160,40,40,.38)'; CX.lineWidth = 4;
+        CX.beginPath(); CX.moveTo(0, rpY); CX.lineTo(W, rpY); CX.stroke();
+        CX.fillStyle = 'rgba(160,40,40,.30)';
+        for (let dx = W * .18; dx < W; dx += W * .28) {
+            CX.fillRect(dx - 1, rpY, 2, 10);
+            CX.beginPath(); CX.arc(dx, rpY + 12, 2.5, 0, Math.PI * 2); CX.fill();
+        }
+
+        // ── High-bay pendant lights ──
+        [W * .34, W * .74].forEach(px => {
+            const py = H * .17;
+            const glow = CX.createRadialGradient(px, py + 10, 0, px, py + 10, 22);
+            glow.addColorStop(0, 'rgba(255,235,200,.18)'); glow.addColorStop(1, 'rgba(0,0,0,0)');
+            CX.fillStyle = glow; CX.fillRect(px - 22, py - 12, 44, 44);
+            CX.fillStyle = 'rgba(40,34,26,.5)';
+            CX.beginPath(); CX.moveTo(px - 5, py); CX.lineTo(px + 5, py); CX.lineTo(px, py + 9); CX.closePath(); CX.fill();
+        });
+
+        // ── Yellow floor demarcation line ──
+        CX.strokeStyle = 'rgba(240,190,20,.4)'; CX.lineWidth = 2;
+        CX.beginPath(); CX.moveTo(0, floorY + 4); CX.lineTo(W, floorY + 4); CX.stroke();
+
+        // ── White zebra crossing patch ──
+        const zx = W * .48, zw = W * .16, zy = floorY - 2, zh = 6;
         CX.save();
-        CX.beginPath(); CX.rect(postX0, tapeY, postX1 - postX0, tapeH); CX.clip();
-        CX.fillStyle = '#2a2418'; CX.fillRect(postX0, tapeY, postX1 - postX0, tapeH);
-        CX.fillStyle = 'rgba(255,190,20,.6)';
-        const stripeW = 18, pitch = 34;
-        for (let sx = postX0 - tapeH; sx < postX1 + tapeH; sx += pitch) {
+        CX.beginPath(); CX.rect(zx, zy, zw, zh); CX.clip();
+        CX.fillStyle = 'rgba(20,18,16,.5)'; CX.fillRect(zx, zy, zw, zh);
+        CX.fillStyle = 'rgba(230,230,225,.5)';
+        for (let sx = zx - zh; sx < zx + zw + zh; sx += 10) {
             CX.beginPath();
-            CX.moveTo(sx, tapeY + tapeH);
-            CX.lineTo(sx + tapeH, tapeY);
-            CX.lineTo(sx + tapeH + stripeW, tapeY);
-            CX.lineTo(sx + stripeW, tapeY + tapeH);
+            CX.moveTo(sx, zy + zh); CX.lineTo(sx + zh, zy);
+            CX.lineTo(sx + zh + 4, zy); CX.lineTo(sx + 4, zy + zh);
             CX.closePath(); CX.fill();
         }
         CX.restore();
 
-        // ── Warning beacon (pulsing glow, same idiom as the extinguisher pickup glow) ──
-        const bx = W * .90, by = floorY - H * .32;
-        const pulse = 0.5 + Math.sin(t * .006) * .5;
-        const bg2 = CX.createRadialGradient(bx, by, 0, bx, by, 26);
-        bg2.addColorStop(0, `rgba(255,150,40,${pulse * .5})`);
-        bg2.addColorStop(1, 'rgba(0,0,0,0)');
-        CX.fillStyle = bg2; CX.fillRect(bx - 26, by - 26, 52, 52);
-        CX.fillStyle = 'rgba(40,35,25,.5)';
-        CX.fillRect(bx - 3, by, 6, floorY - by);
-        CX.fillStyle = `rgba(255,180,60,${0.6 + pulse * .4})`;
-        CX.beginPath(); CX.arc(bx, by, 5, 0, Math.PI * 2); CX.fill();
+        // ── Yellow safety bollards ──
+        [W * .14, W * .80].forEach(bx => {
+            CX.fillStyle = 'rgba(230,180,20,.45)';
+            CX.fillRect(bx - 3, floorY - 16, 6, 16);
+            CX.beginPath(); CX.arc(bx, floorY - 16, 4, 0, Math.PI * 2); CX.fill();
+        });
+
+        // ── Small red hazard signage plate ──
+        CX.fillStyle = 'rgba(150,30,30,.4)';
+        CX.fillRect(W * .955, H * .32, W * .02, H * .03);
+        CX.strokeStyle = 'rgba(255,200,200,.3)'; CX.lineWidth = 1;
+        CX.strokeRect(W * .955, H * .32, W * .02, H * .03);
     }
 
     /* Default Mario-style clouds + bushes — every level except the bespoke-scenery ones */
