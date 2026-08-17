@@ -81,11 +81,20 @@
                     </select>
                 </div>
 
-                <div style="text-align: left; font-family: var(--exo); margin-bottom: 25px;">
+                <div style="text-align: left; font-family: var(--exo); margin-bottom: 15px;">
                     <label style="color: var(--mut); font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 5px;">SELECCIONA TU PRODUCTO:</label>
                     <select id="select-planta" onchange="actualizarEstadoContinuar()" style="width: 100%; padding: 10px; background: rgba(0, 15, 30, 0.8); border: 1px solid var(--b3); color: white; font-family: var(--exo); outline: none;">
                         <option value="">Cargando productos...</option>
                     </select>
+                </div>
+
+                <div style="text-align: left; font-family: var(--exo); margin-bottom: 25px;">
+                    <label style="color: var(--mut); font-size: 12px; letter-spacing: 1px; display: block; margin-bottom: 5px;">INGRESA TU DNI:</label>
+                    <input type="text" id="input-dni" maxlength="8" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+                        placeholder="8 dígitos"
+                        oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8); actualizarEstadoContinuar();"
+                        style="width: 100%; padding: 10px; background: rgba(0, 15, 30, 0.8); border: 1px solid var(--b3); color: white; font-family: var(--exo); outline: none; box-sizing: border-box;">
+                    <div id="dni-error" style="display: none; color: var(--r2); font-size: 11px; margin-top: 6px; letter-spacing: 0.3px;"></div>
                 </div>
 
                 <div id="ubicacion-error" style="display: none; text-align: center; margin-bottom: 15px; padding: 10px; border: 1px solid var(--r2); background: rgba(255,51,85,0.08); border-radius: 4px;">
