@@ -21,6 +21,25 @@ function include(filename) {
 }
 
 // ==========================================
+// 0. UTILIDAD: HASH SEGURO DE DNI (SHA-256)
+//    El DNI en texto plano solo se usa para el login (validarDni contra el
+//    roster "Personal"). En cualquier hoja de resultados se guarda este hash
+//    en su lugar: es determinístico (mismo DNI -> mismo hash siempre), así
+//    que sigue sirviendo como identificador único de la persona entre filas,
+//    pero el Excel nunca contiene el DNI real.
+// ==========================================
+function hashearDni(dni) {
+  var texto = String(dni || '').trim();
+  if (!texto) return '';
+  var bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, texto, Utilities.Charset.UTF_8);
+  return bytes.map(function (b) {
+    var v = (b < 0) ? b + 256 : b;
+    var hex = v.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
+}
+
+// ==========================================
 // 1. QUIZ: FIN DE NIVEL -> Guarda en "ResultadosQuiz" (Sin IDs, por compatibilidad)
 //                       -> Y TAMBIÉN en "ResultadosQuiz2" (Con IDs, nueva estructura)
 // ==========================================
@@ -81,7 +100,7 @@ function guardarResultadosQuiz(datos) {
   }
 
   hojaNueva.appendRow([
-    datos.fecha, datos.paisId, datos.operacionId, datos.dni, datos.nombre, datos.nivel, datos.personaje,
+    datos.fecha, datos.paisId, datos.operacionId, hashearDni(datos.dni), datos.nombre, datos.nivel, datos.personaje,
     p1.p, p1.r, p1.c,
     p2.p, p2.r, p2.c,
     p3.p, p3.r, p3.c,
@@ -128,7 +147,7 @@ function guardarResultadosQuizPortalRapido(datos) {
     datos.fecha,
     datos.paisId,
     datos.operacionId,
-    datos.dni,
+    hashearDni(datos.dni),
     datos.nombre,
     datos.nivel,
     datos.personaje,
@@ -155,7 +174,7 @@ function guardarEncuestaFinal(datos) {
   }
 
   hoja.appendRow([
-    datos.fecha, datos.paisId, datos.operacionId, datos.dni,
+    datos.fecha, datos.paisId, datos.operacionId, hashearDni(datos.dni),
     datos.personaje, datos.estrellas, datos.estado
   ]);
 }
